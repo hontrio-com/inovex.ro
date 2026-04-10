@@ -5,14 +5,6 @@ import { verifyAdminToken } from '@/lib/admin-auth';
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  /* ── Redirect www -> non-www ── */
-  const hostname = request.headers.get('host') ?? '';
-  if (hostname.startsWith('www.')) {
-    const url = request.nextUrl.clone();
-    url.hostname = hostname.replace(/^www\./, '');
-    return NextResponse.redirect(url, 301);
-  }
-
   /* ── Protectie pagini admin (altele decat /admin/login) ── */
   if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
     const token = request.cookies.get('admin_token')?.value;
