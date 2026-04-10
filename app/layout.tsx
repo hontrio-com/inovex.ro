@@ -69,6 +69,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://inovex.ro',
   },
+  icons: {
+    icon: [
+      { url: '/imagini/logo_negru.png', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/imagini/logo_negru.png', type: 'image/png' },
+    ],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
