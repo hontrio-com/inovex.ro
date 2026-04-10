@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import NextImage from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, ShoppingBag, Settings, Users, Star, HelpCircle,
@@ -85,18 +86,18 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 50,
       }}>
         {/* Logo */}
-        <div style={{ padding: '20px 16px 16px', borderBottom: '1px solid #1E293B' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 32, height: 32, background: '#2B8FCC', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-              </svg>
-            </div>
-            <div>
-              <p style={{ color: '#fff', fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.95rem', lineHeight: 1 }}>inovex</p>
-              <p style={{ color: '#2B8FCC', fontFamily: 'var(--font-body)', fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>admin panel</p>
-            </div>
-          </div>
+        <div style={{ padding: '18px 16px 14px', borderBottom: '1px solid #1E293B' }}>
+          <NextImage
+            src="/imagini/logo_alb.png"
+            alt="Inovex"
+            width={120}
+            height={36}
+            style={{ objectFit: 'contain', objectPosition: 'left' }}
+            priority
+          />
+          <p style={{ color: 'rgba(255,255,255,0.30)', fontFamily: 'var(--font-body)', fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase', marginTop: 6 }}>
+            admin panel
+          </p>
         </div>
 
         {/* Nav */}
