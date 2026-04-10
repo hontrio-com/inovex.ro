@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { MarketplacePageClient } from './MarketplacePageClient';
 import { getAllProductsAsync } from '@/lib/marketplace-data-server';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Marketplace | Magazine Online si Website-uri Gata de Folosit | Inovex',
   description: 'Cumpara un magazin online sau website de prezentare complet functional, personalizat cu datele tale si livrat in 48 de ore. Peste 20 de nise disponibile.',
