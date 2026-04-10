@@ -26,7 +26,7 @@ const containerVariants = {
 
 const charVariants = {
   hidden:  { opacity: 0, filter: 'blur(10px)' },
-  visible: { opacity: 1, filter: 'blur(0px)', transition: { duration: 0.45, ease: [0.4, 0, 0.2, 1] } },
+  visible: { opacity: 1, filter: 'blur(0px)', transition: { duration: 0.45, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] } },
 };
 
 function TypewriterHeading({ trigger }: { trigger: boolean }) {
