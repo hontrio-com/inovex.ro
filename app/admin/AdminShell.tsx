@@ -4,28 +4,22 @@ import Link from 'next/link';
 import NextImage from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  LayoutDashboard, ShoppingBag, Settings, Users, Star, HelpCircle,
-  List, Image, Gavel, LogOut, ChevronRight, Globe, Layers, FileText,
+  LayoutDashboard, ShoppingBag, Settings,
+  Gavel, LogOut, ChevronRight, Globe,
   BookOpen, Tag, MessageSquare, Mail,
 } from 'lucide-react';
 
 const NAV = [
-  { label: 'Dashboard',     href: '/admin',              icon: LayoutDashboard },
-  { label: 'Marketplace',   href: '/admin/marketplace',  icon: ShoppingBag     },
-  { label: 'Oferte (bids)', href: '/admin/bids',         icon: Gavel           },
-  { label: '─────────',     href: '',                    icon: null            },
-  { label: 'Servicii',      href: '/admin/services',     icon: Globe           },
-  { label: 'Portofoliu',    href: '/admin/portfolio',    icon: Image           },
-  { label: 'Testimoniale',  href: '/admin/testimonials', icon: Star            },
-  { label: 'Intrebari FAQ', href: '/admin/faq',          icon: HelpCircle      },
-  { label: 'Proces',        href: '/admin/process',      icon: List            },
-  { label: '─────────',                href: '',                                 icon: null           },
-  { label: 'Continut educativ',         href: '/admin/invata-gratuit',            icon: BookOpen       },
-  { label: 'Categorii',                 href: '/admin/invata-gratuit/categorii',  icon: Tag            },
-  { label: 'Comentarii',                href: '/admin/invata-gratuit/comentarii', icon: MessageSquare  },
-  { label: 'Lead-uri',                  href: '/admin/invata-gratuit/leads',      icon: Mail           },
-  { label: '─────────',                href: '',                                 icon: null           },
-  { label: 'Setari site',   href: '/admin/settings',     icon: Settings        },
+  { label: 'Dashboard',         href: '/admin',                          icon: LayoutDashboard },
+  { label: 'Marketplace',       href: '/admin/marketplace',              icon: ShoppingBag     },
+  { label: 'Oferte',            href: '/admin/bids',                     icon: Gavel           },
+  { label: '─────────',         href: '',                                icon: null            },
+  { label: 'Continut educativ', href: '/admin/invata-gratuit',           icon: BookOpen        },
+  { label: 'Categorii',         href: '/admin/invata-gratuit/categorii', icon: Tag             },
+  { label: 'Comentarii',        href: '/admin/invata-gratuit/comentarii',icon: MessageSquare   },
+  { label: 'Lead-uri',          href: '/admin/invata-gratuit/leads',     icon: Mail            },
+  { label: '─────────',         href: '',                                icon: null            },
+  { label: 'Setari site',       href: '/admin/settings',                 icon: Settings        },
 ];
 
 function NavItem({ item, active }: { item: typeof NAV[0]; active: boolean }) {
