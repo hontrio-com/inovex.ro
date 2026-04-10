@@ -1,0 +1,47 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+
+export function ReadingProgress() {
+  const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    function handleScroll() {
+      const scrollTop = window.scrollY
+      const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight
+      if (docHeight <= 0) {
+        setProgress(0)
+        return
+      }
+      setProgress(Math.min(100, Math.round((scrollTop / docHeight) * 100)))
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll()
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 2,
+        zIndex: 50,
+        background: '#E8ECF0',
+        pointerEvents: 'none',
+      }}
+    >
+      <div
+        style={{
+          height: '100%',
+          width: `${progress}%`,
+          background: '#2B8FCC',
+          transition: 'width 100ms linear',
+        }}
+      />
+    </div>
+  )
+}

@@ -1,0 +1,97 @@
+[
+  {
+    "id": "magazine-online",
+    "iconName": "ShoppingCart",
+    "eyebrow": "E-Commerce",
+    "headlinePlain": "Magazine care vand,",
+    "headlineBold": "nu doar afiseaza produse.",
+    "subtitle": "Construim magazine online cu viteza sub 2 secunde, plati integrate si logistica automatizata — de la primele comenzi pana la mii pe zi.",
+    "features": [
+      { "iconName": "CreditCard",      "label": "Plati complete.",      "desc": "Stripe, PayU, Netopia, ramburs si rate in rate — totul integrat nativ." },
+      { "iconName": "Truck",           "label": "Logistica automata.",  "desc": "FanCourier, Cargus, DPD, Sameday — AWB generat automat la comanda." },
+      { "iconName": "FileSpreadsheet", "label": "Facturare instant.",   "desc": "SmartBill, Oblio, iFactura — factura se emite singura la confirmare." },
+      { "iconName": "TrendingUp",      "label": "SEO si viteza.",       "desc": "Core Web Vitals verzi garantat, LCP sub 1.5s, structured data inclus." }
+    ],
+    "badge": "Cel mai solicitat",
+    "badgeColor": "#F59E0B",
+    "ctaText": "Configureaza oferta",
+    "ctaHref": "/oferta",
+    "detailsHref": "/servicii/magazine-online"
+  },
+  {
+    "id": "website-prezentare",
+    "iconName": "Globe",
+    "eyebrow": "Prezenta Online",
+    "headlinePlain": "Prima impresie se face",
+    "headlineBold": "in 3 secunde. Nu le pierde.",
+    "subtitle": "Website-uri de prezentare cu design premium, viteza exceptionala si panou de administrare intuitiv — editezi orice, singur, fara dezvoltator.",
+    "features": [
+      { "iconName": "Zap",      "label": "Viteza garantata.",     "desc": "LCP sub 1.2s, scor Lighthouse 100 — mai rapid decat 99% din competitie." },
+      { "iconName": "Settings", "label": "CMS intuitiv.",         "desc": "Editezi texte, imagini si pagini singur, fara cunostinte tehnice." },
+      { "iconName": "Search",   "label": "SEO tehnic complet.",   "desc": "Schema markup, sitemap XML, Search Console conectat de la lansare." },
+      { "iconName": "Bell",     "label": "Formulare smart.",      "desc": "Notificari instant pe email si integrare directa cu CRM-ul tau." }
+    ],
+    "badge": "Lighthouse 100",
+    "badgeColor": "#10B981",
+    "ctaText": "Solicita oferta",
+    "ctaHref": "/oferta",
+    "detailsHref": "/servicii/website-de-prezentare"
+  },
+  {
+    "id": "aplicatii-web-saas",
+    "iconName": "Code2",
+    "eyebrow": "Produse Digitale",
+    "headlinePlain": "De la idee la produs",
+    "headlineBold": "cu zeci de mii de useri.",
+    "subtitle": "Arhitectura cloud-native, billing recurent, roluri granulare si dashboard-uri in timp real — tot ce ai nevoie pentru un SaaS care scalheaza.",
+    "features": [
+      { "iconName": "Shield",    "label": "Autentificare robusta.", "desc": "SSO, 2FA, roluri si permisiuni RBAC — securitate enterprise din ziua 1." },
+      { "iconName": "BarChart3", "label": "Dashboard real-time.",   "desc": "Grafice, tabele si KPI-uri actualizate live, fara refresh." },
+      { "iconName": "GitBranch", "label": "CI/CD automat.",         "desc": "Deploy la fiecare commit, rollback cu un click, zero downtime." },
+      { "iconName": "Layers",    "label": "Billing recurent.",      "desc": "Planuri, trial, upgrade/downgrade si facturi auto — Stripe integrat." }
+    ],
+    "badge": "API-first",
+    "badgeColor": "#8B5CF6",
+    "ctaText": "Solicita oferta",
+    "ctaHref": "/oferta",
+    "detailsHref": "/servicii/aplicatii-web-saas"
+  },
+  {
+    "id": "cms-crm-erp",
+    "iconName": "Database",
+    "eyebrow": "Digitalizare",
+    "headlinePlain": "Software care se muleaza",
+    "headlineBold": "pe tine, nu invers.",
+    "subtitle": "CMS, CRM si ERP 100% custom — digitalizezi vanzarile, stocul si relatia cu clientii dintr-un singur loc, adaptat exact proceselor tale.",
+    "features": [
+      { "iconName": "Kanban",    "label": "Pipeline vizual.",  "desc": "Urmaresti fiecare deal de la lead la contract semnat, in timp real." },
+      { "iconName": "Package",   "label": "Gestiune stoc.",    "desc": "Multi-depozit, comenzi end-to-end, alerte la stoc minim automat." },
+      { "iconName": "BarChart2", "label": "Dashboard KPI.",    "desc": "Rapoarte personalizate pentru management — datele care conteaza." },
+      { "iconName": "FileCheck", "label": "Import si integrare.", "desc": "Migrezi datele existente si conectezi softurile pe care le folosesti deja." }
+    ],
+    "badge": "100% custom",
+    "badgeColor": "#2B8FCC",
+    "ctaText": "Solicita oferta",
+    "ctaHref": "/oferta",
+    "detailsHref": "/servicii/cms-crm-erp"
+  },
+  {
+    "id": "aplicatii-mobile",
+    "iconName": "Smartphone",
+    "eyebrow": "Mobile",
+    "headlinePlain": "iOS si Android,",
+    "headlineBold": "dintr-un singur proiect.",
+    "subtitle": "Aplicatii mobile native cu design adaptat fiecarei platforme, functionalitati avansate si publicare in App Store si Google Play incluse.",
+    "features": [
+      { "iconName": "Wifi",  "label": "Offline first.",         "desc": "Functioneaza fara internet, sincronizeaza automat la reconectare." },
+      { "iconName": "Lock",  "label": "Biometrie si securitate.", "desc": "Face ID, Touch ID, notificari push si permisiuni granulare." },
+      { "iconName": "Star",  "label": "ASO si analytics.",      "desc": "Optimizare App Store, Firebase Analytics si Crashlytics din ziua 1." },
+      { "iconName": "Send",  "label": "Publicare inclusa.",     "desc": "Pregatim si publicam in App Store si Google Play — tu nu faci nimic." }
+    ],
+    "badge": "React Native",
+    "badgeColor": "#06B6D4",
+    "ctaText": "Solicita oferta",
+    "ctaHref": "/oferta",
+    "detailsHref": "/servicii/aplicatii-mobile"
+  }
+]

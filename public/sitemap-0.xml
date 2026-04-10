@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+<url><loc>https://inovex.ro</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>1</priority></url>
+<url><loc>https://inovex.ro/admin</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://inovex.ro/audit-website</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+<url><loc>https://inovex.ro/blog</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+<url><loc>https://inovex.ro/contact</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+<url><loc>https://inovex.ro/despre-noi</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+<url><loc>https://inovex.ro/marketplace</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.92</priority></url>
+<url><loc>https://inovex.ro/marketplace/magazin-online-cosmetice</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://inovex.ro/marketplace/magazin-online-fashion</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://inovex.ro/marketplace/magazin-online-suplimente</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://inovex.ro/marketplace/website-prezentare-clinica</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://inovex.ro/marketplace/website-prezentare-salon</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://inovex.ro/marketplace/website-prezentare-stomatologie</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://inovex.ro/portofoliu</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+<url><loc>https://inovex.ro/servicii</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://inovex.ro/servicii/aplicatii-mobile</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+<url><loc>https://inovex.ro/servicii/aplicatii-web-saas</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+<url><loc>https://inovex.ro/servicii/cms-crm-erp</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+<url><loc>https://inovex.ro/servicii/magazine-online</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.95</priority></url>
+<url><loc>https://inovex.ro/servicii/website-de-prezentare</loc><lastmod>2026-04-04T19:38:15.301Z</lastmod><changefreq>weekly</changefreq><priority>0.95</priority></url>
+</urlset>

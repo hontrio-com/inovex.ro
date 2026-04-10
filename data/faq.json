@@ -1,0 +1,37 @@
+[
+  {
+    "id": "1",
+    "q": "Cât durează realizarea unui magazin online?",
+    "a": "Un magazin online standard cu până la 500 de produse se livrează în 4-6 săptămâni de la aprobarea designului. Proiectele mai complexe au un timeline stabilit în propunerea tehnică."
+  },
+  {
+    "id": "2",
+    "q": "Oferiți garanție pentru proiectele dezvoltate?",
+    "a": "Da. Toate proiectele vin cu 30 de zile garanție post-lansare inclusă — orice bug apărut din vina noastră este remediat gratuit. Putem extinde cu pachete de mentenanță lunară."
+  },
+  {
+    "id": "3",
+    "q": "Pot să îmi administrez singur site-ul după lansare?",
+    "a": "Absolut. Integrăm un panou de administrare intuitiv și oferim sesiune de training inclusă. Nu ai nevoie de cunoștințe tehnice pentru a adăuga produse, articole sau a modifica conținut."
+  },
+  {
+    "id": "4",
+    "q": "Lucrați cu clienți din toată România sau doar local?",
+    "a": "Lucrăm cu clienți din toată România și din diaspora. Colaborarea se desfășoară 100% online — ședințe video, partajare Figma, acces staging server. Avem sedii în Târgu Jiu și București pentru întâlniri față în față."
+  },
+  {
+    "id": "5",
+    "q": "Ce se întâmplă dacă nu sunt mulțumit de design?",
+    "a": "Procesul nostru include revizii nelimitate în faza de design, înainte de a trece la dezvoltare. Nu trecem la cod până când nu ești 100% mulțumit de aspectul vizual."
+  },
+  {
+    "id": "6",
+    "q": "Oferiți și servicii de mentenanță și hosting?",
+    "a": "Da. Avem pachete de mentenanță lunară care includ: actualizări de securitate, backup zilnic, monitorizare uptime, modificări de conținut și suport tehnic prioritar."
+  },
+  {
+    "id": "7",
+    "q": "Puteți prelua un proiect existent neterminat sau vechi?",
+    "a": "Da, analizăm orice proiect existent și oferim o evaluare onestă. Uneori este mai eficient să reconstruim, alteori optimizăm ce există — recomandăm întotdeauna soluția în interesul clientului."
+  }
+]

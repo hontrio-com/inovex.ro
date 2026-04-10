@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1",
+    "titlu": "BioFresh Market",
+    "categorie": "E-commerce",
+    "descriere": "Magazin online complet pentru produse bio și naturale, cu sistem de abonamente și livrare săptămânală.",
+    "tags": ["WooCommerce", "Custom Design", "SEO"],
+    "link": "",
+    "imagine": "",
+    "accentColor": "#2563EB"
+  },
+  {
+    "id": "2",
+    "titlu": "ImobilPro Gorj",
+    "categorie": "Imobiliare",
+    "descriere": "Platformă imobiliară cu listare proprietăți, căutare avansată și integrare Google Maps.",
+    "tags": ["Next.js", "CMS Custom", "Google Maps"],
+    "link": "",
+    "imagine": "",
+    "accentColor": "#059669"
+  },
+  {
+    "id": "3",
+    "titlu": "Clinica DrSmile",
+    "categorie": "Medical",
+    "descriere": "Website stomatologic cu programări online, galerie înainte/după și blog medical.",
+    "tags": ["WordPress", "Booking Online", "SEO Local"],
+    "link": "",
+    "imagine": "",
+    "accentColor": "#D97706"
+  },
+  {
+    "id": "4",
+    "titlu": "TechSaaS Dashboard",
+    "categorie": "Aplicație Web",
+    "descriere": "Dashboard SaaS cu grafice real-time, gestiune utilizatori și billing Stripe integrat.",
+    "tags": ["React", "Node.js", "PostgreSQL"],
+    "link": "",
+    "imagine": "",
+    "accentColor": "#7C3AED"
+  }
+]

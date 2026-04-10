@@ -1,0 +1,25 @@
+{
+  "companyName": "Inovex",
+  "legalName": "VOID SFT GAMES SRL",
+  "cui": "43474393",
+  "phone": "0750 456 096",
+  "email": "contact@inovex.ro",
+  "addressLine1": "Târgu Jiu, Gorj",
+  "addressLine2": "București, România",
+  "social": {
+    "instagram": "https://www.instagram.com/inovex.ro",
+    "facebook": "https://www.facebook.com/inovex.ro",
+    "tiktok": "https://www.tiktok.com/@inovex.ro"
+  },
+  "seo": {
+    "defaultTitle": "Inovex — Agenție Web Premium | Magazine Online, Website-uri, Aplicații",
+    "defaultDescription": "Agenție de dezvoltare web din România. Construim magazine online, website-uri de prezentare și aplicații web care performează.",
+    "canonicalBase": "https://inovex.ro",
+    "googleAnalyticsId": "",
+    "googleTagManagerId": ""
+  },
+  "logo": {
+    "light": "/imagini/logo_negru.png",
+    "dark": "/imagini/logo_alb.png"
+  }
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "1",
+    "numar": "01",
+    "iconName": "MessageSquare",
+    "titlu": "Consultație Gratuită",
+    "descriere": "Discutăm proiectul tău, înțelegem obiectivele și îți oferim o estimare inițială în aceeași zi."
+  },
+  {
+    "id": "2",
+    "numar": "02",
+    "iconName": "FileText",
+    "titlu": "Strategie & Propunere",
+    "descriere": "Elaborăm propunerea tehnică detaliată, wireframe-urile inițiale și planul de proiect cu timeline clar."
+  },
+  {
+    "id": "3",
+    "numar": "03",
+    "iconName": "Layers",
+    "titlu": "Design & Prototip",
+    "descriere": "Creăm designul complet în Figma, iterăm până la aprobare, fără costuri suplimentare pentru revizii."
+  },
+  {
+    "id": "4",
+    "numar": "04",
+    "iconName": "Code2",
+    "titlu": "Dezvoltare & Testare",
+    "descriere": "Construim și testăm pe toate dispozitivele și browserele. Tu urmărești progresul în timp real."
+  },
+  {
+    "id": "5",
+    "numar": "05",
+    "iconName": "Rocket",
+    "titlu": "Lansare & Suport",
+    "descriere": "Lansăm, configurăm tot, facem handover complet și oferim suport post-lansare inclus 30 de zile."
+  }
+]
