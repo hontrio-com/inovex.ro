@@ -5,7 +5,8 @@ import type { MarketplaceProduct } from '@/types/marketplace';
 
 async function getAll(): Promise<MarketplaceProduct[]> {
   const { data, error } = await supabaseAdmin.from('marketplace_products').select('*').order('id');
-  if (error || !data || data.length === 0) return MARKETPLACE_PRODUCTS;
+  if (error || !data) return MARKETPLACE_PRODUCTS;
+  if (data.length === 0) return [];
   return data as MarketplaceProduct[];
 }
 

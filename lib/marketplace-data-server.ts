@@ -13,7 +13,8 @@ async function getAllFromStorage(): Promise<MarketplaceProduct[]> {
     .from('marketplace_products')
     .select('*')
     .order('id');
-  if (error || !data || data.length === 0) return MARKETPLACE_PRODUCTS;
+  if (error) return MARKETPLACE_PRODUCTS;
+  if (!data || data.length === 0) return [];
   return data as MarketplaceProduct[];
 }
 
