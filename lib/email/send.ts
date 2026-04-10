@@ -18,12 +18,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<{ success: b
     });
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('[Email sent]', options.subject, '→', options.to);
-      // Ethereal preview URL daca e disponibil
-      const previewUrl = (info as { messageId?: string } & Record<string, unknown>);
-      if (previewUrl) {
-        console.log('[Email preview]', JSON.stringify(previewUrl));
-      }
+      console.log('[Email sent]', options.subject, '→', options.to, info.messageId ?? '');
     }
 
     return { success: true };
