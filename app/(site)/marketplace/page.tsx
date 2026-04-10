@@ -1,8 +1,5 @@
 import type { Metadata } from 'next';
 import { MarketplacePageClient } from './MarketplacePageClient';
-import { getAllProductsAsync } from '@/lib/marketplace-data-server';
-
-export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Marketplace | Magazine Online si Website-uri Gata de Folosit | Inovex',
@@ -22,7 +19,6 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://inovex.ro/marketplace' },
 };
 
-export default async function MarketplacePage() {
-  const products = await getAllProductsAsync();
-  return <MarketplacePageClient products={products} />;
+export default function MarketplacePage() {
+  return <MarketplacePageClient />;
 }

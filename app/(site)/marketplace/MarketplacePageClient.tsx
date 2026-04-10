@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Package, Clock, Shield, Headphones, ArrowRight, ChevronDown, SlidersHorizontal, X, Lock } from 'lucide-react';
@@ -29,10 +29,24 @@ const TRUST = [
 
 const ALL_CATEGORIES = Object.keys(CATEGORY_LABELS) as MarketplaceCategory[];
 
-interface Props { products: MarketplaceProduct[] }
-
-export function MarketplacePageClient({ products }: Props) {
+export function MarketplacePageClient() {
   const reduce  = useReducedMotion() ?? false;
+
+  const [products, setProducts] = useState<MarketplaceProduct[]>([]);
+
+  const fetchProducts = useCallback(async () => {
+    try {
+      const res = await fetch('/api/marketplace/products');
+      if (res.ok) {
+        const data = await res.json();
+        setProducts(data);
+      }
+    } catch {
+      // silently fail — products stays []
+    }
+  }, []);
+
+  useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
   const [exclusivityBannerVisible, setExclusivityBannerVisible] = useState(false);
 
