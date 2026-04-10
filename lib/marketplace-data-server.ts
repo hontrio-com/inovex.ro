@@ -6,31 +6,38 @@
  */
 import type { MarketplaceProduct } from '@/types/marketplace';
 import { MARKETPLACE_PRODUCTS } from './marketplace-data';
-import { supabaseAdmin } from './supabase';
+import { supabase } from './supabase';
 
 async function getAllFromStorage(): Promise<MarketplaceProduct[]> {
-  const { data, error } = await supabaseAdmin
-    .from('marketplace_products')
-    .select('*')
-    .order('id');
-  if (error) return MARKETPLACE_PRODUCTS;
-  if (!data || data.length === 0) return [];
-  return data as MarketplaceProduct[];
+  try {
+    const { data, error } = await supabase
+      .from('marketplace_products')
+      .select('*')
+      .eq('status', 'published')
+      .order('id');
+    if (error) return MARKETPLACE_PRODUCTS;
+    if (!data || data.length === 0) return [];
+    return data as MarketplaceProduct[];
+  } catch {
+    return MARKETPLACE_PRODUCTS;
+  }
 }
 
 export async function getAllProductsAsync(): Promise<MarketplaceProduct[]> {
-  const all = await getAllFromStorage();
-  return all.filter((p) => p.status === 'published');
+  return getAllFromStorage();
 }
 
 export async function getProductBySlugAsync(slug: string): Promise<MarketplaceProduct | undefined> {
-  const { data } = await supabaseAdmin
-    .from('marketplace_products')
-    .select('*')
-    .eq('slug', slug)
-    .single();
-  if (data) return data as MarketplaceProduct;
-  // fallback la date statice
+  try {
+    const { data } = await supabase
+      .from('marketplace_products')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+    if (data) return data as MarketplaceProduct;
+  } catch {
+    // fallback
+  }
   return MARKETPLACE_PRODUCTS.find((p) => p.slug === slug);
 }
 
