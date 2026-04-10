@@ -1,9 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-
-export const dynamic = 'force-dynamic';
 import Link from 'next/link';
-import { getAllProductsAsync, getProductBySlugAsync, getRelatedProductsAsync } from '@/lib/marketplace-data-server';
+import { getProductBySlugAsync, getRelatedProductsAsync } from '@/lib/marketplace-data-server';
 import { BuySection } from '@/components/marketplace/BuySection';
 import { ProductTabs } from '@/components/marketplace/ProductTabs';
 import { DeliveryTimeline } from '@/components/marketplace/DeliveryTimeline';
@@ -14,13 +12,7 @@ import ProactiveChatWidget from '@/components/marketplace/ProactiveChatWidget';
 import { CATEGORY_LABELS } from '@/types/marketplace';
 import { Zap, Shield, Settings, ExternalLink, ChevronRight } from 'lucide-react';
 
-/* ── ISR ── */
-export const revalidate = 1800;
-
-export async function generateStaticParams() {
-  const products = await getAllProductsAsync();
-  return products.map((p) => ({ slug: p.slug }));
-}
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
