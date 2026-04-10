@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase'
+import { sendEmail } from '@/lib/email/send'
+import { downloadClientSubject, downloadClientHtml } from '@/lib/email/templates/marketplace'
 
 const downloadSchema = z.object({
   name: z.string().min(1).max(100),
@@ -88,6 +90,22 @@ export async function POST(req: NextRequest) {
       .from('learn_content')
       .update({ downloads: (content.downloads ?? 0) + 1 })
       .eq('id', contentId)
+
+    // Trimite email cu link download
+    const downloadResult = await sendEmail({
+      to: email,
+      subject: downloadClientSubject(),
+      html: downloadClientHtml({
+        name,
+        email,
+        resourceTitle: content.title,
+        downloadUrl: content.resource_file_url,
+        downloadedAt: new Date().toISOString(),
+      }),
+    })
+    if (!downloadResult.success) {
+      console.error('[Email download eșuat]', downloadResult.error)
+    }
 
     return NextResponse.json({
       success: true,
