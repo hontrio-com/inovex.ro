@@ -16,7 +16,7 @@ interface Props { product: MarketplaceProduct }
 
 export function DeliveryTimeline({ product }: Props) {
   const reduce = useReducedMotion() ?? false;
-  const steps  = product.deliverySteps;
+  const steps  = product.deliverySteps ?? [];
 
   return (
     <div>

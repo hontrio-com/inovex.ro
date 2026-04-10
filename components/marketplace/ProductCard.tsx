@@ -26,8 +26,9 @@ export function ProductCard({ product, compact = false }: Props) {
   const [hovered,     setHovered]     = useState(false);
   const [demoHovered, setDemoHovered] = useState(false);
 
-  const pills      = product.techSpecs.technologies.slice(0, 3);
-  const extraPills = product.techSpecs.technologies.length - 3;
+  const technologies = product.techSpecs?.technologies ?? [];
+  const pills      = technologies.slice(0, 3);
+  const extraPills = technologies.length - 3;
   const gradientBg = GRADIENT_BG[product.category] ?? 'linear-gradient(135deg,#F5F3FF 0%,#DDD6FE 50%,#F5F3FF 100%)';
 
   return (

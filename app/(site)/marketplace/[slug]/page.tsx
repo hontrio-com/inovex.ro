@@ -205,7 +205,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
               {/* Thumbnails galerie */}
               <div style={{ display: 'flex', gap: 8, marginBottom: 28, overflowX: 'auto', scrollbarWidth: 'none' }}>
-                {product.gallery.map((item, i) => (
+                {(product.gallery ?? []).map((item, i) => (
                   <div key={i} style={{ flexShrink: 0, textAlign: 'center' }}>
                     <div style={{
                       width: 88, aspectRatio: '16/10', borderRadius: 8,
@@ -288,7 +288,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               )}
 
               {/* FAQ */}
-              {product.faq.length > 0 && (
+              {(product.faq ?? []).length > 0 && (
                 <div style={{ marginTop: 'clamp(32px,4vw,48px)', borderTop: '1px solid #E8ECF0', paddingTop: 'clamp(32px,4vw,48px)' }}>
                   <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.25rem', color: '#0D1117', marginBottom: 24 }}>
                     Intrebari frecvente

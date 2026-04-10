@@ -60,7 +60,7 @@ export function ProductTabs({ product }: Props) {
           {/* TAB 1 — Pagini incluse */}
           {active === 'pagini' && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
-              {product.includedPages.map((pg, i) => (
+              {(product.includedPages ?? []).map((pg, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                   <FileText size={16} color="#2B8FCC" style={{ flexShrink: 0, marginTop: 2 }} />
                   <div>
@@ -79,7 +79,7 @@ export function ProductTabs({ product }: Props) {
           {/* TAB 2 — Functionalitati */}
           {active === 'features' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              {product.includedFeatures.map((cat, ci) => (
+              {(product.includedFeatures ?? []).map((cat, ci) => (
                 <div key={ci}>
                   <p style={{
                     fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 700,
@@ -108,11 +108,11 @@ export function ProductTabs({ product }: Props) {
             <div>
               <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #F0F2F5' }}>
                 {[
-                  { label: 'Platforma', value: product.techSpecs.platform },
-                  { label: 'PHP minim', value: product.techSpecs.phpVersion ?? 'N/A' },
-                  { label: 'Cerinte hosting', value: product.techSpecs.hostingRequirements },
-                  { label: 'Browsere', value: product.techSpecs.browserCompatibility },
-                  { label: 'Limba', value: product.techSpecs.language },
+                  { label: 'Platforma', value: product.techSpecs?.platform },
+                  { label: 'PHP minim', value: product.techSpecs?.phpVersion ?? 'N/A' },
+                  { label: 'Cerinte hosting', value: product.techSpecs?.hostingRequirements },
+                  { label: 'Browsere', value: product.techSpecs?.browserCompatibility },
+                  { label: 'Limba', value: product.techSpecs?.language },
                 ].map((row, i) => (
                   <div key={i} style={{
                     display: 'flex', padding: '12px 16px',
@@ -135,7 +135,7 @@ export function ProductTabs({ product }: Props) {
                   Tehnologii
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {product.techSpecs.technologies.map((tech) => (
+                  {(product.techSpecs?.technologies ?? []).map((tech) => (
                     <span key={tech} style={{
                       background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 6,
                       padding: '5px 12px', fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 13, color: '#2B8FCC',
@@ -162,7 +162,7 @@ export function ProductTabs({ product }: Props) {
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {product.notIncluded.map((item, i) => (
+                {(product.notIncluded ?? []).map((item, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                     <X size={14} color="#F59E0B" style={{ flexShrink: 0, marginTop: 2 }} />
                     <div>
