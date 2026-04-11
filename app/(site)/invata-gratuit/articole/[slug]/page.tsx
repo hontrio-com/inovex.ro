@@ -20,7 +20,7 @@ import {
 } from '@/lib/learn-data'
 import { supabase } from '@/lib/supabase'
 
-export const revalidate = 1800
+export const revalidate = 0
 
 const fmt = new Intl.DateTimeFormat('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' })
 

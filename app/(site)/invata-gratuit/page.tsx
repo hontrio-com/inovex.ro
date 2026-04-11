@@ -12,7 +12,7 @@ import {
   getFeaturedContent,
 } from '@/lib/learn-data'
 
-export const revalidate = 3600
+export const revalidate = 0
 
 export const metadata: Metadata = {
   title: 'Invata Gratuit - Ghiduri, Resurse si Tool-uri | Inovex',

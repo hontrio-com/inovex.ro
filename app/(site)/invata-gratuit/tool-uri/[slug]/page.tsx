@@ -9,7 +9,7 @@ import { ViewCounter } from '@/components/learn/ViewCounter'
 import { getLearnContentBySlug, getRelatedContent } from '@/lib/learn-data'
 import { supabase } from '@/lib/supabase'
 
-export const revalidate = 86400
+export const revalidate = 0
 
 export async function generateStaticParams() {
   const { data } = await supabase
