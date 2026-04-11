@@ -36,13 +36,20 @@ export function proxy(request: NextRequest) {
 
   const csp = [
     "default-src 'self'",
-    `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ''} https://www.googletagmanager.com https://connect.facebook.net https://analytics.tiktok.com https://www.youtube.com`,
+    // Scripts: GTM, GA4, Google Ads, Meta Pixel, YouTube, TikTok
+    `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ''} https://www.googletagmanager.com https://ssl.google-analytics.com https://www.google-analytics.com https://googleadservices.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://connect.facebook.net https://analytics.tiktok.com https://www.youtube.com https://s.ytimg.com`,
+    // Styles
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    // Fonts
     "font-src 'self' data: https://fonts.gstatic.com",
+    // Images: analytics pixels, Supabase, social
     "img-src 'self' data: blob: https: http:",
-    "media-src 'self' https://www.youtube.com",
-    "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://www.googletagmanager.com",
-    "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://analytics.tiktok.com https://*.supabase.co wss://*.supabase.co",
+    // Media
+    "media-src 'self' https://www.youtube.com https://*.supabase.co",
+    // Frames: GTM noscript, YouTube, DoubleClick
+    "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://www.googletagmanager.com https://td.doubleclick.net",
+    // Fetch/XHR: all analytics endpoints + Supabase + Meta Conversions API
+    "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://www.googletagmanager.com https://*.googletagmanager.com https://googleadservices.com https://www.googleadservices.com https://www.facebook.com https://*.facebook.com https://*.facebook.net https://analytics.tiktok.com https://*.supabase.co wss://*.supabase.co https://*.run.app https://conversionsapigateway.com https://*.conversionsapigateway.com",
     "worker-src 'self' blob:",
     "object-src 'none'",
     "base-uri 'self'",
