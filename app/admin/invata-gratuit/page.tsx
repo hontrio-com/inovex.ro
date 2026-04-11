@@ -59,6 +59,12 @@ const TYPE_COLOR: Record<string, string> = {
   video:   '#EF4444',
 }
 
+function getHtmlContent(content: unknown): string {
+  if (!content || typeof content !== 'object') return ''
+  const c = content as Record<string, unknown>
+  return typeof c.html === 'string' ? c.html : ''
+}
+
 export default function LearnContentAdminPage() {
   const [items, setItems] = useState<Partial<LearnContent>[]>([])
   const [loading, setLoading] = useState(true)
@@ -85,38 +91,38 @@ export default function LearnContentAdminPage() {
     if (!d) return
     const isNew = String(id).startsWith('new-')
     if (isNew) {
-      // Create
       setSaving(true)
       fetch('/api/admin/learn/content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(d),
       })
-        .then((r) => r.json())
-        .then((created: Partial<LearnContent>) => {
-          setItems((prev) => prev.map((it) => it.id === id ? created : it))
+        .then(async (r) => {
+          const json = await r.json()
+          if (!r.ok) { alert('Eroare salvare: ' + (json.error ?? r.status)); return }
+          setItems((prev) => prev.map((it) => it.id === id ? json : it))
           setExpandedId(null)
           setSaved(true)
           setTimeout(() => setSaved(false), 3000)
         })
-        .catch(() => {})
+        .catch((e) => alert('Eroare retea: ' + e))
         .finally(() => setSaving(false))
     } else {
-      // Update
       setSaving(true)
       fetch(`/api/admin/learn/content/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(d),
       })
-        .then((r) => r.json())
-        .then((updated: Partial<LearnContent>) => {
-          setItems((prev) => prev.map((it) => it.id === id ? updated : it))
+        .then(async (r) => {
+          const json = await r.json()
+          if (!r.ok) { alert('Eroare salvare: ' + (json.error ?? r.status)); return }
+          setItems((prev) => prev.map((it) => it.id === id ? json : it))
           setExpandedId(null)
           setSaved(true)
           setTimeout(() => setSaved(false), 3000)
         })
-        .catch(() => {})
+        .catch((e) => alert('Eroare retea: ' + e))
         .finally(() => setSaving(false))
     }
   }
@@ -335,7 +341,7 @@ export default function LearnContentAdminPage() {
                       <div style={{ marginBottom: 16 }}>
                         <Field label="Continut articol (HTML)">
                           <Textarea
-                            value={typeof (d.content as Record<string,unknown> | null)?.html === 'string' ? String((d.content as Record<string,unknown>).html) : ''}
+                            value={getHtmlContent(d.content)}
                             onChange={(v) => patchDraft(id, 'content', { html: v })}
                             placeholder="<p>Scrie continutul articolului in HTML...</p>"
                             rows={12}

@@ -40,15 +40,17 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json()
   const now = new Date().toISOString()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { id: _tempId, ...rest } = body  // exclude temporary frontend ID (e.g. "new-...")
   const payload = {
-    ...body,
+    ...rest,
     created_at: now,
     updated_at: now,
     views: 0,
     downloads: 0,
-    tags: body.tags ?? [],
-    resource_preview_urls: body.resource_preview_urls ?? [],
-    resource_benefits: body.resource_benefits ?? [],
+    tags: rest.tags ?? [],
+    resource_preview_urls: rest.resource_preview_urls ?? [],
+    resource_benefits: rest.resource_benefits ?? [],
   }
 
   const { data, error } = await supabaseAdmin
