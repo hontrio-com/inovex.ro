@@ -10,8 +10,11 @@ export async function GET() {
       .eq('status', 'published')
       .order('id');
 
-    if (error || !data || data.length === 0) {
+    if (error) {
       return NextResponse.json(MARKETPLACE_PRODUCTS.filter((p) => p.status === 'published'));
+    }
+    if (!data || data.length === 0) {
+      return NextResponse.json([]);
     }
 
     return NextResponse.json(data);
