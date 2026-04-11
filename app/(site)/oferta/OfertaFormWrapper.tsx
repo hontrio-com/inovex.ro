@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Send, CheckCircle2 } from 'lucide-react';
 import { pushEvent } from '@/lib/gtm';
+import { trackEvent } from '@/lib/meta-pixel';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -81,6 +82,8 @@ function OfertaFormInner() {
       if (res.ok) {
         setSubmitStatus('success');
         pushEvent('form_oferta_success', { serviciu: values.serviciu });
+        trackEvent('SubmitApplication');
+        trackEvent('Lead', { content_name: 'oferta', content_category: values.serviciu });
       } else {
         setSubmitStatus('error');
       }

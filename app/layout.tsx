@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { Inter, Plus_Jakarta_Sans, Fraunces } from 'next/font/google';
 import './globals.css';
+import { Suspense } from 'react';
 import { GoogleTagManager } from '@/components/analytics/GoogleTagManager';
+import { MetaPixel } from '@/components/analytics/MetaPixel';
 
 const inter = Inter({
   variable: '--font-body',
@@ -92,6 +94,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="min-h-full flex flex-col">
         <GoogleTagManager />
+        <Suspense fallback={null}><MetaPixel /></Suspense>
         {children}
       </body>
     </html>

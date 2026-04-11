@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import { pushEvent } from '@/lib/gtm';
+import { trackEvent } from '@/lib/meta-pixel';
 import {
   Form,
   FormControl,
@@ -66,6 +67,8 @@ export function ContactForm() {
       setStatus('success');
       form.reset();
       pushEvent('form_contact_success', { serviciu: data.serviciu });
+      trackEvent('Contact');
+      trackEvent('Lead', { content_name: 'contact', content_category: data.serviciu });
     } catch {
       setStatus('error');
     }
