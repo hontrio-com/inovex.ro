@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import {
   A, Field, Inp, Textarea, Sel, SaveBar, AdminHeader,
 } from '@/app/admin/_components/AdminPage'
+import { BlockEditor, type BlockContent } from '@/components/learn/BlockEditor'
 import { Plus, Trash2, X, Check, ChevronDown, ChevronUp, Eye, Download } from 'lucide-react'
 import type { LearnContent, LearnType, LearnStatus } from '@/types/learn'
 
@@ -336,15 +337,13 @@ export default function LearnContentAdminPage() {
 
                     {/* ── Câmpuri specifice tipului ── */}
 
-                    {/* ARTICOL — corp HTML */}
+                    {/* ARTICOL — block editor */}
                     {d.type === 'articol' && (
                       <div style={{ marginBottom: 16 }}>
-                        <Field label="Continut articol (HTML)">
-                          <Textarea
-                            value={getHtmlContent(d.content)}
-                            onChange={(v) => patchDraft(id, 'content', { html: v })}
-                            placeholder="<p>Scrie continutul articolului in HTML...</p>"
-                            rows={12}
+                        <Field label="Continut articol">
+                          <BlockEditor
+                            value={(d.content as BlockContent | null) ?? null}
+                            onChange={(v) => patchDraft(id, 'content', v)}
                           />
                         </Field>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }}>
