@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getProductBySlugAsync, getRelatedProductsAsync } from '@/lib/marketplace-data-server';
 import { BuySection } from '@/components/marketplace/BuySection';
+import { ProductViewTracker } from '@/components/marketplace/ProductViewTracker';
 import { ProductTabs } from '@/components/marketplace/ProductTabs';
 import { DeliveryTimeline } from '@/components/marketplace/DeliveryTimeline';
 import { ProductCard } from '@/components/marketplace/ProductCard';
@@ -72,6 +73,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <ProductViewTracker productTitle={product.title} />
 
       <div style={{ background: '#fff', paddingTop: 'clamp(80px,8vw,100px)', paddingBottom: 'clamp(64px,8vw,96px)' }}>
         <div className="max-w-7xl mx-auto px-5 lg:px-8">

@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { trackConversions } from '@/lib/gtm';
+import { trackTikTok } from '@/lib/tiktok';
 import { Send, AlertCircle, CheckCircle2, Euro } from 'lucide-react';
 import {
   Dialog,
@@ -51,6 +53,8 @@ export function BidModal({ open, onClose, productSlug, productTitle, listedPrice
         body:    JSON.stringify(payload),
       });
       if (!res.ok) throw new Error('server');
+      trackConversions.formularOferta();
+      trackTikTok.marketplace(productTitle);
       setStatus('success');
     } catch {
       setStatus('error');

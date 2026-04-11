@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import { trackConversions } from '@/lib/gtm';
+import { trackTikTok } from '@/lib/tiktok';
 import { trackEvent } from '@/lib/meta-pixel';
 import {
   Form,
@@ -67,6 +68,7 @@ export function ContactForm() {
       setStatus('success');
       form.reset();
       trackConversions.formularContact();
+      trackTikTok.formularContact();
       trackEvent('Contact');
       trackEvent('Lead', { content_name: 'contact', content_category: data.serviciu });
     } catch {

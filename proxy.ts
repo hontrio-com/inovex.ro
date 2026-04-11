@@ -49,7 +49,7 @@ export function proxy(request: NextRequest) {
     // Frames: GTM noscript, YouTube, DoubleClick
     "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://www.googletagmanager.com https://td.doubleclick.net",
     // Fetch/XHR: all analytics endpoints + Supabase + Meta Conversions API
-    "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://www.googletagmanager.com https://*.googletagmanager.com https://googleadservices.com https://www.googleadservices.com https://www.google.com https://www.facebook.com https://*.facebook.com https://*.facebook.net https://analytics.tiktok.com https://*.supabase.co wss://*.supabase.co https://*.run.app https://conversionsapigateway.com https://*.conversionsapigateway.com",
+    "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://www.googletagmanager.com https://*.googletagmanager.com https://googleadservices.com https://www.googleadservices.com https://www.google.com https://www.facebook.com https://*.facebook.com https://*.facebook.net https://analytics.tiktok.com https://log.tiktokv.com https://business-api.tiktok.com https://*.supabase.co wss://*.supabase.co https://*.run.app https://conversionsapigateway.com https://*.conversionsapigateway.com",
     "worker-src 'self' blob:",
     "object-src 'none'",
     "base-uri 'self'",

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { trackConversions } from '@/lib/gtm';
+import { trackTikTok } from '@/lib/tiktok';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
   User,
@@ -366,6 +367,7 @@ export function ConfiguratorMagazinClient() {
       if (res.ok) {
         localStorage.removeItem(LS_KEY);
         trackConversions.configuratorMagazin();
+        trackTikTok.configuratorMagazin();
         setSubmitStatus('success');
       } else {
         setSubmitStatus('error');
