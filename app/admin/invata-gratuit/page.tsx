@@ -328,6 +328,122 @@ export default function LearnContentAdminPage() {
                       </Field>
                     </div>
 
+                    {/* ── Câmpuri specifice tipului ── */}
+
+                    {/* ARTICOL — corp HTML */}
+                    {d.type === 'articol' && (
+                      <div style={{ marginBottom: 16 }}>
+                        <Field label="Continut articol (HTML)">
+                          <Textarea
+                            value={typeof (d.content as Record<string,unknown> | null)?.html === 'string' ? String((d.content as Record<string,unknown>).html) : ''}
+                            onChange={(v) => patchDraft(id, 'content', { html: v })}
+                            placeholder="<p>Scrie continutul articolului in HTML...</p>"
+                            rows={12}
+                          />
+                        </Field>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }}>
+                          <Field label="Timp citire (minute)">
+                            <Inp type="number" value={String(d.read_time ?? '')} onChange={(v) => patchDraft(id, 'read_time', v ? Number(v) : null)} placeholder="5" />
+                          </Field>
+                          <Field label="Permite comentarii">
+                            <Sel
+                              value={d.allow_comments ? 'da' : 'nu'}
+                              onChange={(v) => patchDraft(id, 'allow_comments', v === 'da')}
+                              options={[{ value: 'da', label: 'Da' }, { value: 'nu', label: 'Nu' }]}
+                            />
+                          </Field>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* RESURSA — fisier download */}
+                    {d.type === 'resursa' && (
+                      <div style={{ marginBottom: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <Field label="URL fisier download (PDF, ZIP, etc.)">
+                          <Inp value={String(d.resource_file_url ?? '')} onChange={(v) => patchDraft(id, 'resource_file_url', v)} placeholder="https://..." />
+                        </Field>
+                        <Field label="Descriere resursa">
+                          <Textarea value={String(d.resource_description ?? '')} onChange={(v) => patchDraft(id, 'resource_description', v)} placeholder="Ce contine aceasta resursa..." rows={3} />
+                        </Field>
+                        <Field label="Beneficii (unul per rand)">
+                          <Textarea
+                            value={Array.isArray(d.resource_benefits) ? (d.resource_benefits as string[]).join('\n') : ''}
+                            onChange={(v) => patchDraft(id, 'resource_benefits', v.split('\n').map((s) => s.trim()).filter(Boolean))}
+                            placeholder={"Economisesti 10 ore de munca\nTemplate gata de folosit\n..."}
+                            rows={4}
+                          />
+                        </Field>
+                        <Field label="Necesita email pentru download">
+                          <Sel
+                            value={d.requires_email ? 'da' : 'nu'}
+                            onChange={(v) => patchDraft(id, 'requires_email', v === 'da')}
+                            options={[{ value: 'da', label: 'Da — colecteaza emailul' }, { value: 'nu', label: 'Nu — download direct' }]}
+                          />
+                        </Field>
+                      </div>
+                    )}
+
+                    {/* VIDEO — YouTube */}
+                    {d.type === 'video' && (
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                        <Field label="URL YouTube (embed sau watch)">
+                          <Inp value={String(d.youtube_url ?? '')} onChange={(v) => patchDraft(id, 'youtube_url', v)} placeholder="https://www.youtube.com/watch?v=..." />
+                        </Field>
+                        <Field label="Durata video (ex: 12:34)">
+                          <Inp value={String(d.video_duration ?? '')} onChange={(v) => patchDraft(id, 'video_duration', v)} placeholder="12:34" />
+                        </Field>
+                      </div>
+                    )}
+
+                    {/* TOOL — component intern */}
+                    {d.type === 'tool' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 16 }}>
+                        <Field label="Component tool (cheie interna)">
+                          <Sel
+                            value={String(d.tool_component_key ?? '')}
+                            onChange={(v) => patchDraft(id, 'tool_component_key', v || null)}
+                            options={[
+                              { value: '', label: '— Selecteaza —' },
+                              { value: 'CostCalculatorMagazin', label: 'Calculator Cost Magazin Online' },
+                              { value: 'CostCalculatorWebsite', label: 'Calculator Cost Website Prezentare' },
+                              { value: 'ChecklistLansareMagazin', label: 'Checklist Lansare Magazin' },
+                              { value: 'SeoAuditChecker', label: 'SEO Audit Checker' },
+                            ]}
+                          />
+                        </Field>
+                        <Field label="Descriere tool">
+                          <Textarea value={String(d.tool_description ?? '')} onChange={(v) => patchDraft(id, 'tool_description', v)} placeholder="Ce face acest tool..." rows={3} />
+                        </Field>
+                        <Field label="Necesita email pentru acces">
+                          <Sel
+                            value={d.tool_requires_email ? 'da' : 'nu'}
+                            onChange={(v) => patchDraft(id, 'tool_requires_email', v === 'da')}
+                            options={[{ value: 'nu', label: 'Nu — acces liber' }, { value: 'da', label: 'Da — colecteaza emailul' }]}
+                          />
+                        </Field>
+                      </div>
+                    )}
+
+                    {/* SEO + optiuni comune */}
+                    <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: 16, marginBottom: 16 }}>
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>SEO & Optiuni</p>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 12 }}>
+                        <Field label="SEO Title">
+                          <Inp value={String(d.seo_title ?? '')} onChange={(v) => patchDraft(id, 'seo_title', v)} placeholder="Titlu pentru Google..." />
+                        </Field>
+                        <Field label="Featured">
+                          <Sel
+                            value={d.featured ? 'da' : 'nu'}
+                            onChange={(v) => patchDraft(id, 'featured', v === 'da')}
+                            options={[{ value: 'nu', label: 'Nu' }, { value: 'da', label: 'Da — afisat in sectiunea Featured' }]}
+                          />
+                        </Field>
+                      </div>
+                      <Field label="SEO Description">
+                        <Textarea value={String(d.seo_description ?? '')} onChange={(v) => patchDraft(id, 'seo_description', v)} placeholder="Descriere pentru Google (max 160 caractere)..." rows={2} />
+                      </Field>
+                    </div>
+
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
                       <button onClick={() => cancelDraft(id)} style={A.btnOutline}>
                         <X size={14} /> Anuleaza
