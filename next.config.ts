@@ -15,6 +15,24 @@ const nextConfig: NextConfig = {
   },
 
   async headers() {
+    const csp = [
+      "default-src 'self'",
+      // Scripts: GTM, GA4, Google Ads, Meta Pixel, YouTube embeds
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://analytics.google.com https://googleadservices.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://connect.facebook.net https://www.youtube.com https://s.ytimg.com",
+      // Styles: Google Fonts + inline styles (needed for Next.js)
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      // Fonts
+      "font-src 'self' https://fonts.gstatic.com",
+      // Images: analytics pixels, Supabase, YouTube thumbnails
+      "img-src 'self' data: blob: https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com https://www.facebook.com https://*.facebook.com https://*.supabase.co https://*.ytimg.com https://*.youtube.com https://inovex.ro https://www.inovex.ro",
+      // Fetch/XHR: analytics endpoints, Supabase, our own API
+      "connect-src 'self' https://*.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://*.googletagmanager.com https://www.facebook.com https://*.facebook.com https://*.supabase.co wss://*.supabase.co",
+      // Frames: GTM iframe fallback, YouTube embeds
+      "frame-src https://www.googletagmanager.com https://td.doubleclick.net https://www.youtube.com https://www.youtube-nocookie.com",
+      // Media
+      "media-src 'self' https://*.supabase.co",
+    ].join('; ')
+
     return [
       {
         source: '/:path*',
@@ -22,6 +40,10 @@ const nextConfig: NextConfig = {
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: csp,
           },
         ],
       },
