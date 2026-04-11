@@ -34,33 +34,42 @@ export default function LearnCommentsAdminPage() {
 
   async function approve(id: string) {
     setActionLoading(id)
-    await fetch(`/api/admin/learn/comments/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ approved: true }),
-    })
-    setItems((prev) => prev.filter((c) => c.id !== id || showAll))
-    setItems((prev) => prev.map((c) => c.id === id ? { ...c, approved: true } : c))
-    setActionLoading(null)
+    try {
+      const r = await fetch(`/api/admin/learn/comments/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ approved: true }),
+      })
+      if (!r.ok) { alert('Eroare la aprobare'); return }
+      if (!showAll) {
+        setItems((prev) => prev.filter((c) => c.id !== id))
+      } else {
+        setItems((prev) => prev.map((c) => c.id === id ? { ...c, approved: true } : c))
+      }
+    } catch { alert('Eroare retea') } finally { setActionLoading(null) }
   }
 
   async function reject(id: string) {
     setActionLoading(id)
-    await fetch(`/api/admin/learn/comments/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ approved: false }),
-    })
-    setItems((prev) => prev.map((c) => c.id === id ? { ...c, approved: false } : c))
-    setActionLoading(null)
+    try {
+      const r = await fetch(`/api/admin/learn/comments/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ approved: false }),
+      })
+      if (!r.ok) { alert('Eroare la respingere'); return }
+      setItems((prev) => prev.map((c) => c.id === id ? { ...c, approved: false } : c))
+    } catch { alert('Eroare retea') } finally { setActionLoading(null) }
   }
 
   async function remove(id: string) {
     if (!confirm('Stergi acest comentariu?')) return
     setActionLoading(id)
-    await fetch(`/api/admin/learn/comments/${id}`, { method: 'DELETE' })
-    setItems((prev) => prev.filter((c) => c.id !== id))
-    setActionLoading(null)
+    try {
+      const r = await fetch(`/api/admin/learn/comments/${id}`, { method: 'DELETE' })
+      if (!r.ok) { alert('Eroare la stergere'); return }
+      setItems((prev) => prev.filter((c) => c.id !== id))
+    } catch { alert('Eroare retea') } finally { setActionLoading(null) }
   }
 
   return (

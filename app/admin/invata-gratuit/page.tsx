@@ -6,7 +6,7 @@ import {
 } from '@/app/admin/_components/AdminPage'
 import { BlockEditor, type BlockContent } from '@/components/learn/BlockEditor'
 import { Plus, Trash2, X, Check, ChevronDown, ChevronUp, Eye, Download } from 'lucide-react'
-import type { LearnContent, LearnType, LearnStatus } from '@/types/learn'
+import type { LearnContent, LearnCategory, LearnType, LearnStatus } from '@/types/learn'
 
 const TYPE_OPTIONS = [
   { value: 'articol', label: 'Articol' },
@@ -28,23 +28,37 @@ const DIFFICULTY_OPTIONS = [
   { value: 'avansat',     label: 'Avansat' },
 ]
 
+function toSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+}
+
 const EMPTY = (): Partial<LearnContent> => ({
   id: `new-${Date.now()}`,
   title: '',
   slug: '',
   type: 'articol' as LearnType,
   status: 'draft' as LearnStatus,
+  category_id: null,
   tags: [],
   resource_preview_urls: [],
   resource_benefits: [],
   requires_email: false,
   tool_requires_email: false,
   featured: false,
+  featured_order: null,
   allow_comments: true,
   views: 0,
   downloads: 0,
   content: null,
   excerpt: '',
+  published_at: null,
 })
 
 const STATUS_COLOR: Record<string, string> = {
@@ -60,14 +74,10 @@ const TYPE_COLOR: Record<string, string> = {
   video:   '#EF4444',
 }
 
-function getHtmlContent(content: unknown): string {
-  if (!content || typeof content !== 'object') return ''
-  const c = content as Record<string, unknown>
-  return typeof c.html === 'string' ? c.html : ''
-}
 
 export default function LearnContentAdminPage() {
   const [items, setItems] = useState<Partial<LearnContent>[]>([])
+  const [categories, setCategories] = useState<LearnCategory[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -76,15 +86,36 @@ export default function LearnContentAdminPage() {
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    fetch('/api/admin/learn/content?perPage=100')
-      .then((r) => r.json())
-      .then((d: { items?: Partial<LearnContent>[] }) => setItems(d.items ?? []))
+    Promise.all([
+      fetch('/api/admin/learn/content?perPage=100').then((r) => r.json()),
+      fetch('/api/admin/learn/categories').then((r) => r.json()).catch(() => []),
+    ])
+      .then(([contentData, catData]: [{ items?: Partial<LearnContent>[] }, LearnCategory[] | { error: string }]) => {
+        setItems(contentData.items ?? [])
+        setCategories(Array.isArray(catData) ? catData : [])
+      })
       .catch(() => setItems([]))
       .finally(() => setLoading(false))
   }, [])
 
   function patchDraft(id: string, key: keyof LearnContent, val: unknown) {
-    setDrafts((prev) => ({ ...prev, [id]: { ...prev[id], [key]: val } }))
+    setDrafts((prev) => {
+      const current = prev[id] ?? {}
+      const updated: Partial<LearnContent> = { ...current, [key]: val }
+      // Auto-generate slug from title (only if slug is still empty or auto-generated)
+      if (key === 'title' && typeof val === 'string') {
+        const currentSlug = current.slug ?? ''
+        const expectedSlug = toSlug(String(current.title ?? ''))
+        if (!currentSlug || currentSlug === expectedSlug) {
+          updated.slug = toSlug(val)
+        }
+      }
+      // Auto-set published_at when status changes to 'published'
+      if (key === 'status' && val === 'published' && !current.published_at) {
+        updated.published_at = new Date().toISOString()
+      }
+      return { ...prev, [id]: updated }
+    })
   }
 
   function commitDraft(id: string) {
@@ -299,7 +330,7 @@ export default function LearnContentAdminPage() {
                       <Field label="Titlu">
                         <Inp value={String(d.title ?? '')} onChange={(v) => patchDraft(id, 'title', v)} placeholder="Titlul continutului" />
                       </Field>
-                      <Field label="Slug">
+                      <Field label="Slug (auto-generat din titlu)">
                         <Inp value={String(d.slug ?? '')} onChange={(v) => patchDraft(id, 'slug', v)} placeholder="slug-url" />
                       </Field>
                       <Field label="Tip">
@@ -308,13 +339,25 @@ export default function LearnContentAdminPage() {
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
                       <Field label="Status">
-                        <Sel value={String(d.status ?? 'draft')} onChange={(v) => patchDraft(id, 'status', v)} options={STATUS_OPTIONS} />
+                        <Sel value={String(d.status ?? 'draft')} onChange={(v) => patchDraft(id, 'status', v as LearnStatus)} options={STATUS_OPTIONS} />
                       </Field>
                       <Field label="Dificultate">
                         <Sel value={String(d.difficulty ?? '')} onChange={(v) => patchDraft(id, 'difficulty', v)} options={DIFFICULTY_OPTIONS} />
                       </Field>
                       <Field label="Data publicare">
-                        <Inp type="datetime-local" value={String(d.published_at ?? '').slice(0, 16)} onChange={(v) => patchDraft(id, 'published_at', v)} />
+                        <Inp type="datetime-local" value={String(d.published_at ?? '').slice(0, 16)} onChange={(v) => patchDraft(id, 'published_at', v || null)} />
+                      </Field>
+                    </div>
+                    <div style={{ marginBottom: 16 }}>
+                      <Field label="Categorie">
+                        <Sel
+                          value={String(d.category_id ?? '')}
+                          onChange={(v) => patchDraft(id, 'category_id', v || null)}
+                          options={[
+                            { value: '', label: '— Fara categorie —' },
+                            ...categories.map((c) => ({ value: c.id, label: c.name })),
+                          ]}
+                        />
                       </Field>
                     </div>
                     <div style={{ marginBottom: 16 }}>
@@ -444,6 +487,18 @@ export default function LearnContentAdminPage() {
                           />
                         </Field>
                       </div>
+                      {d.featured && (
+                        <div style={{ marginBottom: 12 }}>
+                          <Field label="Ordine Featured (1 = primul)">
+                            <Inp
+                              type="number"
+                              value={String(d.featured_order ?? '')}
+                              onChange={(v) => patchDraft(id, 'featured_order', v ? Number(v) : null)}
+                              placeholder="1"
+                            />
+                          </Field>
+                        </div>
+                      )}
                       <Field label="SEO Description">
                         <Textarea value={String(d.seo_description ?? '')} onChange={(v) => patchDraft(id, 'seo_description', v)} placeholder="Descriere pentru Google (max 160 caractere)..." rows={2} />
                       </Field>
