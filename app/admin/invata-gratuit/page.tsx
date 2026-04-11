@@ -75,6 +75,27 @@ const TYPE_COLOR: Record<string, string> = {
 }
 
 
+function getContentMode(content: unknown): 'blocks' | 'html' {
+  if (content && typeof content === 'object') {
+    if ('html' in (content as object)) return 'html'
+  }
+  return 'blocks'
+}
+
+function getHtmlFromContent(content: unknown): string {
+  if (content && typeof content === 'object' && 'html' in (content as object)) {
+    return String((content as Record<string, unknown>).html ?? '')
+  }
+  return ''
+}
+
+function getBlocksFromContent(content: unknown): BlockContent | null {
+  if (content && typeof content === 'object' && 'blocks' in (content as object)) {
+    return content as BlockContent
+  }
+  return null
+}
+
 export default function LearnContentAdminPage() {
   const [items, setItems] = useState<Partial<LearnContent>[]>([])
   const [categories, setCategories] = useState<LearnCategory[]>([])
@@ -84,6 +105,8 @@ export default function LearnContentAdminPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [drafts, setDrafts] = useState<Record<string, Partial<LearnContent>>>({})
   const [filter, setFilter] = useState('')
+  const [contentModes, setContentModes] = useState<Record<string, 'blocks' | 'html'>>({})
+  const [htmlPreviews, setHtmlPreviews] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     Promise.all([
@@ -192,7 +215,19 @@ export default function LearnContentAdminPage() {
     } else {
       setExpandedId(id)
       setDrafts((prev) => ({ ...prev, [id]: { ...item } }))
+      // Detect content mode from existing content
+      setContentModes((prev) => ({ ...prev, [id]: getContentMode(item.content) }))
     }
+  }
+
+  function switchContentMode(id: string, mode: 'blocks' | 'html') {
+    const current = drafts[id]
+    const currentMode = contentModes[id] ?? 'blocks'
+    if (mode === currentMode) return
+    const hasContent = current?.content != null
+    if (hasContent && !confirm(`Schimbi modul din "${currentMode === 'blocks' ? 'Blocuri' : 'HTML'}" în "${mode === 'blocks' ? 'Blocuri' : 'HTML'}". Continutul curent va fi sters. Continui?`)) return
+    setContentModes((prev) => ({ ...prev, [id]: mode }))
+    setDrafts((prev) => ({ ...prev, [id]: { ...prev[id], content: null } }))
   }
 
   const filtered = filter
@@ -380,29 +415,102 @@ export default function LearnContentAdminPage() {
 
                     {/* ── Câmpuri specifice tipului ── */}
 
-                    {/* ARTICOL — block editor */}
-                    {d.type === 'articol' && (
-                      <div style={{ marginBottom: 16 }}>
-                        <Field label="Continut articol">
-                          <BlockEditor
-                            value={(d.content as BlockContent | null) ?? null}
-                            onChange={(v) => patchDraft(id, 'content', v)}
-                          />
-                        </Field>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }}>
-                          <Field label="Timp citire (minute)">
-                            <Inp type="number" value={String(d.read_time ?? '')} onChange={(v) => patchDraft(id, 'read_time', v ? Number(v) : null)} placeholder="5" />
-                          </Field>
-                          <Field label="Permite comentarii">
-                            <Sel
-                              value={d.allow_comments ? 'da' : 'nu'}
-                              onChange={(v) => patchDraft(id, 'allow_comments', v === 'da')}
-                              options={[{ value: 'da', label: 'Da' }, { value: 'nu', label: 'Nu' }]}
+                    {/* ARTICOL — hybrid block/html editor */}
+                    {d.type === 'articol' && (() => {
+                      const cmode = contentModes[id] ?? getContentMode(d.content)
+                      const showPreview = htmlPreviews[id] ?? false
+                      return (
+                        <div style={{ marginBottom: 16 }}>
+                          {/* Mode toggle */}
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                            <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                              Continut articol
+                            </span>
+                            <div style={{ display: 'flex', gap: 4, background: '#F1F5F9', borderRadius: 8, padding: 3 }}>
+                              {(['blocks', 'html'] as const).map((m) => (
+                                <button
+                                  key={m}
+                                  type="button"
+                                  onClick={() => switchContentMode(id, m)}
+                                  style={{
+                                    padding: '4px 14px', borderRadius: 6, border: 'none', cursor: 'pointer',
+                                    fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 600,
+                                    background: cmode === m ? '#fff' : 'transparent',
+                                    color: cmode === m ? '#0F172A' : '#64748B',
+                                    boxShadow: cmode === m ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                                    transition: 'all 150ms',
+                                  }}
+                                >
+                                  {m === 'blocks' ? '⊞ Blocuri' : '</> HTML'}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Block editor mode */}
+                          {cmode === 'blocks' && (
+                            <BlockEditor
+                              value={getBlocksFromContent(d.content)}
+                              onChange={(v) => patchDraft(id, 'content', v)}
                             />
-                          </Field>
+                          )}
+
+                          {/* HTML editor mode */}
+                          {cmode === 'html' && (
+                            <div>
+                              <textarea
+                                value={getHtmlFromContent(d.content)}
+                                onChange={(e) => patchDraft(id, 'content', { html: e.target.value })}
+                                placeholder={'<h2>Titlu sectiune</h2>\n<p>Paragraf cu <strong>bold</strong> si <a href="#">link</a>.</p>\n<ul>\n  <li>Element lista</li>\n</ul>'}
+                                style={{
+                                  width: '100%', minHeight: 400, border: '1px solid #E2E8F0',
+                                  borderRadius: 8, padding: '12px 14px', fontSize: '0.85rem',
+                                  fontFamily: 'monospace', lineHeight: 1.7, color: '#0F172A',
+                                  background: '#FAFAFA', resize: 'vertical', outline: 'none',
+                                  boxSizing: 'border-box',
+                                }}
+                              />
+                              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 6 }}>
+                                <button
+                                  type="button"
+                                  onClick={() => setHtmlPreviews((prev) => ({ ...prev, [id]: !showPreview }))}
+                                  style={{
+                                    padding: '4px 12px', border: '1px solid #E2E8F0', borderRadius: 6,
+                                    background: showPreview ? '#EAF5FF' : '#fff', color: showPreview ? '#2B8FCC' : '#64748B',
+                                    fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 600, cursor: 'pointer',
+                                  }}
+                                >
+                                  {showPreview ? 'Ascunde preview' : '👁 Preview'}
+                                </button>
+                              </div>
+                              {showPreview && getHtmlFromContent(d.content) && (
+                                <div
+                                  style={{
+                                    marginTop: 10, border: '1px solid #E2E8F0', borderRadius: 8,
+                                    padding: '20px 24px', background: '#fff',
+                                    fontFamily: 'var(--font-body)', fontSize: '1rem', lineHeight: 1.8, color: '#2D3748',
+                                  }}
+                                  dangerouslySetInnerHTML={{ __html: getHtmlFromContent(d.content) }}
+                                />
+                              )}
+                            </div>
+                          )}
+
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }}>
+                            <Field label="Timp citire (minute)">
+                              <Inp type="number" value={String(d.read_time ?? '')} onChange={(v) => patchDraft(id, 'read_time', v ? Number(v) : null)} placeholder="5" />
+                            </Field>
+                            <Field label="Permite comentarii">
+                              <Sel
+                                value={d.allow_comments ? 'da' : 'nu'}
+                                onChange={(v) => patchDraft(id, 'allow_comments', v === 'da')}
+                                options={[{ value: 'da', label: 'Da' }, { value: 'nu', label: 'Nu' }]}
+                              />
+                            </Field>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )
+                    })()}
 
                     {/* RESURSA — fisier download */}
                     {d.type === 'resursa' && (
