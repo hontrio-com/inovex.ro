@@ -1,4 +1,5 @@
 import { Phone, Mail, Clock, Star, Check } from 'lucide-react';
+import { PhoneLink } from '@/components/ui/PhoneLink';
 
 export function OfertaSidebar() {
   return (
@@ -19,13 +20,12 @@ export function OfertaSidebar() {
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2">
             <Phone size={15} className="text-[#2B8FCC] shrink-0" />
-            <a
-              href="tel:+40750456096"
+            <PhoneLink
               style={{ fontSize: '14px', color: '#0D1117', fontWeight: 500 }}
               className="hover:text-[#2B8FCC] transition-colors"
             >
               0750 456 096
-            </a>
+            </PhoneLink>
           </div>
           <div className="flex items-center gap-2">
             <Mail size={15} className="text-[#2B8FCC] shrink-0" />

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Phone, FileText, Receipt, Shield } from 'lucide-react';
 import { CookieConsent } from '@/components/layout/CookieConsent';
+import { PhoneLink } from '@/components/ui/PhoneLink';
 
 export default function ConfiguratoareLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -21,10 +22,9 @@ export default function ConfiguratoareLayout({ children }: { children: React.Rea
             />
           </Link>
 
-          <a
-            href="tel:+40750456096"
+          <PhoneLink
             className="flex items-center gap-2"
-            aria-label="Suna-ne la 0750 456 096"
+            style={{ textDecoration: 'none' }}
           >
             <Phone size={15} className="text-[#2B8FCC]" />
             <span
@@ -37,7 +37,7 @@ export default function ConfiguratoareLayout({ children }: { children: React.Rea
             >
               0750 456 096
             </span>
-          </a>
+          </PhoneLink>
         </div>
       </header>
 

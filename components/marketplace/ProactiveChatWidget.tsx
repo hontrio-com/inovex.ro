@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MessageCircle } from 'lucide-react';
+import { trackConversions } from '@/lib/gtm';
 
 interface Props {
   productTitle: string;
@@ -95,7 +96,7 @@ export default function ProactiveChatWidget({
                 href={waUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={dismiss}
+                onClick={() => { trackConversions.whatsapp(); dismiss(); }}
                 style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, textDecoration: 'none', color: '#fff' }}
               >
                 <span style={{ color: '#fff' }}>{WA_ICON}</span>
@@ -172,7 +173,7 @@ export default function ProactiveChatWidget({
                   href={waUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={dismiss}
+                  onClick={() => { trackConversions.whatsapp(); dismiss(); }}
                   data-purchase-intent="true"
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
@@ -184,7 +185,7 @@ export default function ProactiveChatWidget({
                   Da, vreau sa intreb
                 </a>
                 <button
-                  onClick={dismiss}
+                  onClick={() => { trackConversions.whatsapp(); dismiss(); }}
                   style={{
                     background: 'none', border: 'none', cursor: 'pointer', padding: '8px 16px',
                     fontFamily: 'var(--font-body)', fontSize: 12, color: '#8A94A6', fontWeight: 500,

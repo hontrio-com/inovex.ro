@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { trackConversions } from '@/lib/gtm';
 
 const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '40750456096';
 const WA_MESSAGE = encodeURIComponent('Bună ziua, am o întrebare despre serviciile Inovex.');
@@ -37,6 +38,7 @@ export function StickyButtons() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Mesaj WhatsApp"
+              onClick={() => trackConversions.whatsapp()}
               className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#25D366] text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110"
             >
               <WhatsAppIcon />
@@ -51,6 +53,7 @@ export function StickyButtons() {
             <a
               href="tel:+40750456096"
               aria-label="Sună acum"
+              onClick={() => trackConversions.telefon()}
               className="relative flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110"
             >
               <Phone size={20} />

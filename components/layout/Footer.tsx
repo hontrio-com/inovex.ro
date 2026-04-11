@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Phone, Mail, MapPin } from 'lucide-react';
+import { trackConversions } from '@/lib/gtm';
 
 /* ══════════════════════════════════════════════════════
    DATE
@@ -235,6 +236,7 @@ export function Footer() {
               <li>
                 <a
                   href="tel:+40750456096"
+                  onClick={() => trackConversions.telefon()}
                   className="footer-link"
                   style={{ ...linkStyle, display: 'flex', alignItems: 'center', gap: 8 }}
                 >

@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { Phone, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { trackConversions } from '@/lib/gtm';
 
 interface Word { text: string; highlight: boolean; }
 
@@ -105,6 +106,7 @@ export function CTA() {
             size="lg"
             leftIcon={<Phone size={17} />}
             className="bg-[#0D1117] hover:bg-[#1a2030]"
+            onClick={() => trackConversions.telefon()}
           >
             Sună acum: 0750 456 096
           </Button>

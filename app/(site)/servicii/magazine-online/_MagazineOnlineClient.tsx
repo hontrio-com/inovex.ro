@@ -11,6 +11,7 @@ import {
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import ServiceVideo from '@/components/sections/ServiceVideo';
 import { ProjectCard, type PortfolioProject } from '@/components/sections/Portfolio';
+import { trackConversions } from '@/lib/gtm';
 
 const EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
 
@@ -1103,6 +1104,7 @@ export default function MagazineOnlineClient() {
               </Link>
               <a
                 href="tel:+40750456096"
+                onClick={() => trackConversions.telefon()}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',

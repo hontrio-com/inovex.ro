@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { trackConversions } from '@/lib/gtm';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
   User,
@@ -362,6 +363,7 @@ export function ConfiguratorWebsiteClient() {
       });
       if (res.ok) {
         localStorage.removeItem(LS_KEY);
+        trackConversions.configuratorWebsite();
         setSubmitStatus('success');
       } else {
         setSubmitStatus('error');

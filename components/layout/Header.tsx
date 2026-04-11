@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { trackConversions } from '@/lib/gtm';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -199,6 +200,7 @@ export function Header() {
             <div className="hidden lg:flex items-center gap-2">
               <a
                 href="tel:+40750456096"
+                onClick={() => trackConversions.telefon()}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[14px] font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
               >
                 <Phone size={14} className="text-gray-400" />
