@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Send, CheckCircle2, AlertCircle } from 'lucide-react';
+import { pushEvent } from '@/lib/gtm';
 import {
   Form,
   FormControl,
@@ -64,6 +65,7 @@ export function ContactForm() {
       if (!res.ok) throw new Error();
       setStatus('success');
       form.reset();
+      pushEvent('form_contact_success', { serviciu: data.serviciu });
     } catch {
       setStatus('error');
     }
