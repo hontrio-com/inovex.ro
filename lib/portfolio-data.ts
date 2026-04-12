@@ -21,7 +21,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Piese Agricole', categoryLabel: 'Piese Agricole',
     description: 'Website de prezentare pentru business auto cu servicii de inchirieri, service si vanzari de piese agricole.',
     features: ['Plata card + ramburs', 'Soft facturare + curieri', 'Sistem inchirieri utilaje'],
-    image: '/imagini/portofoliu/DSMOTOR.RO.png',
+    image: '/imagini/portofoliu/DSMOTOR.RO.webp',
     filterKey: 'website-prezentare',
   },
   {
@@ -32,7 +32,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Accesorii', categoryLabel: 'Accesorii',
     description: 'Magazin online pentru materiale de creatii si cadouri personalizate, optimizat pentru conversii rapide.',
     features: ['Plata cu cardul integrata', 'Soft facturare integrat', 'Integrare curieri'],
-    image: '/imagini/portofoliu/CUTIADEMAGIE.RO.jpg',
+    image: '/imagini/portofoliu/CUTIADEMAGIE.RO.webp',
     filterKey: 'magazine-online',
   },
   {
@@ -43,7 +43,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Auto', categoryLabel: 'Auto',
     description: 'Magazin online de piese si accesorii auto cu filtrare avansata si integrare TecDoc pentru catalogul de piese.',
     features: ['Aplicatie mobila inclusa', 'Filtrare avansata', 'Integrare TecDoc'],
-    image: '/imagini/portofoliu/ATPAUTOTEILE.png',
+    image: '/imagini/portofoliu/ATPAUTOTEILE.webp',
     filterKey: 'magazine-online',
   },
   {
@@ -54,7 +54,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Fashion', categoryLabel: 'Fashion',
     description: 'Platforma eCommerce pentru produse handmade unice, cu experienta de cumparare emotionala in doua limbi.',
     features: ['2 limbi (RO/EN)', 'Integrare BT iPay', 'Filtrare avansata'],
-    image: '/imagini/portofoliu/SAGRAHANDMADE.COM.png',
+    image: '/imagini/portofoliu/SAGRAHANDMADE.COM.webp',
     filterKey: 'magazine-online',
   },
   {
@@ -65,7 +65,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Educatie', categoryLabel: 'Educatie',
     description: 'Website educational in domeniul AI care explica beneficiile si ghideaza utilizatorii spre utilizare practica.',
     features: ['Plata Stripe integrata', 'Implementare API', 'Optimizare SEO'],
-    image: '/imagini/portofoliu/PROFESORULDEAI.RO.png',
+    image: '/imagini/portofoliu/PROFESORULDEAI.RO.webp',
     filterKey: 'educatie',
   },
   {
@@ -76,7 +76,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Constructii', categoryLabel: 'Constructii',
     description: 'Website pentru companie de constructii industriale cu portofoliu de lucrari si formulare oferta.',
     features: ['Galerie proiecte', 'Integrare Google Ads', 'Formular contact + WhatsApp'],
-    image: '/imagini/portofoliu/VARLAN-EISENBAU.COM.png',
+    image: '/imagini/portofoliu/VARLAN-EISENBAU.COM.webp',
     filterKey: 'constructii',
   },
   {
@@ -87,7 +87,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Mobilier', categoryLabel: 'Mobilier',
     description: 'Magazin online de mobilier premium fabricat in Romania cu sistem de comanda rapida si prezentare detaliata.',
     features: ['Plata card + ramburs', 'SmartBill + curieri', 'Sistem comanda rapida'],
-    image: '/imagini/portofoliu/MARSAL.RO.jpg',
+    image: '/imagini/portofoliu/MARSAL.RO.webp',
     filterKey: 'magazine-online',
   },
   {
@@ -98,7 +98,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Parfumuri', categoryLabel: 'Parfumuri',
     description: 'Magazin online de parfumuri cu navigare simpla, categorii clare si filtrare avansata pe atribute.',
     features: ['Plati card integrate', 'SmartBill + Cargus', 'Filtrare avansata'],
-    image: '/imagini/portofoliu/PARFUMERIA-ZODIAC.RO.jpg',
+    image: '/imagini/portofoliu/PARFUMERIA-ZODIAC.RO.webp',
     filterKey: 'magazine-online',
   },
   {
@@ -109,7 +109,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Educatie', categoryLabel: 'Educatie',
     description: 'Platforma educationala pentru stomatologi cu cursuri moderne de implantologie si sistem de inscrieri.',
     features: ['Formular contact', 'Contact WhatsApp', 'Pagini selectare cursuri'],
-    image: '/imagini/portofoliu/DENTALFUTURE.RO.png',
+    image: '/imagini/portofoliu/DENTALFUTURE.RO.webp',
     filterKey: 'educatie',
   },
   {
@@ -120,7 +120,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Stomatologie', categoryLabel: 'Stomatologie',
     description: 'Website pentru servicii medicale stomatologice cu pagini dedicate clinicilor, medicilor si programarilor.',
     features: ['Integrare TIDIO', 'Integrare TBI Bank', 'Pagini clinici + medici'],
-    image: '/imagini/portofoliu/JUNIORFAMILY.RO.png',
+    image: '/imagini/portofoliu/JUNIORFAMILY.RO.webp',
     filterKey: 'website-prezentare',
   },
   {
@@ -131,7 +131,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Fashion', categoryLabel: 'Fashion',
     description: 'Platforma eCommerce pentru brand de haine cu design atractiv, produse variabile si structura optimizata.',
     features: ['Plata card integrata', 'Soft facturare integrat', 'Produse variabile'],
-    image: '/imagini/portofoliu/RALLS.RO.jpg',
+    image: '/imagini/portofoliu/RALLS.RO.webp',
     filterKey: 'magazine-online',
   },
   {
@@ -142,7 +142,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'SaaS', categoryLabel: 'SaaS',
     description: 'Platforma SaaS cu AI pentru optimizarea magazinelor online: automatizare, prevenire comenzi false, SEO.',
     features: ['4 functii principale AI', 'Dashboard modern', 'Platforma internationala'],
-    image: '/imagini/portofoliu/HONTRIO.COM.png',
+    image: '/imagini/portofoliu/HONTRIO.COM.webp',
     filterKey: 'saas',
   },
   {
@@ -153,7 +153,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Imobiliare', categoryLabel: 'Imobiliare',
     description: 'Platforma imobiliara cu sistem de filtrare avansat, listari detaliate si generare eficienta de lead-uri.',
     features: ['Cautare rapida', 'Filtrare avansata', 'Profil proprietate'],
-    image: '/imagini/portofoliu/FORTASESTATE.RO.png',
+    image: '/imagini/portofoliu/FORTASESTATE.RO.webp',
     filterKey: 'imobiliare',
   },
   {
@@ -164,7 +164,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Constructii', categoryLabel: 'Constructii',
     description: 'Website pentru servicii complete de acoperisuri cu catalog pachete, fise tehnice si formular personalizat.',
     features: ['Catalog de pachete', 'Formular personalizat', 'Fise tehnice incluse'],
-    image: '/imagini/portofoliu/FABRICA-DE-ACOPERISURI.RO.png',
+    image: '/imagini/portofoliu/FABRICA-DE-ACOPERISURI.RO.webp',
     filterKey: 'constructii',
   },
   {
@@ -186,7 +186,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Asociatie', categoryLabel: 'Asociatie',
     description: 'Website pentru Asociatia Carosierilor Auto din Romania cu forum, harta interactiva si profiluri membri.',
     features: ['Forum integrat', 'Harta interactiva', 'Profil pentru fiecare membru'],
-    image: '/imagini/portofoliu/APCA.RO.png',
+    image: '/imagini/portofoliu/APCA.RO.webp',
     filterKey: 'website-prezentare',
   },
   {
@@ -197,7 +197,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Metale', categoryLabel: 'Metale',
     description: 'Website multilingv pentru import si distributie materiale industriale cu catalog produse si contact rapid.',
     features: ['3 limbi (RO/EN/FR)', 'Catalog produse', 'Formular + WhatsApp'],
-    image: '/imagini/portofoliu/TIGLOBALIMPORT1010.COM.jpg',
+    image: '/imagini/portofoliu/TIGLOBALIMPORT1010.COM.webp',
     filterKey: 'website-prezentare',
   },
   {
@@ -208,7 +208,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Parc Auto', categoryLabel: 'Parc Auto',
     description: 'Platforma pentru vanzari auto cu cautare rapida, filtre intuitive si pagini detaliate per vehicul.',
     features: ['Cautare + filtrare avansata', 'Pagina vehicul detaliata', 'Formular masina la comanda'],
-    image: '/imagini/portofoliu/NEMESCAR.RO.jpg',
+    image: '/imagini/portofoliu/NEMESCAR.RO.webp',
     filterKey: 'auto',
   },
   {
@@ -219,7 +219,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Educatie', categoryLabel: 'Educatie',
     description: 'Website pentru centru de meditatii cu profiluri profesori, pachete de pret si formular contact.',
     features: ['Formular + WhatsApp', 'Profil profesori', 'Pachete de pret'],
-    image: '/imagini/portofoliu/MEDITATIILEVELUP.RO.png',
+    image: '/imagini/portofoliu/MEDITATIILEVELUP.RO.webp',
     filterKey: 'educatie',
   },
   {
@@ -230,7 +230,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Inghetata', categoryLabel: 'Inghetata',
     description: 'Magazin online pentru un brand pionier al inghetatei in Romania, cu sistem de trepte discount si integratii complete.',
     features: ['Plata card + ramburs', 'SAGA + curieri integrat', 'Sistem trepte discount'],
-    image: '/imagini/portofoliu/MAGICICE.RO.png',
+    image: '/imagini/portofoliu/MAGICICE.RO.webp',
     filterKey: 'magazine-online',
   },
   {
@@ -241,7 +241,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Inchirieri Auto', categoryLabel: 'Inchirieri Auto',
     description: 'Website de inchirieri auto cu prezentare flota, rezervari rapide si profiluri detaliate per vehicul.',
     features: ['Cautare rapida', 'Plata cu cardul', 'Profil vehicul'],
-    image: '/imagini/portofoliu/CARLYON.RO.jpg',
+    image: '/imagini/portofoliu/CARLYON.RO.webp',
     filterKey: 'inchirieri-auto',
   },
   {
@@ -252,7 +252,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Dans', categoryLabel: 'Dans',
     description: 'Website pentru scoala de dans popular cu activitati, cursuri, sistem de inscriere si galerie media.',
     features: ['Formular inscriere', 'WhatsApp + Apel', 'Galerie & Media'],
-    image: '/imagini/portofoliu/TIM.AFVP.RO.png',
+    image: '/imagini/portofoliu/TIM.AFVP.RO.webp',
     filterKey: 'website-prezentare',
   },
   {
@@ -263,7 +263,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Inchirieri Auto', categoryLabel: 'Inchirieri Auto',
     description: 'Website de inchirieri auto cu sistem complet de administrare, plata card si pagini vehicul detaliate.',
     features: ['Sistem administrare complet', 'Plata cu cardul', 'Pagina vehicul detaliata'],
-    image: '/imagini/portofoliu/INCHIRIERIAUTOARGES.RO.jpg',
+    image: '/imagini/portofoliu/INCHIRIERIAUTOARGES.RO.webp',
     filterKey: 'inchirieri-auto',
   },
   {
@@ -274,7 +274,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Constructii', categoryLabel: 'Constructii',
     description: 'Website pentru firma de constructii civile si industriale cu portofoliu proiecte si sectiune imobiliara.',
     features: ['Formular + WhatsApp', 'Sectiune imobiliare', 'Portofoliu proiecte'],
-    image: '/imagini/portofoliu/GABSTEAM.RO.jpg',
+    image: '/imagini/portofoliu/GABSTEAM.RO.webp',
     filterKey: 'constructii',
   },
   {
@@ -285,7 +285,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     category: 'Servicii', categoryLabel: 'Servicii',
     description: 'Website pentru servicii funerare cu pagini dedicate, catalog accesorii si blog informativ.',
     features: ['Catalog produse', 'Blog integrat', 'Formular + WhatsApp'],
-    image: '/imagini/portofoliu/UNCOLTDINRAI.COM.jpg',
+    image: '/imagini/portofoliu/UNCOLTDINRAI.COM.webp',
     filterKey: 'website-prezentare',
   },
 ];
