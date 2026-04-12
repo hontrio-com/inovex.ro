@@ -20,30 +20,11 @@ const EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
    DATE
 ══════════════════════════════════════════════════════ */
 
-const PAYMENT_LOGOS = [
-  { src: '/imagini/alte-logouri/stripe.svg', alt: 'Stripe' },
-  { src: '/imagini/alte-logouri/payu.svg', alt: 'PayU' },
-  { src: '/imagini/alte-logouri/netopia.svg', alt: 'Netopia' },
-  { src: '/imagini/alte-logouri/tbibank.svg', alt: 'TBI Bank' },
-  { src: '/imagini/alte-logouri/fancourier.svg', alt: 'FanCourier' },
-  { src: '/imagini/alte-logouri/cargus.svg', alt: 'Cargus' },
-  { src: '/imagini/alte-logouri/dpd.svg', alt: 'DPD' },
-  { src: '/imagini/alte-logouri/sameday.webp', alt: 'Sameday' },
-];
+type LogoEntry = { src: string; alt: string };
+type LogoGroup = { label: string; logos: LogoEntry[] };
+type FeatureItem = { bold: string; rest: string };
 
-const BILLING_LOGOS = [
-  { src: '/imagini/alte-logouri/smartbill.svg', alt: 'SmartBill' },
-  { src: '/imagini/alte-logouri/oblio.webp', alt: 'Oblio' },
-  { src: '/imagini/alte-logouri/fgo.svg', alt: 'fGo' },
-  { src: '/imagini/alte-logouri/saga.svg', alt: 'SAGA' },
-];
-
-type FeatureItem = {
-  bold: string;
-  rest: string;
-};
-
-const FEATURES: { icon: React.ElementType; titlu: string; logos?: { src: string; alt: string }[]; items: FeatureItem[] }[] = [
+const FEATURES: { icon: React.ElementType; titlu: string; logoGroups?: LogoGroup[]; items: FeatureItem[] }[] = [
   {
     icon: Palette,
     titlu: 'Design & Dezvoltare',
@@ -73,7 +54,26 @@ const FEATURES: { icon: React.ElementType; titlu: string; logos?: { src: string;
   {
     icon: CreditCard,
     titlu: 'Plati & Curierat',
-    logos: PAYMENT_LOGOS,
+    logoGroups: [
+      {
+        label: 'Procesatori de plata',
+        logos: [
+          { src: '/imagini/alte-logouri/stripe.svg',   alt: 'Stripe'   },
+          { src: '/imagini/alte-logouri/payu.svg',     alt: 'PayU'     },
+          { src: '/imagini/alte-logouri/netopia.svg',  alt: 'Netopia'  },
+          { src: '/imagini/alte-logouri/tbibank.svg',  alt: 'TBI Bank' },
+        ],
+      },
+      {
+        label: 'Firme de curierat',
+        logos: [
+          { src: '/imagini/alte-logouri/fancourier.svg',  alt: 'FanCourier' },
+          { src: '/imagini/alte-logouri/cargus.svg',      alt: 'Cargus'     },
+          { src: '/imagini/alte-logouri/dpd.svg',         alt: 'DPD'        },
+          { src: '/imagini/alte-logouri/sameday.webp',    alt: 'Sameday'    },
+        ],
+      },
+    ],
     items: [
       { bold: 'Card bancar', rest: ': Stripe, PayU, Netopia / mobilPay, EuPlatesc' },
       { bold: 'Plata la livrare', rest: ', transfer bancar, rate TBI Bank' },
@@ -87,7 +87,17 @@ const FEATURES: { icon: React.ElementType; titlu: string; logos?: { src: string;
   {
     icon: Zap,
     titlu: 'Automatizari & Integari',
-    logos: BILLING_LOGOS,
+    logoGroups: [
+      {
+        label: 'Soft de facturare',
+        logos: [
+          { src: '/imagini/alte-logouri/smartbill.svg', alt: 'SmartBill' },
+          { src: '/imagini/alte-logouri/oblio.webp',    alt: 'Oblio'     },
+          { src: '/imagini/alte-logouri/fgo.svg',       alt: 'fGo'       },
+          { src: '/imagini/alte-logouri/saga.svg',      alt: 'SAGA'      },
+        ],
+      },
+    ],
     items: [
       { bold: 'Facturare automata', rest: ': SmartBill, Oblio, fGo, SAGA' },
       { bold: 'Email marketing', rest: ': cos abandonat, confirmare, urmarire livrare' },
@@ -543,7 +553,7 @@ export default function MagazineOnlineClient() {
                     el.style.boxShadow = 'none';
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: f.logos ? 12 : 24 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: f.logoGroups ? 16 : 24 }}>
                     <div style={{
                       width: 44, height: 44, background: '#EAF5FF', borderRadius: 10,
                       display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
@@ -554,10 +564,21 @@ export default function MagazineOnlineClient() {
                       {f.titlu}
                     </h3>
                   </div>
-                  {f.logos && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', marginBottom: 20 }}>
-                      {f.logos.map((logo) => (
-                        <img key={logo.alt} src={logo.src} alt={logo.alt} style={{ height: 28, width: 'auto', filter: 'grayscale(1) opacity(0.6)' }} />
+                  {f.logoGroups && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20, padding: '14px 16px', background: '#F8FAFB', borderRadius: 10, border: '1px solid #EEF0F3' }}>
+                      {f.logoGroups.map((group) => (
+                        <div key={group.label} style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                          <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#8A94A6', whiteSpace: 'nowrap', minWidth: 130 }}>
+                            {group.label}:
+                          </span>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+                            {group.logos.map((logo) => (
+                              <div key={logo.alt} style={{ background: '#fff', border: '1px solid #E8ECF0', borderRadius: 8, padding: '5px 10px', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 34 }}>
+                                <img src={logo.src} alt={logo.alt} style={{ height: 18, width: 'auto', maxWidth: 64, objectFit: 'contain', display: 'block', filter: 'grayscale(1) opacity(0.7)' }} />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       ))}
                     </div>
                   )}
