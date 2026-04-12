@@ -23,9 +23,9 @@ const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string 
 };
 
 const TYPE_CONFIG = {
-  trigger:    { color: '#F59E0B', bg: '#FEF3C7', label: 'TRIGGER' },
+  trigger:    { color: '#F59E0B', bg: '#FEF3C7', label: 'DECLANSATOR' },
   ai:         { color: '#8B5CF6', bg: '#EDE9FE', label: 'AI' },
-  conditie:   { color: '#F97316', bg: '#FFEDD5', label: 'CONDITIE' },
+  conditie:   { color: '#F97316', bg: '#FFEDD5', label: 'DECIZIE' },
   actiune:    { color: '#2B8FCC', bg: '#EAF5FF', label: 'ACTIUNE' },
   notificare: { color: '#10B981', bg: '#D1FAE5', label: 'NOTIFICARE' },
 };

@@ -95,7 +95,7 @@ export function ProjectCard({ project, index, priority = false }: ProjectCardPro
           <span className="text-[10px] font-semibold uppercase tracking-[0.05em] px-2 py-0.5 rounded bg-[#EAF5FF] text-[#2B8FCC]">
             {project.categoryLabel}
           </span>
-          <span className="text-[10px] md:text-[11px] text-[#8A94A6] italic truncate max-w-[120px]">
+          <span className="text-[10px] md:text-[11px] text-[#8A94A6] truncate max-w-[120px]">
             {project.urlDisplay}
           </span>
         </div>

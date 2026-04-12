@@ -233,7 +233,7 @@ export default function TipuriAplicatii() {
             }}
             className="mb-4"
           >
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>Orice</span>{' '}
+            <span style={{ color: '#2B8FCC' }}>Orice</span>{' '}
             tip de aplicatie web
           </h2>
           <p className="text-[#4A5568] text-[0.9375rem] leading-relaxed">

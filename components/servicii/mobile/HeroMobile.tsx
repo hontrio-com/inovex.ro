@@ -11,7 +11,8 @@ import {
   Play,
 } from 'lucide-react';
 
-const PLATFORM_CHIPS = ['iOS (App Store)', 'Android (Google Play)', 'React Native', 'Flutter', 'Swift (native)', 'Kotlin (native)'];
+const MARQUEE_ROW1_MOBILE = ['iOS', 'Android', 'React Native', 'Flutter', 'Aplicatii Hybrid', 'MVP Rapid'];
+const MARQUEE_ROW2_MOBILE = ['App Comenzi', 'Tracking GPS', 'App Fidelizare', 'E-commerce Mobile', 'Social App', 'B2B Mobile'];
 
 export default function HeroMobile() {
   const shouldReduceMotion = useReducedMotion();
@@ -63,27 +64,37 @@ export default function HeroMobile() {
               React Native si Flutter pentru lansare rapida pe iOS si Android din acelasi proiect. Design nativ per platforma, performanta de 60fps, publicare completa in App Store si Google Play - totul inclus.
             </p>
 
-            {/* Platform chips */}
+            {/* Platform marquee */}
             <div className="mb-9">
               <p className="text-[11px] font-semibold uppercase tracking-widest text-[#8A94A6] mb-3">Construim pentru:</p>
-              <div className="flex flex-wrap gap-2">
-                {PLATFORM_CHIPS.map((chip, i) => (
-                  <motion.span
-                    key={chip}
-                    initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 + i * 0.03, duration: 0.3 }}
-                  >
-                    <Badge variant="secondary" className="cursor-default hover:bg-[#e2e8f0] transition-colors duration-150">{chip}</Badge>
-                  </motion.span>
-                ))}
+              <style>{`
+                @keyframes marquee-mob-left { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+                @keyframes marquee-mob-right { from { transform: translateX(-50%) } to { transform: translateX(0) } }
+                .marquee-mob-left { animation: marquee-mob-left 25s linear infinite; display: flex; }
+                .marquee-mob-right { animation: marquee-mob-right 25s linear infinite; display: flex; }
+              `}</style>
+              <div style={{ overflow: 'hidden' }}>
+                <div className="marquee-mob-left" style={{ gap: 8, width: 'max-content', marginBottom: 8 }}>
+                  {[...MARQUEE_ROW1_MOBILE, ...MARQUEE_ROW1_MOBILE].map((item, i) => (
+                    <span key={i} style={{ background: '#EAF5FF', border: '1px solid #BFDFFF', borderRadius: 20, padding: '4px 14px', fontSize: 13, fontWeight: 500, color: '#2B8FCC', whiteSpace: 'nowrap' }}>
+                      {item}
+                    </span>
+                  ))}
+                </div>
+                <div className="marquee-mob-right" style={{ gap: 8, width: 'max-content' }}>
+                  {[...MARQUEE_ROW2_MOBILE, ...MARQUEE_ROW2_MOBILE].map((item, i) => (
+                    <span key={i} style={{ background: '#EAF5FF', border: '1px solid #BFDFFF', borderRadius: 20, padding: '4px 14px', fontSize: 13, fontWeight: 500, color: '#2B8FCC', whiteSpace: 'nowrap' }}>
+                      {item}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
 
             {/* CTA */}
             <div className="flex flex-wrap gap-3">
-              <Button href="/oferta" size="lg" rightIcon={<ArrowRight size={16} />}>Solicita oferta gratuita</Button>
-              <Button size="lg" variant="outline" className="border-[#2B8FCC] text-[#2B8FCC] hover:bg-[#EAF5FF]" onClick={() => document.getElementById('demo-interactiv')?.scrollIntoView({ behavior: 'smooth' })}>
+              <Button href="/oferta" size="lg" rightIcon={<ArrowRight size={16} />} style={{ minWidth: 220 }}>Solicita oferta gratuita</Button>
+              <Button size="lg" variant="outline" className="border-[#2B8FCC] text-[#2B8FCC] hover:bg-[#EAF5FF]" style={{ minWidth: 220 }} onClick={() => document.getElementById('demo-interactiv')?.scrollIntoView({ behavior: 'smooth' })}>
                 Exploreaza demo interactiv
               </Button>
             </div>

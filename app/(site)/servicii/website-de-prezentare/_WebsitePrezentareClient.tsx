@@ -14,7 +14,8 @@ import {
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import ServiceVideo from '@/components/sections/ServiceVideo';
-import { ProjectCard, type PortfolioProject } from '@/components/sections/Portfolio';
+import { ProjectCard } from '@/components/portofoliu/ProjectCard';
+import { PORTFOLIO_PROJECTS } from '@/lib/portfolio-data';
 import { trackConversions } from '@/lib/gtm';
 
 const EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
@@ -23,11 +24,8 @@ const EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
    DATE
 ══════════════════════════════════════════════════════ */
 
-const INDUSTRII_CHIPS = [
-  'Medical', 'Juridic', 'Constructii', 'HoReCa',
-  'Imobiliare', 'Salon', 'Contabilitate', 'Transport',
-  'Fitness', 'Turism', 'Auto', 'Educatie',
-];
+const MARQUEE_ROW1 = ['Medical', 'Juridic', 'Constructii', 'Retail', 'HoReCa', 'Educatie', 'Fitness', 'Imobiliare', 'Beauty'];
+const MARQUEE_ROW2 = ['Arhitectura', 'Auto', 'Fotografie', 'Evenimente', 'Consultanta', 'IT', 'Stomatologie', 'Turism', 'Sport'];
 
 const FEATURES: { icon: ElementType; titlu: string; items: ReactNode[] }[] = [
   {
@@ -99,78 +97,7 @@ const DOMENII = [
   { icon: GraduationCap,  titlu: 'Educatie & Cursuri',        descriere: 'Scoli, tutori, platforme cursuri' },
 ];
 
-const PORTFOLIO_PROJECTS: PortfolioProject[] = [
-  {
-    id: 'p1',
-    title: 'Hontrio.com',
-    category: 'website-prezentare',
-    categoryLabel: 'Website Prezentare',
-    niche: 'Servicii Profesionale',
-    description: 'Website modern de prezentare cu design minimalist, sectiuni animate si formular de contact integrat cu notificari automate.',
-    screenshot: '/imagini/hero/HONTRIO.COM.webp',
-    imgWidth: 1424,
-    imgHeight: 2560,
-    liveUrl: 'https://hontrio.com',
-    technologies: ['Next.js', 'Tailwind CSS'],
-    slug: 'hontrio-com',
-  },
-  {
-    id: 'p2',
-    title: 'FortaEstate.ro',
-    category: 'website-prezentare',
-    categoryLabel: 'Website Prezentare',
-    niche: 'Imobiliare',
-    description: 'Website de prezentare pentru agentie imobiliara, cu galerie proprietati, hartare Google Maps si formular de cerere vizionare.',
-    screenshot: '/imagini/hero/FORTASESTATE.RO.webp',
-    imgWidth: 1424,
-    imgHeight: 2560,
-    liveUrl: 'https://fortasestate.ro',
-    technologies: ['WordPress', 'Custom Theme'],
-    slug: 'fortasestate-ro',
-  },
-  {
-    id: 'p3',
-    title: 'Varlan Eisenbau',
-    category: 'website-prezentare',
-    categoryLabel: 'Website Prezentare',
-    niche: 'Constructii Metalice',
-    description: 'Website de prezentare pentru firma de constructii metalice, cu portofoliu de proiecte, certificari si formular de oferta.',
-    screenshot: '/imagini/hero/VARLAN-EISENBAU.COM.webp',
-    imgWidth: 1424,
-    imgHeight: 2560,
-    liveUrl: 'https://varlan-eisenbau.com',
-    technologies: ['WordPress', 'Custom Theme'],
-    slug: 'varlan-eisenbau',
-  },
-  {
-    id: 'p4',
-    title: 'Profesoruldeai.ro',
-    category: 'website-prezentare',
-    categoryLabel: 'Website Prezentare',
-    niche: 'Educatie & AI',
-    description: 'Website de prezentare pentru platforma de educatie AI, cu design modern, sectiuni animate si formular de inscriere integrat.',
-    screenshot: '/imagini/hero/PROFESORULDEAI.RO.webp',
-    imgWidth: 1424,
-    imgHeight: 2560,
-    liveUrl: 'https://profesoruldeai.ro',
-    technologies: ['WordPress', 'Custom Theme'],
-    slug: 'profesoruldeai-ro',
-  },
-  {
-    id: 'p5',
-    title: 'Juniorfamily.ro',
-    category: 'website-prezentare',
-    categoryLabel: 'Website Prezentare',
-    niche: 'Familie & Parenting',
-    description: 'Website de prezentare pentru platforma dedicata familiilor cu copii, cu design cald, continut editorial si newsletter integrat.',
-    screenshot: '/imagini/hero/JUNIORFAMILY.RO.webp',
-    imgWidth: 1424,
-    imgHeight: 2560,
-    liveUrl: 'https://juniorfamily.ro',
-    technologies: ['WordPress', 'Custom Theme'],
-    slug: 'juniorfamily-ro',
-  },
-];
+const WP_PROJECTS = PORTFOLIO_PROJECTS.filter(p => p.filterKey === 'website-prezentare').slice(0, 4);
 
 const PROCESS_STEPS = [
   { icon: MessageSquare, nr: '01', titlu: 'Consultatie gratuita',    descriere: 'Discutam afacerea ta, domeniul, publicul tinta si obiectivele website-ului.' },
@@ -241,7 +168,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Trebuie sa am deja un domeniu si hosting?',
-    a: 'Nu este obligatoriu. Putem gestiona tot: inregistrare domeniu, hosting optimizat, certificat SSL si email profesional. Sau lucram cu ce ai deja daca preferi sa mentii furnizorul actual.',
+    a: 'Nu este obligatoriu. Nu oferim direct servicii de hosting, insa colaboram cu Hostico.ro, unul dintre cei mai de incredere furnizori din Romania. Ii recomandam clientilor nostri si ii ajutam cu configurarea completa a domeniului, certificatului SSL si mediului de hosting. Sau lucram cu furnizorul tau actual daca preferi.',
   },
   {
     q: 'Website-ul va aparea pe Google dupa lansare?',
@@ -363,7 +290,6 @@ export default function WebsitePrezentareClient() {
   const processInView = useInView(processRef, { once: true, margin: '-80px' });
 
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [hoveredChip, setHoveredChip] = useState<string | null>(null);
   const [hoveredDomeniu, setHoveredDomeniu] = useState<number | null>(null);
 
   return (
@@ -446,7 +372,7 @@ export default function WebsitePrezentareClient() {
               >
                 Website profesional la cheie,{' '}
                 pentru{' '}
-                <em style={{ fontStyle: 'italic', color: '#2B8FCC' }}>orice domeniu</em>{' '}
+                <span style={{ color: '#2B8FCC' }}>orice domeniu</span>{' '}
                 de activitate
               </h1>
 
@@ -459,27 +385,28 @@ export default function WebsitePrezentareClient() {
                 De la cabinete medicale la firme de avocatura, de la saloane de infrumusetare la companii de constructii. Livram website-uri profesionale, complete si optimizate pentru domeniul tau specific.
               </p>
 
-              {/* Chips industrii */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 36 }}>
-                {INDUSTRII_CHIPS.map((chip) => (
-                  <span
-                    key={chip}
-                    onMouseEnter={() => setHoveredChip(chip)}
-                    onMouseLeave={() => setHoveredChip(null)}
-                    style={{
-                      background: hoveredChip === chip ? '#EAF5FF' : '#F4F6F8',
-                      border: `1px solid ${hoveredChip === chip ? '#C8E6F8' : '#E8ECF0'}`,
-                      borderRadius: 100,
-                      padding: '5px 12px',
-                      fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 12,
-                      color: hoveredChip === chip ? '#2B8FCC' : '#4A5568',
-                      cursor: 'default',
-                      transition: 'all 150ms ease',
-                    }}
-                  >
-                    {chip}
-                  </span>
-                ))}
+              {/* Marquee industrii */}
+              <style>{`
+                @keyframes marquee-wp-left { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+                @keyframes marquee-wp-right { from { transform: translateX(-50%) } to { transform: translateX(0) } }
+                .marquee-wp-left { animation: marquee-wp-left 25s linear infinite; display: flex; }
+                .marquee-wp-right { animation: marquee-wp-right 25s linear infinite; display: flex; }
+              `}</style>
+              <div style={{ overflow: 'hidden', marginBottom: 36 }}>
+                <div className="marquee-wp-left" style={{ gap: 8, width: 'max-content', marginBottom: 8 }}>
+                  {[...MARQUEE_ROW1, ...MARQUEE_ROW1].map((item, i) => (
+                    <span key={i} style={{ background: '#EAF5FF', border: '1px solid #BFDFFF', borderRadius: 20, padding: '4px 14px', fontSize: 13, fontWeight: 500, color: '#2B8FCC', whiteSpace: 'nowrap' }}>
+                      {item}
+                    </span>
+                  ))}
+                </div>
+                <div className="marquee-wp-right" style={{ gap: 8, width: 'max-content' }}>
+                  {[...MARQUEE_ROW2, ...MARQUEE_ROW2].map((item, i) => (
+                    <span key={i} style={{ background: '#EAF5FF', border: '1px solid #BFDFFF', borderRadius: 20, padding: '4px 14px', fontSize: 13, fontWeight: 500, color: '#2B8FCC', whiteSpace: 'nowrap' }}>
+                      {item}
+                    </span>
+                  ))}
+                </div>
               </div>
 
               {/* Trust indicators */}
@@ -510,6 +437,7 @@ export default function WebsitePrezentareClient() {
                     background: '#2B8FCC', color: '#fff', textDecoration: 'none',
                     fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.9375rem',
                     padding: '14px 28px', borderRadius: 8, transition: 'background 200ms ease',
+                    minWidth: 240, justifyContent: 'center',
                   }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = '#1a6fa8'; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = '#2B8FCC'; }}
@@ -518,13 +446,14 @@ export default function WebsitePrezentareClient() {
                   <ArrowRight size={16} aria-hidden="true" />
                 </Link>
                 <Link
-                  href="/portofoliu?categorie=website-prezentare"
+                  href="/configurare-website-prezentare"
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 8,
                     background: 'transparent', border: '1px solid #E8ECF0',
                     color: '#4A5568', textDecoration: 'none',
                     fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.9375rem',
                     padding: '14px 24px', borderRadius: 8, transition: 'all 200ms ease',
+                    minWidth: 240, justifyContent: 'center',
                   }}
                   onMouseEnter={(e) => {
                     const el = e.currentTarget as HTMLAnchorElement;
@@ -538,7 +467,7 @@ export default function WebsitePrezentareClient() {
                   }}
                 >
                   <ExternalLink size={15} aria-hidden="true" />
-                  Vezi portofoliul
+                  Configureaza website-ul tau
                 </Link>
               </div>
             </motion.div>
@@ -595,7 +524,7 @@ export default function WebsitePrezentareClient() {
                 }}
               >
                 Website profesional adaptat{' '}
-                <em style={{ fontStyle: 'italic', color: '#2B8FCC' }}>100%</em>{' '}
+                <span style={{ color: '#2B8FCC' }}>100%</span>{' '}
                 nevoilor tale
               </h2>
               <p style={{
@@ -688,7 +617,7 @@ export default function WebsitePrezentareClient() {
                 }}
               >
                 Construim pentru{' '}
-                <em style={{ fontStyle: 'italic', color: '#2B8FCC' }}>orice industrie</em>
+                <span style={{ color: '#2B8FCC' }}>orice industrie</span>
               </h2>
               <p style={{
                 fontFamily: 'var(--font-body)', fontSize: '1.0625rem',
@@ -801,7 +730,7 @@ export default function WebsitePrezentareClient() {
                 }}
               >
                 Website-uri{' '}
-                <em style={{ fontStyle: 'italic', color: '#2B8FCC' }}>create</em>{' '}
+                <span style={{ color: '#2B8FCC' }}>create</span>{' '}
                 pentru clientii nostri
               </h2>
               <Link
@@ -832,7 +761,7 @@ export default function WebsitePrezentareClient() {
             @media (max-width: 599px)  { .portfolio-wp-grid { grid-template-columns: 1fr; } }
           `}</style>
           <div className="portfolio-wp-grid">
-            {PORTFOLIO_PROJECTS.map((project, i) => (
+            {WP_PROJECTS.map((project, i) => (
               <ScrollReveal key={project.id} delay={i * 0.07}>
                 <ProjectCard project={project} index={i} />
               </ScrollReveal>
@@ -845,7 +774,7 @@ export default function WebsitePrezentareClient() {
       <section
         ref={compareRef}
         aria-labelledby="comparatie-h2"
-        style={{ background: '#0D1117', padding: 'clamp(64px,8vw,100px) 0' }}
+        style={{ background: '#fff', border: '1px solid #E8ECF0', padding: 'clamp(64px,8vw,100px) 0' }}
       >
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 clamp(24px,5vw,48px)' }}>
           {/* Header */}
@@ -863,16 +792,16 @@ export default function WebsitePrezentareClient() {
                 fontFamily: 'var(--font-display)', fontWeight: 700,
                 fontSize: 'clamp(1.8rem, 3vw, 2.6rem)',
                 lineHeight: 1.1, letterSpacing: '-0.025em',
-                color: '#fff', margin: '0 0 16px',
+                color: '#0D1117', margin: '0 0 16px',
               }}
             >
               De ce conteaza{' '}
-              <em style={{ fontStyle: 'italic', color: '#4AADE8' }}>cum arata</em>{' '}
+              <span style={{ color: '#2B8FCC' }}>cum arata</span>{' '}
               website-ul tau
             </h2>
             <p style={{
               fontFamily: 'var(--font-body)', fontSize: '1.0625rem',
-              lineHeight: 1.7, color: 'rgba(255,255,255,0.55)',
+              lineHeight: 1.7, color: '#4A5568',
               margin: 0,
             }}>
               Vizitatorii iti judeca afacerea in primele 3 secunde. Un website prost pierde clienti inainte ca acestia sa citeasca prima fraza.
@@ -891,7 +820,7 @@ export default function WebsitePrezentareClient() {
               animate={compareInView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.55, ease: EASE }}
               style={{
-                background: 'rgba(239,68,68,0.06)',
+                background: 'rgba(239,68,68,0.04)',
                 border: '1px solid rgba(239,68,68,0.15)',
                 borderRadius: 16,
                 padding: 32,
@@ -912,7 +841,7 @@ export default function WebsitePrezentareClient() {
                     <X size={14} style={{ color: '#EF4444', flexShrink: 0, marginTop: 2 }} aria-hidden="true" />
                     <span style={{
                       fontFamily: 'var(--font-body)', fontWeight: 400,
-                      fontSize: '0.875rem', color: 'rgba(255,255,255,0.60)',
+                      fontSize: '0.875rem', color: '#4A5568',
                       lineHeight: 1.5,
                     }}>
                       {item}
@@ -928,17 +857,17 @@ export default function WebsitePrezentareClient() {
               animate={compareInView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.55, ease: EASE }}
               style={{
-                background: 'rgba(43,143,204,0.08)',
-                border: '1px solid rgba(43,143,204,0.25)',
+                background: 'rgba(43,143,204,0.05)',
+                border: '1px solid rgba(43,143,204,0.20)',
                 borderRadius: 16,
                 padding: 32,
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
-                <CheckCircle size={22} style={{ color: '#4AADE8', flexShrink: 0 }} aria-hidden="true" />
+                <CheckCircle size={22} style={{ color: '#2B8FCC', flexShrink: 0 }} aria-hidden="true" />
                 <span style={{
                   fontFamily: 'var(--font-body)', fontWeight: 700,
-                  fontSize: '1rem', color: '#4AADE8',
+                  fontSize: '1rem', color: '#2B8FCC',
                 }}>
                   Website Inovex
                 </span>
@@ -946,10 +875,10 @@ export default function WebsitePrezentareClient() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {BENEFICII_INOVEX.map((item) => (
                   <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                    <Check size={14} style={{ color: '#4AADE8', flexShrink: 0, marginTop: 2 }} aria-hidden="true" />
+                    <Check size={14} style={{ color: '#2B8FCC', flexShrink: 0, marginTop: 2 }} aria-hidden="true" />
                     <span style={{
                       fontFamily: 'var(--font-body)', fontWeight: 400,
-                      fontSize: '0.875rem', color: 'rgba(255,255,255,0.80)',
+                      fontSize: '0.875rem', color: '#0D1117',
                       lineHeight: 1.5,
                     }}>
                       {item}
@@ -994,7 +923,7 @@ export default function WebsitePrezentareClient() {
                 }}
               >
                 De la prima discutie la{' '}
-                <em style={{ fontStyle: 'italic', color: '#4AADE8' }}>website-ul live</em>
+                <span style={{ color: '#4AADE8' }}>website-ul live</span>
               </h2>
             </motion.div>
           </div>
@@ -1107,7 +1036,7 @@ export default function WebsitePrezentareClient() {
                 }}
               >
                 Rezultate{' '}
-                <em style={{ fontStyle: 'italic', color: '#2B8FCC' }}>reale</em>,{' '}
+                <span style={{ color: '#2B8FCC' }}>reale</span>,{' '}
                 confirmate de clienti reali
               </h2>
             </div>
@@ -1207,7 +1136,7 @@ export default function WebsitePrezentareClient() {
                 }}
               >
                 Raspunsuri la cele mai{' '}
-                <em style={{ fontStyle: 'italic', color: '#2B8FCC' }}>comune</em>{' '}
+                <span style={{ color: '#2B8FCC' }}>comune</span>{' '}
                 intrebari
               </h2>
             </div>
@@ -1274,7 +1203,7 @@ export default function WebsitePrezentareClient() {
               }}
             >
               Gata sa ai o prezenta online care{' '}
-              <em style={{ fontStyle: 'italic' }}>aduce clienti</em>?
+              <span>aduce clienti</span>?
             </h2>
 
             {/* Subtitlu */}
@@ -1289,7 +1218,7 @@ export default function WebsitePrezentareClient() {
             {/* Butoane */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center' }}>
               <Link
-                href="/oferta"
+                href="/configurare-website-prezentare"
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   background: '#FFFFFF', color: '#2B8FCC',
@@ -1309,7 +1238,7 @@ export default function WebsitePrezentareClient() {
                   el.style.transform = 'scale(1)';
                 }}
               >
-                Solicita oferta gratuita
+                Configureaza website-ul tau
                 <ArrowRight size={16} style={{ color: '#2B8FCC' }} aria-hidden="true" />
               </Link>
               <a

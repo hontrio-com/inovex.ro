@@ -13,16 +13,8 @@ import {
   ChevronRight,
 } from 'lucide-react';
 
-const APP_TYPES = [
-  'Platforme SaaS',
-  'Marketplace-uri',
-  'Portale B2B',
-  'Aplicatii de management',
-  'Dashboard-uri',
-  'Sisteme rezervari',
-  'Platforme e-learning',
-  'Aplicatii fintech',
-];
+const MARQUEE_ROW1_SAAS = ['Platforme SaaS', 'CRM Custom', 'ERP', 'Marketplace', 'Portal Clienti', 'Dashboard Analytics'];
+const MARQUEE_ROW2_SAAS = ['Aplicatii B2B', 'Sisteme Rezervari', 'Platforme E-learning', 'Tools Interne', 'API-uri', 'Automatizari'];
 
 export default function HeroSaas() {
   const shouldReduceMotion = useReducedMotion();
@@ -125,27 +117,32 @@ export default function HeroSaas() {
               primul rand de cod.
             </p>
 
-            {/* App type chips */}
+            {/* App type marquee */}
             <div className="mb-9">
               <p className="text-[11px] font-semibold uppercase tracking-widest text-[#8A94A6] mb-3">
                 Construim:
               </p>
-              <div className="flex flex-wrap gap-2">
-                {APP_TYPES.map((t, i) => (
-                  <motion.span
-                    key={t}
-                    initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 + i * 0.03, duration: 0.3 }}
-                  >
-                    <Badge
-                      variant="secondary"
-                      className="cursor-default hover:bg-[#e2e8f0] transition-colors duration-150"
-                    >
-                      {t}
-                    </Badge>
-                  </motion.span>
-                ))}
+              <style>{`
+                @keyframes marquee-saas-left { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+                @keyframes marquee-saas-right { from { transform: translateX(-50%) } to { transform: translateX(0) } }
+                .marquee-saas-left { animation: marquee-saas-left 25s linear infinite; display: flex; }
+                .marquee-saas-right { animation: marquee-saas-right 25s linear infinite; display: flex; }
+              `}</style>
+              <div style={{ overflow: 'hidden' }}>
+                <div className="marquee-saas-left" style={{ gap: 8, width: 'max-content', marginBottom: 8 }}>
+                  {[...MARQUEE_ROW1_SAAS, ...MARQUEE_ROW1_SAAS].map((item, i) => (
+                    <span key={i} style={{ background: '#EAF5FF', border: '1px solid #BFDFFF', borderRadius: 20, padding: '4px 14px', fontSize: 13, fontWeight: 500, color: '#2B8FCC', whiteSpace: 'nowrap' }}>
+                      {item}
+                    </span>
+                  ))}
+                </div>
+                <div className="marquee-saas-right" style={{ gap: 8, width: 'max-content' }}>
+                  {[...MARQUEE_ROW2_SAAS, ...MARQUEE_ROW2_SAAS].map((item, i) => (
+                    <span key={i} style={{ background: '#EAF5FF', border: '1px solid #BFDFFF', borderRadius: 20, padding: '4px 14px', fontSize: 13, fontWeight: 500, color: '#2B8FCC', whiteSpace: 'nowrap' }}>
+                      {item}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
 

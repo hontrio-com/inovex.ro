@@ -14,14 +14,8 @@ import {
   ChevronRight,
 } from 'lucide-react';
 
-const RESOLVE_ITEMS = [
-  'Foi Excel imprastiate',
-  'Emailuri pierdute',
-  'Date duplicate',
-  'Rapoarte manuale',
-  'Procese neautomatizate',
-  'Vizibilitate zero',
-];
+const MARQUEE_ROW1_CRM = ['CRM', 'ERP', 'CMS', 'Sistem Facturare', 'Portal Clienti', 'Rapoarte'];
+const MARQUEE_ROW2_CRM = ['Gestiune Stocuri', 'HR Software', 'Sistem Ticketing', 'Automatizari', 'Dashboard', 'Integrari API'];
 
 export default function HeroCrm() {
   const shouldReduceMotion = useReducedMotion();
@@ -99,27 +93,32 @@ export default function HeroCrm() {
               Daca afacerea ta merge pe foi Excel, emailuri imprastiate si note lipite, construim sistemul care pune ordine in tot. Clienti, comenzi, stoc, facturi si echipa - gestionate dintr-un singur loc, adaptat exact cum lucrezi tu deja.
             </p>
 
-            {/* Rezolvam chips */}
+            {/* Sistem types marquee */}
             <div className="mb-9">
               <p className="text-[11px] font-semibold uppercase tracking-widest text-[#8A94A6] mb-3">
-                Rezolvam:
+                Construim:
               </p>
-              <div className="flex flex-wrap gap-2">
-                {RESOLVE_ITEMS.map((t, i) => (
-                  <motion.span
-                    key={t}
-                    initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 + i * 0.03, duration: 0.3 }}
-                  >
-                    <Badge
-                      variant="secondary"
-                      className="cursor-default hover:bg-[#e2e8f0] transition-colors duration-150"
-                    >
-                      {t}
-                    </Badge>
-                  </motion.span>
-                ))}
+              <style>{`
+                @keyframes marquee-crm-left { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+                @keyframes marquee-crm-right { from { transform: translateX(-50%) } to { transform: translateX(0) } }
+                .marquee-crm-left { animation: marquee-crm-left 25s linear infinite; display: flex; }
+                .marquee-crm-right { animation: marquee-crm-right 25s linear infinite; display: flex; }
+              `}</style>
+              <div style={{ overflow: 'hidden' }}>
+                <div className="marquee-crm-left" style={{ gap: 8, width: 'max-content', marginBottom: 8 }}>
+                  {[...MARQUEE_ROW1_CRM, ...MARQUEE_ROW1_CRM].map((item, i) => (
+                    <span key={i} style={{ background: '#EAF5FF', border: '1px solid #BFDFFF', borderRadius: 20, padding: '4px 14px', fontSize: 13, fontWeight: 500, color: '#2B8FCC', whiteSpace: 'nowrap' }}>
+                      {item}
+                    </span>
+                  ))}
+                </div>
+                <div className="marquee-crm-right" style={{ gap: 8, width: 'max-content' }}>
+                  {[...MARQUEE_ROW2_CRM, ...MARQUEE_ROW2_CRM].map((item, i) => (
+                    <span key={i} style={{ background: '#EAF5FF', border: '1px solid #BFDFFF', borderRadius: 20, padding: '4px 14px', fontSize: 13, fontWeight: 500, color: '#2B8FCC', whiteSpace: 'nowrap' }}>
+                      {item}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
 

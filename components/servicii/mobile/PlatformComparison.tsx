@@ -54,8 +54,11 @@ export default function PlatformComparison() {
           >
             <Card className="h-full border border-[#E8ECF0] rounded-2xl overflow-hidden">
               <CardContent className="p-6">
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style={{ background: '#E8F0FE' }}>
-                  <Smartphone size={22} color="#007AFF" />
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#E8F0FE' }}>
+                    <Smartphone size={22} color="#007AFF" />
+                  </div>
+                  <img src="/imagini/alte-logouri/swift.svg" alt="Swift" style={{ height: 28, width: 'auto', filter: 'grayscale(1) opacity(0.6)' }} />
                 </div>
                 <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.0625rem', color: '#0D1117', marginBottom: 8 }}>
                   iOS Nativ (Swift)
@@ -103,8 +106,11 @@ export default function PlatformComparison() {
           >
             <Card className="h-full border border-[#E8ECF0] rounded-2xl overflow-hidden">
               <CardContent className="p-6">
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style={{ background: '#E6F4EA' }}>
-                  <Smartphone size={22} color="#34A853" />
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#E6F4EA' }}>
+                    <Smartphone size={22} color="#34A853" />
+                  </div>
+                  <img src="/imagini/alte-logouri/kotlin.svg" alt="Kotlin" style={{ height: 28, width: 'auto', filter: 'grayscale(1) opacity(0.6)' }} />
                 </div>
                 <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.0625rem', color: '#0D1117', marginBottom: 8 }}>
                   Android Nativ (Kotlin)
@@ -160,8 +166,11 @@ export default function PlatformComparison() {
 
             <Card className="h-full border-2 border-[#2B8FCC] rounded-2xl overflow-hidden shadow-lg" style={{ boxShadow: '0 0 0 4px rgba(43,143,204,0.12)' }}>
               <CardContent className="p-6">
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style={{ background: '#EAF5FF' }}>
-                  <Layers size={22} color="#2B8FCC" />
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#EAF5FF' }}>
+                    <Layers size={22} color="#2B8FCC" />
+                  </div>
+                  <img src="/imagini/alte-logouri/flutter.svg" alt="Flutter" style={{ height: 28, width: 'auto', filter: 'grayscale(1) opacity(0.6)' }} />
                 </div>
                 <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.0625rem', color: '#0D1117', marginBottom: 8 }}>
                   React Native / Flutter

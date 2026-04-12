@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Link from 'next/link';
 import { motion, useInView, useReducedMotion, AnimatePresence } from 'framer-motion';
 import {
@@ -10,7 +10,8 @@ import {
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import ServiceVideo from '@/components/sections/ServiceVideo';
-import { ProjectCard, type PortfolioProject } from '@/components/sections/Portfolio';
+import { ProjectCard } from '@/components/portofoliu/ProjectCard';
+import { PORTFOLIO_PROJECTS } from '@/lib/portfolio-data';
 import { trackConversions } from '@/lib/gtm';
 
 const EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
@@ -19,57 +20,82 @@ const EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
    DATE
 ══════════════════════════════════════════════════════ */
 
-const FEATURES = [
+const PAYMENT_LOGOS = [
+  { src: '/imagini/alte-logouri/stripe.svg', alt: 'Stripe' },
+  { src: '/imagini/alte-logouri/payu.svg', alt: 'PayU' },
+  { src: '/imagini/alte-logouri/netopia.svg', alt: 'Netopia' },
+  { src: '/imagini/alte-logouri/tbibank.svg', alt: 'TBI Bank' },
+  { src: '/imagini/alte-logouri/fancourier.svg', alt: 'FanCourier' },
+  { src: '/imagini/alte-logouri/cargus.svg', alt: 'Cargus' },
+  { src: '/imagini/alte-logouri/dpd.svg', alt: 'DPD' },
+  { src: '/imagini/alte-logouri/sameday.webp', alt: 'Sameday' },
+];
+
+const BILLING_LOGOS = [
+  { src: '/imagini/alte-logouri/smartbill.svg', alt: 'SmartBill' },
+  { src: '/imagini/alte-logouri/oblio.webp', alt: 'Oblio' },
+  { src: '/imagini/alte-logouri/fgo.svg', alt: 'fGo' },
+  { src: '/imagini/alte-logouri/saga.svg', alt: 'SAGA' },
+];
+
+type FeatureItem = {
+  bold: string;
+  rest: string;
+};
+
+const FEATURES: { icon: React.ElementType; titlu: string; logos?: { src: string; alt: string }[]; items: FeatureItem[] }[] = [
   {
     icon: Palette,
     titlu: 'Design & Dezvoltare',
     items: [
-      'Design 100% personalizat, creat de la zero pentru brandul tau',
-      'Responsive perfect pe orice dispozitiv si browser',
-      'Pagini produs cu galerie foto, zoom, variante culoare si marime',
-      'Filtrare si cautare avansata in catalog',
-      'Cos persistent si checkout simplificat in minim de pasi',
-      'Panou de administrare intuitiv, fara cunostinte tehnice',
-      'Optimizare viteza: sub 2 secunde, Core Web Vitals verzi',
+      { bold: 'Design 100% personalizat', rest: ', creat de la zero pentru brandul tau' },
+      { bold: 'Responsive perfect', rest: ' pe orice dispozitiv si browser' },
+      { bold: 'Pagini produs', rest: ' cu galerie foto, zoom, variante culoare si marime' },
+      { bold: 'Filtrare si cautare avansata', rest: ' in catalog' },
+      { bold: 'Cos persistent', rest: ' si checkout simplificat in minim de pasi' },
+      { bold: 'Panou de administrare intuitiv', rest: ', fara cunostinte tehnice' },
+      { bold: 'Optimizare viteza', rest: ': sub 2 secunde, Core Web Vitals verzi' },
     ],
   },
   {
     icon: Package,
     titlu: 'Produse & Continut',
     items: [
-      'Import produse in masa din Excel sau CSV',
-      'Produse cu variante: culoare, marime, material, orice atribut',
-      'Gestionare stoc cu alerta automata la cantitate scazuta',
-      'Produse la comanda, precomanda si produse digitale',
-      'Badge-uri automate: Nou, Reducere, Bestseller, Stoc limitat',
-      'Wishlist, comparare produse si produse vizualizate recent',
-      'SEO tehnic per produs: schema markup, meta editabile, URL-uri prietenoase',
+      { bold: 'Import produse in masa', rest: ' din Excel sau CSV' },
+      { bold: 'Produse cu variante', rest: ': culoare, marime, material, orice atribut' },
+      { bold: 'Gestionare stoc', rest: ' cu alerta automata la cantitate scazuta' },
+      { bold: 'Produse la comanda', rest: ', precomanda si produse digitale' },
+      { bold: 'Badge-uri automate', rest: ': Nou, Reducere, Bestseller, Stoc limitat' },
+      { bold: 'Wishlist', rest: ', comparare produse si produse vizualizate recent' },
+      { bold: 'SEO tehnic per produs', rest: ': schema markup, meta editabile, URL-uri prietenoase' },
     ],
   },
   {
     icon: CreditCard,
     titlu: 'Plati & Curierat',
+    logos: PAYMENT_LOGOS,
     items: [
-      'Card bancar: Stripe, PayU, Netopia / mobilPay, EuPlatesc',
-      'Plata la livrare, transfer bancar, rate TBI Bank',
-      'Apple Pay si Google Pay',
-      'FanCourier, Cargus, DPD, Sameday, DHL, Urgent Cargus',
-      'AWB generat automat la confirmarea comenzii',
-      'Calcul automat cost livrare dupa greutate si judet',
-      'Tracking colet trimis automat clientului pe email',
+      { bold: 'Card bancar', rest: ': Stripe, PayU, Netopia / mobilPay, EuPlatesc' },
+      { bold: 'Plata la livrare', rest: ', transfer bancar, rate TBI Bank' },
+      { bold: 'Apple Pay si Google Pay', rest: '' },
+      { bold: 'FanCourier, Cargus, DPD, Sameday', rest: ', DHL, Urgent Cargus' },
+      { bold: 'AWB generat automat', rest: ' la confirmarea comenzii' },
+      { bold: 'Calcul automat cost livrare', rest: ' dupa greutate si judet' },
+      { bold: 'Tracking colet', rest: ' trimis automat clientului pe email' },
     ],
   },
   {
     icon: Zap,
     titlu: 'Automatizari & Integari',
+    logos: BILLING_LOGOS,
     items: [
-      'Facturare automata: SmartBill, Oblio, fGo, SAGA',
-      'Email marketing: cos abandonat, confirmare, urmarire livrare',
-      'Google Merchant Center, Facebook Shop, TikTok Shop',
-      'Integrare Klaviyo, MailerLite sau ActiveCampaign',
-      'Coduri de reducere, upsell si cross-sell automat',
-      'Google Analytics 4, Meta Pixel, TikTok Pixel configurate',
-      'Conformitate GDPR completa cu cookie banner si politici legale',
+      { bold: 'Facturare automata', rest: ': SmartBill, Oblio, fGo, SAGA' },
+      { bold: 'Email marketing', rest: ': cos abandonat, confirmare, urmarire livrare' },
+      { bold: 'Google Merchant Center', rest: ', Facebook Shop, TikTok Shop' },
+      { bold: 'Integrare Klaviyo', rest: ', MailerLite sau ActiveCampaign' },
+      { bold: 'Coduri de reducere', rest: ', upsell si cross-sell automat' },
+      { bold: 'Google Analytics 4', rest: ', Meta Pixel, TikTok Pixel configurate' },
+      { bold: 'Conformitate GDPR completa', rest: ' cu cookie banner si politici legale' },
     ],
   },
 ];
@@ -80,6 +106,7 @@ const PLATFORME = [
     featured: true,
     titlu: 'WooCommerce',
     tag: 'WordPress + PHP',
+    logo: '/imagini/alte-logouri/woocommerce.svg',
     descriere: 'Cea mai flexibila solutie open-source. Potrivit pentru magazine de orice dimensiune, cu control complet asupra fiecarui aspect.',
     cand: [
       'Magazine cu 10 la 10.000+ produse',
@@ -92,6 +119,7 @@ const PLATFORME = [
     featured: false,
     titlu: 'Shopify',
     tag: 'SaaS / Hosted',
+    logo: '/imagini/alte-logouri/shopify.svg',
     descriere: 'Platforma hosted, rapida de lansat. Ideala cand vrei sa te concentrezi pe vanzari, nu pe tehnic.',
     cand: [
       'Magazine care vor sa lanseze rapid',
@@ -104,6 +132,7 @@ const PLATFORME = [
     featured: false,
     titlu: 'Next.js Commerce',
     tag: 'Custom / Headless',
+    logo: '/imagini/alte-logouri/nextjs.svg',
     descriere: 'Solutie custom de inalta performanta pentru magazine mari sau cu cerinte tehnice speciale.',
     cand: [
       'Volume mari de trafic (zeci de mii de vizitatori/zi)',
@@ -113,50 +142,7 @@ const PLATFORME = [
   },
 ];
 
-const PORTFOLIO_PROJECTS: PortfolioProject[] = [
-  {
-    id: '1',
-    title: 'DsMotor.ro',
-    category: 'magazin-online',
-    categoryLabel: 'Magazin Online',
-    niche: 'Piese Auto',
-    description: 'Magazin online modern pentru piese si utilaje agricole, optimizat pentru conversii si navigare rapida intre categorii.',
-    screenshot: '/imagini/hero/DSMOTOR.RO.webp',
-    imgWidth: 1424,
-    imgHeight: 2560,
-    liveUrl: 'https://dsmotor.ro',
-    technologies: ['WordPress', 'WooCommerce'],
-    slug: 'dsmotor-ro',
-  },
-  {
-    id: '2',
-    title: 'CutiadeMagie.ro',
-    category: 'magazin-online',
-    categoryLabel: 'Magazin Online',
-    niche: 'Accesorii Personalizare',
-    description: 'Magazin online cu design elegant si feminin, dedicat produselor pentru creatii handmade si cadouri personalizate.',
-    screenshot: '/imagini/hero/CUTIADEMAGIE.RO.webp',
-    imgWidth: 1424,
-    imgHeight: 2560,
-    liveUrl: 'https://cutiademagie.ro',
-    technologies: ['WordPress', 'WooCommerce'],
-    slug: 'cutiademagie-ro',
-  },
-  {
-    id: '3',
-    title: 'ATPAutoteile',
-    category: 'magazin-online',
-    categoryLabel: 'Magazin Online',
-    niche: 'Piese & Accesorii Auto',
-    description: 'Magazin online pentru piese si accesorii auto, cu catalog extins, filtrare avansata si integrari complete de livrare.',
-    screenshot: '/imagini/hero/ATPAUTOTEILE.webp',
-    imgWidth: 1424,
-    imgHeight: 2560,
-    liveUrl: 'https://atpautoteile.ro',
-    technologies: ['WordPress', 'WooCommerce'],
-    slug: 'atpautoteile',
-  },
-];
+const MAGAZINE_PROJECTS = PORTFOLIO_PROJECTS.filter(p => p.filterKey === 'magazine-online').slice(0, 3);
 
 const PROCESS_STEPS = [
   { icon: MessageSquare, nr: '01', titlu: 'Consultatie gratuita',    descriere: 'Discutam proiectul, intelegem nisa si obiectivele tale de vanzare.' },
@@ -213,7 +199,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Oferiti si servicii de hosting?',
-    a: 'Da. Putem gestiona tot: domeniu, hosting optimizat pentru WooCommerce, certificate SSL, backup zilnic si monitorizare uptime. Sau poti alege propriul hosting daca preferi.',
+    a: 'Nu oferim direct servicii de hosting, insa colaboram cu Hostico.ro, unul dintre cei mai de incredere furnizori de hosting din Romania. Ii recomandam clientilor nostri si ii ajutam cu configurarea completa a domeniului, certificatului SSL si mediului de hosting optim pentru magazinul online.',
   },
   {
     q: 'Exista costuri lunare ascunse dupa lansare?',
@@ -398,7 +384,7 @@ export default function MagazineOnlineClient() {
                 }}
               >
                 Magazin online la cheie,{' '}
-                <em style={{ fontStyle: 'italic', color: '#2B8FCC' }}>integrat cu tot ce ai nevoie</em>
+                <span style={{ color: '#2B8FCC' }}>integrat cu tot ce ai nevoie</span>
               </h1>
 
               {/* Paragraf */}
@@ -446,7 +432,7 @@ export default function MagazineOnlineClient() {
                   <ArrowRight size={16} aria-hidden="true" />
                 </Link>
                 <Link
-                  href="/oferta?serviciu=magazin-online"
+                  href="/configurare-magazin-online"
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 8,
                     background: '#fff', border: '1px solid #D1D5DB',
@@ -466,7 +452,7 @@ export default function MagazineOnlineClient() {
                   }}
                 >
                   <Settings size={15} aria-hidden="true" />
-                  Configureaza oferta
+                  Configureaza Oferta
                 </Link>
               </div>
             </motion.div>
@@ -524,7 +510,7 @@ export default function MagazineOnlineClient() {
               }}
             >
               Ne ocupam de{' '}
-              <em style={{ fontStyle: 'italic', color: '#2B8FCC' }}>absolut tot</em>
+              <span style={{ color: '#2B8FCC' }}>absolut tot</span>
               , de la A la Z
             </h2>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: '1.0625rem', color: '#4A5568', lineHeight: 1.7, margin: 0 }}>
@@ -557,7 +543,7 @@ export default function MagazineOnlineClient() {
                     el.style.boxShadow = 'none';
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: f.logos ? 12 : 24 }}>
                     <div style={{
                       width: 44, height: 44, background: '#EAF5FF', borderRadius: 10,
                       display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
@@ -568,12 +554,19 @@ export default function MagazineOnlineClient() {
                       {f.titlu}
                     </h3>
                   </div>
+                  {f.logos && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', marginBottom: 20 }}>
+                      {f.logos.map((logo) => (
+                        <img key={logo.alt} src={logo.src} alt={logo.alt} style={{ height: 28, width: 'auto', filter: 'grayscale(1) opacity(0.6)' }} />
+                      ))}
+                    </div>
+                  )}
                   <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
                     {f.items.map((item) => (
-                      <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                      <li key={item.bold} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                         <Check size={14} style={{ color: '#2B8FCC', flexShrink: 0, marginTop: 2 }} aria-hidden="true" />
                         <span style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 14, color: '#4A5568', lineHeight: 1.5 }}>
-                          {item}
+                          <strong>{item.bold}</strong>{item.rest}
                         </span>
                       </li>
                     ))}
@@ -653,9 +646,14 @@ export default function MagazineOnlineClient() {
                       Recomandat
                     </div>
                   )}
-                  <h3 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1.0625rem', color: '#0D1117', margin: '0 0 10px' }}>
-                    {p.titlu}
-                  </h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
+                    <h3 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '1.0625rem', color: '#0D1117', margin: 0 }}>
+                      {p.titlu}
+                    </h3>
+                    {p.logo && (
+                      <img src={p.logo} alt={p.titlu} style={{ height: 22, width: 'auto', filter: 'grayscale(1) opacity(0.5)' }} />
+                    )}
+                  </div>
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#4A5568', lineHeight: 1.6, margin: '0 0 16px' }}>
                     {p.descriere}
                   </p>
@@ -705,7 +703,7 @@ export default function MagazineOnlineClient() {
                 }}
               >
                 Magazine online{' '}
-                <em style={{ fontStyle: 'italic', color: '#2B8FCC' }}>create</em>
+                <span style={{ color: '#2B8FCC' }}>create</span>
                 {' '}pentru clientii nostri
               </h2>
             </ScrollReveal>
@@ -738,7 +736,7 @@ export default function MagazineOnlineClient() {
             @media (max-width: 639px)  { .serviciu-portfolio-grid { grid-template-columns: 1fr !important; } }
           `}</style>
           <div className="serviciu-portfolio-grid">
-            {PORTFOLIO_PROJECTS.map((project, i) => (
+            {MAGAZINE_PROJECTS.map((project, i) => (
               <ProjectCard key={project.id} project={project} index={i} />
             ))}
           </div>
@@ -777,7 +775,7 @@ export default function MagazineOnlineClient() {
                 }}
               >
                 De la prima discutie la{' '}
-                <em style={{ fontStyle: 'italic', color: '#4AADE8' }}>primul client</em>
+                <span style={{ color: '#4AADE8' }}>primul client</span>
               </h2>
             </motion.div>
           </div>
@@ -889,7 +887,7 @@ export default function MagazineOnlineClient() {
               }}
             >
               Recenzii de la{' '}
-              <em style={{ fontStyle: 'italic', color: '#2B8FCC' }}>clientii nostri</em>
+              <span style={{ color: '#2B8FCC' }}>clientii nostri</span>
             </h2>
           </ScrollReveal>
 
@@ -909,7 +907,7 @@ export default function MagazineOnlineClient() {
                 </div>
               </div>
               <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#4A5568' }}>
-                87 recenzii Google verificate
+                Recenzii Google verificate
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <GoogleIcon />
@@ -977,7 +975,7 @@ export default function MagazineOnlineClient() {
                       &ldquo;
                     </div>
                     <p style={{
-                      fontFamily: 'var(--font-display)', fontStyle: 'italic',
+                      fontFamily: 'var(--font-display)',
                       fontSize: '0.9375rem', color: '#1A202C', lineHeight: 1.75,
                       margin: 0,
                     }}>
@@ -1018,7 +1016,7 @@ export default function MagazineOnlineClient() {
               }}
             >
               Raspunsuri{' '}
-              <em style={{ fontStyle: 'italic', color: '#2B8FCC' }}>clare</em>
+              <span style={{ color: '#2B8FCC' }}>clare</span>
               {' '}la intrebarile tale
             </h2>
           </div>
@@ -1074,7 +1072,7 @@ export default function MagazineOnlineClient() {
               }}
             >
               Gata sa iti{' '}
-              <em style={{ fontStyle: 'italic', color: '#4AADE8' }}>lansezi</em>
+              <span style={{ color: '#4AADE8' }}>lansezi</span>
               {' '}magazinul online?
             </h2>
 
