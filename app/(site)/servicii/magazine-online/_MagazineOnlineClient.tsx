@@ -574,7 +574,7 @@ export default function MagazineOnlineClient() {
                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
                             {group.logos.map((logo) => (
                               <div key={logo.alt} style={{ background: '#fff', border: '1px solid #E8ECF0', borderRadius: 8, padding: '5px 10px', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 34 }}>
-                                <img src={logo.src} alt={logo.alt} style={{ height: 18, width: 'auto', maxWidth: 64, objectFit: 'contain', display: 'block', filter: 'grayscale(1) opacity(0.7)' }} />
+                                <img src={logo.src} alt={logo.alt} style={{ height: 18, width: 'auto', maxWidth: 64, objectFit: 'contain', display: 'block', opacity: 0.85 }} />
                               </div>
                             ))}
                           </div>
