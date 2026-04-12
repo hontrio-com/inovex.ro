@@ -64,10 +64,11 @@ export default function ServiceVideo({ src, loop = true, className, style }: Ser
     };
   }, []);
 
+  const webmSrc = src.replace(/\.mp4$/i, '.webm');
+
   return (
     <video
       ref={videoRef}
-      src={src}
       muted
       playsInline
       loop={loop}
@@ -82,6 +83,9 @@ export default function ServiceVideo({ src, loop = true, className, style }: Ser
         willChange: 'transform',
         ...style,
       }}
-    />
+    >
+      <source src={webmSrc} type="video/webm" />
+      <source src={src} type="video/mp4" />
+    </video>
   );
 }
