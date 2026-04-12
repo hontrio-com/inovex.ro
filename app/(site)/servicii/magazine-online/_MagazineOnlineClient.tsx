@@ -20,7 +20,7 @@ const EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
    DATE
 ══════════════════════════════════════════════════════ */
 
-type LogoEntry = { src: string; alt: string };
+type LogoEntry = { src: string; alt: string; invert?: boolean };
 type LogoGroup = { label: string; logos: LogoEntry[] };
 type FeatureItem = { bold: string; rest: string };
 
@@ -60,7 +60,7 @@ const FEATURES: { icon: React.ElementType; titlu: string; logoGroups?: LogoGroup
         logos: [
           { src: '/imagini/alte-logouri/stripe.svg',   alt: 'Stripe'   },
           { src: '/imagini/alte-logouri/payu.svg',     alt: 'PayU'     },
-          { src: '/imagini/alte-logouri/netopia.svg',  alt: 'Netopia'  },
+          { src: '/imagini/alte-logouri/netopia.svg',  alt: 'Netopia',  invert: true },
           { src: '/imagini/alte-logouri/tbibank.svg',  alt: 'TBI Bank' },
         ],
       },
@@ -92,8 +92,8 @@ const FEATURES: { icon: React.ElementType; titlu: string; logoGroups?: LogoGroup
         label: 'Soft de facturare',
         logos: [
           { src: '/imagini/alte-logouri/smartbill.svg', alt: 'SmartBill' },
-          { src: '/imagini/alte-logouri/oblio.webp',    alt: 'Oblio'     },
-          { src: '/imagini/alte-logouri/fgo.svg',       alt: 'fGo'       },
+          { src: '/imagini/alte-logouri/oblio.webp',    alt: 'Oblio',    invert: true },
+          { src: '/imagini/alte-logouri/fgo.svg',       alt: 'fGo',      invert: true },
           { src: '/imagini/alte-logouri/saga.svg',      alt: 'SAGA'      },
         ],
       },
@@ -574,7 +574,7 @@ export default function MagazineOnlineClient() {
                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
                             {group.logos.map((logo) => (
                               <div key={logo.alt} style={{ background: '#fff', border: '1px solid #E8ECF0', borderRadius: 8, padding: '5px 10px', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 34 }}>
-                                <img src={logo.src} alt={logo.alt} style={{ height: 18, width: 'auto', maxWidth: 64, objectFit: 'contain', display: 'block', opacity: 0.85 }} />
+                                <img src={logo.src} alt={logo.alt} style={{ height: 18, width: 'auto', maxWidth: 64, objectFit: 'contain', display: 'block', opacity: 0.85, filter: logo.invert ? 'invert(1)' : undefined }} />
                               </div>
                             ))}
                           </div>
