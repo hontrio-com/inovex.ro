@@ -29,25 +29,25 @@ const PROJECTS: PortfolioProject[] = [
   {
     id: '1', title: 'DsMotor.ro', category: 'magazin-online', categoryLabel: 'Magazin Online',
     niche: 'Piese Auto', description: 'Magazin online modern pentru piese și utilaje agricole, optimizat pentru conversii și navigare rapidă între categorii.',
-    screenshot: '/imagini/hero/DSMOTOR.RO.png', imgWidth: 1424, imgHeight: 2560,
+    screenshot: '/imagini/hero/DSMOTOR.RO.webp', imgWidth: 1424, imgHeight: 2560,
     liveUrl: 'https://dsmotor.ro', technologies: ['WordPress', 'WooCommerce'], slug: 'dsmotor-ro',
   },
   {
     id: '2', title: 'Profesorul de AI', category: 'website-prezentare', categoryLabel: 'Website de Prezentare',
     niche: 'Cursuri', description: 'Website de prezentare pentru un brand educațional axat pe cursuri de creare videoclipuri cu inteligență artificială.',
-    screenshot: '/imagini/hero/PROFESORULDEAI.RO.png', imgWidth: 1424, imgHeight: 2560,
+    screenshot: '/imagini/hero/PROFESORULDEAI.RO.webp', imgWidth: 1424, imgHeight: 2560,
     liveUrl: 'https://profesoruldeai.ro', technologies: ['Node.js'], slug: 'profesoruldeai-ro',
   },
   {
     id: '3', title: 'CutiadeMagie.ro', category: 'magazin-online', categoryLabel: 'Magazin Online',
     niche: 'Accesorii Personalizare', description: 'Magazin online cu design elegant și feminin, dedicat produselor pentru creații handmade și cadouri personalizate.',
-    screenshot: '/imagini/hero/CUTIADEMAGIE.RO.jpg', imgWidth: 1424, imgHeight: 2560,
+    screenshot: '/imagini/hero/CUTIADEMAGIE.RO.webp', imgWidth: 1424, imgHeight: 2560,
     liveUrl: 'https://cutiademagie.ro', technologies: ['WordPress', 'WooCommerce'], slug: 'cutiademagie-ro',
   },
   {
     id: '4', title: 'Hontrio.com', category: 'aplicatii-web', categoryLabel: 'SaaS',
     niche: 'Platformă Automatizări', description: 'Platformă SaaS bazată pe AI, dedicată automatizării și optimizării produselor din magazinele online.',
-    screenshot: '/imagini/hero/HONTRIO.COM.png', imgWidth: 1424, imgHeight: 2560,
+    screenshot: '/imagini/hero/HONTRIO.COM.webp', imgWidth: 1424, imgHeight: 2560,
     liveUrl: 'https://hontrio.com', technologies: ['Next.js'], slug: 'hontrio-com',
   },
 ];

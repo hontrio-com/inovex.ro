@@ -21,22 +21,22 @@ const IMG_H = 2560;
 type Card = { id: string; src: string; label: string };
 
 const COL_A: Card[] = [
-  { id: 'a1', src: '/imagini/hero/HONTRIO.COM.png',            label: 'Hontrio.com'        },
-  { id: 'a2', src: '/imagini/hero/CUTIADEMAGIE.RO.jpg',        label: 'Cutiademagie.ro'    },
-  { id: 'a3', src: '/imagini/hero/DSMOTOR.RO.png',             label: 'Dsmotor.ro'         },
-  { id: 'a4', src: '/imagini/hero/FORTASESTATE.RO.png',        label: 'Fortasestate.ro'    },
+  { id: 'a1', src: '/imagini/hero/HONTRIO.COM.webp',            label: 'Hontrio.com'        },
+  { id: 'a2', src: '/imagini/hero/CUTIADEMAGIE.RO.webp',        label: 'Cutiademagie.ro'    },
+  { id: 'a3', src: '/imagini/hero/DSMOTOR.RO.webp',             label: 'Dsmotor.ro'         },
+  { id: 'a4', src: '/imagini/hero/FORTASESTATE.RO.webp',        label: 'Fortasestate.ro'    },
 ];
 const COL_B: Card[] = [
-  { id: 'b1', src: '/imagini/hero/ATPAUTOTEILE.png',           label: 'ATP Autoteile'      },
-  { id: 'b2', src: '/imagini/hero/JUNIORFAMILY.RO.png',        label: 'Juniorfamily.ro'    },
-  { id: 'b3', src: '/imagini/hero/MEDITATIILEVELUP.RO.png',    label: 'Meditatii Level Up' },
-  { id: 'b4', src: '/imagini/hero/NEMESCAR.RO.jpg',            label: 'Nemescar.ro'        },
+  { id: 'b1', src: '/imagini/hero/ATPAUTOTEILE.webp',           label: 'ATP Autoteile'      },
+  { id: 'b2', src: '/imagini/hero/JUNIORFAMILY.RO.webp',        label: 'Juniorfamily.ro'    },
+  { id: 'b3', src: '/imagini/hero/MEDITATIILEVELUP.RO.webp',    label: 'Meditatii Level Up' },
+  { id: 'b4', src: '/imagini/hero/NEMESCAR.RO.webp',            label: 'Nemescar.ro'        },
 ];
 const COL_C: Card[] = [
-  { id: 'c1', src: '/imagini/hero/PROFESORULDEAI.RO.png',      label: 'Profesoruldeai.ro'  },
-  { id: 'c2', src: '/imagini/hero/TIGLOBALIMPORT1010.COM.png', label: 'TI Global Import'   },
-  { id: 'c3', src: '/imagini/hero/VARLAN-EISENBAU.COM.png',    label: 'Varlan Eisenbau'    },
-  { id: 'c4', src: '/imagini/hero/HONTRIO.COM.png',            label: 'Hontrio.com'        },
+  { id: 'c1', src: '/imagini/hero/PROFESORULDEAI.RO.webp',      label: 'Profesoruldeai.ro'  },
+  { id: 'c2', src: '/imagini/hero/TIGLOBALIMPORT1010.COM.webp', label: 'TI Global Import'   },
+  { id: 'c3', src: '/imagini/hero/VARLAN-EISENBAU.COM.webp',    label: 'Varlan Eisenbau'    },
+  { id: 'c4', src: '/imagini/hero/HONTRIO.COM.webp',            label: 'Hontrio.com'        },
 ];
 
 export function Hero() {
