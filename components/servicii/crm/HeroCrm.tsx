@@ -57,7 +57,7 @@ export default function HeroCrm() {
         {/* Two-column layout */}
         <div className="grid lg:grid-cols-[55fr_45fr] gap-12 lg:gap-20 items-center">
           {/* Left column */}
-          <motion.div {...motionLeftProps}>
+          <motion.div {...motionLeftProps} style={{ minWidth: 0, overflow: 'hidden' }}>
             <motion.div {...badgeMotionProps}>
               <Badge className="mb-6 inline-flex items-center gap-1.5 bg-[#EAF5FF] text-[#2B8FCC] border border-[#C8E6F8]">
                 <Database size={13} />
@@ -160,7 +160,7 @@ export default function HeroCrm() {
           </motion.div>
 
           {/* Right column - video + floating cards */}
-          <motion.div {...motionRightProps} className="relative">
+          <motion.div {...motionRightProps} className="relative max-lg:hidden">
             <div
               style={{
                 borderRadius: 16,

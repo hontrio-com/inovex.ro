@@ -36,7 +36,7 @@ export default function HeroMobile() {
 
         <div className="grid lg:grid-cols-[55fr_45fr] gap-12 lg:gap-20 items-center">
           {/* Left */}
-          <motion.div {...motionLeft}>
+          <motion.div {...motionLeft} style={{ minWidth: 0, overflow: 'hidden' }}>
             <motion.div initial={shouldReduceMotion ? {} : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.05 }}>
               <Badge className="mb-6 inline-flex items-center gap-1.5 bg-[#EAF5FF] text-[#2B8FCC] border border-[#C8E6F8]">
                 <Smartphone size={13} />
@@ -101,7 +101,7 @@ export default function HeroMobile() {
           </motion.div>
 
           {/* Right — video mockup */}
-          <motion.div {...motionRight} className="relative">
+          <motion.div {...motionRight} className="relative max-lg:hidden">
             <div
               style={{
                 borderRadius: 16,

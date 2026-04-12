@@ -73,7 +73,7 @@ export default function HeroSaas() {
         {/* Two column layout */}
         <div className="grid lg:grid-cols-[55fr_45fr] gap-12 lg:gap-16 items-center">
           {/* Left column */}
-          <motion.div {...motionProps}>
+          <motion.div {...motionProps} style={{ minWidth: 0, overflow: 'hidden' }}>
             {/* Badge */}
             <motion.div {...badgeMotionProps}>
               <Badge className="mb-6 inline-flex items-center gap-1.5 bg-[#EAF5FF] text-[#2B8FCC] border border-[#C8E6F8]">
@@ -184,7 +184,7 @@ export default function HeroSaas() {
           </motion.div>
 
           {/* Right column - video */}
-          <motion.div {...motionRightProps} className="relative">
+          <motion.div {...motionRightProps} className="relative max-lg:hidden">
             <div
               style={{
                 borderRadius: 16,
