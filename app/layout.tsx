@@ -93,12 +93,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="ro"
       className={`${inter.variable} ${jakartaSans.variable} ${fraunces.variable} h-full antialiased`}
     >
+      <head>
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://connect.facebook.net" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://analytics.tiktok.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://googleadservices.com" />
+      </head>
       <body className="min-h-full flex flex-col">
         <GoogleTagManager />
         <Suspense fallback={null}><MetaPixel /></Suspense>
         <Script
           id="tiktok-pixel"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           dangerouslySetInnerHTML={{
             __html: `
               !function (w, d, t) {

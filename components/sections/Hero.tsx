@@ -174,7 +174,6 @@ function ScrollColumn({ cards, direction, duration, startFrac, maxColWidth }: {
   const setH         = useRef(0);
   const ready        = useRef(false);
   const paused       = useRef(false);
-  const [visible, setVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -186,7 +185,6 @@ function ScrollColumn({ cards, direction, duration, startFrac, maxColWidth }: {
       setH.current = h;
       y.set(direction === 'up' ? -(h * startFrac) : -h + h * startFrac);
       ready.current = true;
-      setVisible(true);
     }, 150);
     return () => clearTimeout(timer);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -212,7 +210,7 @@ function ScrollColumn({ cards, direction, duration, startFrac, maxColWidth }: {
       onMouseEnter={() => { paused.current = true; }}
       onMouseLeave={() => { paused.current = false; }}
     >
-      <motion.div ref={containerRef} style={{ y, opacity: visible ? 1 : 0, transition: 'opacity 0.3s ease' }}>
+      <motion.div ref={containerRef} style={{ y }}>
         <CardSet cards={cards} suffix="a" />
         <CardSet cards={cards} suffix="b" />
       </motion.div>
@@ -223,12 +221,12 @@ function ScrollColumn({ cards, direction, duration, startFrac, maxColWidth }: {
 function CardSet({ cards, suffix }: { cards: Card[]; suffix: string }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: CARD_GAP, paddingBottom: CARD_GAP }}>
-      {cards.map(c => <SiteCard key={`${c.id}-${suffix}`} src={c.src} label={c.label} />)}
+      {cards.map((c, i) => <SiteCard key={`${c.id}-${suffix}`} src={c.src} label={c.label} priority={suffix === 'a' && i === 0} />)}
     </div>
   );
 }
 
-function SiteCard({ src, label }: { src: string; label: string }) {
+function SiteCard({ src, label, priority }: { src: string; label: string; priority?: boolean }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div
@@ -243,7 +241,14 @@ function SiteCard({ src, label }: { src: string; label: string }) {
       onMouseLeave={() => setHovered(false)}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt={label} draggable={false} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', userSelect: 'none' }} />
+      <img
+        src={src}
+        alt={label}
+        draggable={false}
+        loading={priority ? 'eager' : 'lazy'}
+        fetchPriority={priority ? 'high' : 'auto'}
+        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', userSelect: 'none' }}
+      />
     </div>
   );
 }
