@@ -332,18 +332,19 @@ export default function WebsitePrezentareClient() {
 
           {/* Grid doua coloane */}
           <style>{`
-            @media (max-width: 767px) {
+            @media (max-width: 900px) {
               .hero-wp-grid { grid-template-columns: 1fr !important; }
               .hero-wp-visual { display: none !important; }
             }
           `}</style>
-          <div className="hero-wp-grid" style={{ display: 'grid', gridTemplateColumns: '55% 45%', gap: 80, alignItems: 'center' }}>
+          <div className="hero-wp-grid" style={{ display: 'grid', gridTemplateColumns: '11fr 9fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }}>
 
             {/* Coloana text */}
             <motion.div
               initial={reduce ? false : { opacity: 0, x: -24 }}
               animate={heroInView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.55, ease: EASE }}
+              style={{ minWidth: 0, overflow: 'hidden' }}
             >
               {/* Badge */}
               <div style={{

@@ -345,12 +345,12 @@ export default function MagazineOnlineClient() {
 
           {/* Grid doua coloane */}
           <style>{`
-            @media (max-width: 767px) {
+            @media (max-width: 900px) {
               .hero-grid { grid-template-columns: 1fr !important; }
               .hero-visual { display: none !important; }
             }
           `}</style>
-          <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '52% 48%', gap: 64, alignItems: 'center' }}>
+          <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '13fr 12fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }}>
 
             {/* Coloana text */}
             <motion.div
