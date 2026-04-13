@@ -24,7 +24,7 @@ const EMPTY = (): Testimonial => ({
   quote: '',
 });
 
-const RATING_OPTIONS = [1, 2, 3, 4, 5].map((n) => ({ value: String(n), label: '★'.repeat(n) + ' - ' + n }));
+const RATING_OPTIONS = [1, 2, 3, 4, 5].map((n) => ({ value: String(n), label: '★'.repeat(n) + ' | ' + n }));
 
 export default function TestimonialsPage() {
   const [items, setItems] = useState<Testimonial[]>([]);

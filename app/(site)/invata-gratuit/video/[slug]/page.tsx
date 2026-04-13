@@ -49,7 +49,7 @@ export async function generateMetadata({
   }
 }
 
-function extractYouTubeId(url: string - null): string - null {
+function extractYouTubeId(url: string | null): string | null {
   if (!url) return null
   // watch?v= format
   const watchMatch = url.match(/[?&]v=([^&]+)/)

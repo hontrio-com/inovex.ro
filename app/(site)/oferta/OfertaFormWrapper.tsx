@@ -45,7 +45,7 @@ function OfertaFormInner() {
   const searchParams = useSearchParams();
   const serviciiParam = searchParams.get('serviciu') ?? '';
 
-  const [submitStatus, setSubmitStatus] = useState<'idle' - 'loading' - 'success' - 'error'>(
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
     'idle',
   );
 
