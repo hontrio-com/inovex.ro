@@ -15,7 +15,7 @@ import {
 export const revalidate = 0
 
 export const metadata: Metadata = {
-  title: 'Invata Gratuit - Ghiduri, Resurse si Tool-uri | Inovex',
+  title: 'Invata Gratuit - Ghiduri, Resurse si Tool-uri',
   description:
     'Resurse gratuite pentru antreprenori si developeri: articole, ghiduri PDF, tool-uri interactive si video tutoriale despre e-commerce, web design si SEO.',
   keywords: [
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://inovex.ro/invata-gratuit' },
   openGraph: {
-    title: 'Invata Gratuit - Ghiduri, Resurse si Tool-uri | Inovex',
+    title: 'Invata Gratuit - Ghiduri, Resurse si Tool-uri',
     description:
       'Resurse gratuite: articole, ghiduri PDF, tool-uri interactive si tutoriale video despre e-commerce si web.',
     url: 'https://inovex.ro/invata-gratuit',
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Invata Gratuit | Inovex',
+    title: 'Invata Gratuit',
     description: 'Resurse gratuite: articole, ghiduri PDF, tool-uri si tutoriale video.',
     images: ['/images/og/inovex-og.jpg'],
   },

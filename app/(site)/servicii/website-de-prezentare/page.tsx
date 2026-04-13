@@ -3,11 +3,11 @@ import { ServiceJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import WebsitePrezentareClient from './_WebsitePrezentareClient';
 
 export const metadata: Metadata = {
-  title: 'Website de Prezentare Profesional | Design 100% Personalizat | Inovex',
+  title: 'Website de Prezentare Profesional - Design 100% Personalizat',
   description: 'Construim website-uri de prezentare complete pentru orice domeniu de activitate. Design personalizat, SEO tehnic, CMS inclus si viteza garantata. Solicita oferta gratuita.',
   alternates: { canonical: 'https://inovex.ro/servicii/website-de-prezentare' },
   openGraph: {
-    title: 'Website de Prezentare Profesional | Inovex',
+    title: 'Website de Prezentare Profesional',
     description: 'Website-uri de prezentare complete, livrate la termen, pentru orice industrie.',
     images: [{ url: '/images/og/website-prezentare.jpg', width: 1200, height: 630 }],
   },

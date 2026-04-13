@@ -30,7 +30,7 @@ const fraunces = Fraunces({
 export const metadata: Metadata = {
   title: {
     default: 'Inovex | Agentie Web Premium | Magazine Online, Website-uri, Aplicatii',
-    template: '%s | Inovex',
+    template: '%s - Inovex',
   },
   description:
     'Agentie de dezvoltare web din Romania. Construim magazine online, website-uri de prezentare si aplicatii web care performeaza, se incarca rapid si convertesc. 200+ proiecte livrate.',

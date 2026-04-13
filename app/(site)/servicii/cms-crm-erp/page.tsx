@@ -10,12 +10,12 @@ import { FAQ } from '@/components/sections/FAQ';
 import CTACrm from '@/components/servicii/crm/CTACrm';
 
 export const metadata: Metadata = {
-  title: 'CRM, CMS & ERP Custom | Software de Management la Cheie | Inovex',
+  title: 'CRM, CMS & ERP Custom - Software de Management la Cheie',
   description:
     'Construim sisteme de management adaptate exact proceselor tale: CRM pentru vanzari, ERP pentru operatiuni, CMS pentru continut. Analiza, dezvoltare, training si suport - totul inclus. Solicita oferta gratuita.',
   alternates: { canonical: 'https://inovex.ro/servicii/cms-crm-erp' },
   openGraph: {
-    title: 'CRM, CMS & ERP Custom | Software de Management | Inovex',
+    title: 'CRM, CMS & ERP Custom - Software de Management',
     description:
       'Sisteme de management adaptate proceselor tale. CRM, ERP, CMS custom cu training inclus.',
     images: [{ url: '/images/og/cms-crm-erp.jpg', width: 1200, height: 630 }],

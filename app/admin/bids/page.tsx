@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { A, SaveBar, AdminHeader } from '@/app/admin/_components/AdminPage';
-import { CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { CheckCircle, XCircle, RefreshCw, Trash2 } from 'lucide-react';
 
 type BidStatus = 'pending' | 'accepted' | 'rejected';
 
@@ -49,7 +49,7 @@ function formatDate(iso: string) {
 }
 
 function formatPrice(price: number) {
-  return new Intl.NumberFormat('ro-RO', { style: 'currency', currency: 'RON', maximumFractionDigits: 0 }).format(price);
+  return new Intl.NumberFormat('ro-RO', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(price);
 }
 
 export default function BidsPage() {
@@ -90,6 +90,13 @@ export default function BidsPage() {
 
   function updateStatus(id: string, status: BidStatus) {
     const updated = bids.map((b) => b.id === id ? { ...b, status } : b);
+    setBids(updated);
+    saveBids(updated);
+  }
+
+  function deleteBid(id: string) {
+    if (!confirm('Stergi definitiv aceasta oferta?')) return;
+    const updated = bids.filter((b) => b.id !== id);
     setBids(updated);
     saveBids(updated);
   }
@@ -244,7 +251,7 @@ export default function BidsPage() {
                     <StatusBadge status={bid.status} />
 
                     {/* Actions */}
-                    <div style={{ display: 'flex', gap: 6 }} onClick={(e) => e.stopPropagation()}>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }} onClick={(e) => e.stopPropagation()}>
                       {bid.status !== 'accepted' && (
                         <button
                           onClick={() => updateStatus(bid.id, 'accepted')}
@@ -292,6 +299,19 @@ export default function BidsPage() {
                           <RefreshCw size={12} />
                         </button>
                       )}
+                      <button
+                        onClick={() => deleteBid(bid.id)}
+                        title="Sterge oferta"
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 5,
+                          height: 32, padding: '0 10px', borderRadius: 7,
+                          background: '#FEF2F2', color: '#DC2626',
+                          border: '1px solid #FECACA', cursor: 'pointer',
+                          fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.75rem',
+                        }}
+                      >
+                        <Trash2 size={12} />
+                      </button>
                     </div>
                   </div>
 

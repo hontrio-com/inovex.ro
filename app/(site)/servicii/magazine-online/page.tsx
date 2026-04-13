@@ -3,11 +3,11 @@ import { ServiceJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import MagazineOnlineClient from './_MagazineOnlineClient';
 
 export const metadata: Metadata = {
-  title: 'Magazin Online la Cheie | Dezvoltare WooCommerce & Shopify | Inovex',
+  title: 'Magazin Online la Cheie - Dezvoltare WooCommerce & Shopify',
   description: 'Construim magazine online complete: design personalizat, plati integrate, curierat, facturare automata si SEO. Peste 80 de magazine online livrate. Solicita oferta gratuita.',
   alternates: { canonical: 'https://inovex.ro/servicii/magazine-online' },
   openGraph: {
-    title: 'Magazin Online la Cheie | Inovex',
+    title: 'Magazin Online la Cheie',
     description: 'Magazine online complete, functionale din prima zi. WooCommerce, Shopify, Next.js Commerce.',
     images: [{ url: '/images/og/magazin-online.jpg', width: 1200, height: 630 }],
   },

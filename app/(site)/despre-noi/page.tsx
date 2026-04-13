@@ -6,12 +6,12 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
-  title: 'Despre Inovex | Agentie de Dezvoltare Web din Romania',
+  title: 'Despre Inovex - Agentie de Dezvoltare Web din Romania',
   description:
     'Povestea Inovex: o echipa pasionata de digital, cu 7+ ani experienta si 200+ proiecte livrate. Sedii in Targu Jiu si Bucuresti.',
   alternates: { canonical: 'https://inovex.ro/despre-noi' },
   openGraph: {
-    title: 'Despre Inovex | Agentie de Dezvoltare Web din Romania',
+    title: 'Despre Inovex - Agentie de Dezvoltare Web din Romania',
     description: '7+ ani de experienta, 200+ proiecte livrate, sedii in Targu Jiu si Bucuresti.',
     url: 'https://inovex.ro/despre-noi',
     images: [{ url: '/images/og/inovex-og.jpg', width: 1200, height: 630 }],

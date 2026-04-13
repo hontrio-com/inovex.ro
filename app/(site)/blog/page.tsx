@@ -3,20 +3,20 @@ import Link from 'next/link';
 import { Clock } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Blog | Resurse, Ghiduri si Sfaturi Web | Inovex',
+  title: 'Blog - Resurse, Ghiduri si Sfaturi Web',
   description:
     'Articole despre SEO, performanta web, magazine online si design. Ghiduri practice pentru antreprenori si marketeri.',
   keywords: ['blog web design', 'articole SEO', 'ghiduri magazine online', 'sfaturi web Romania'],
   alternates: { canonical: 'https://inovex.ro/blog' },
   openGraph: {
-    title: 'Blog | Resurse, Ghiduri si Sfaturi Web | Inovex',
+    title: 'Blog - Resurse, Ghiduri si Sfaturi Web',
     description: 'Articole despre SEO, performanta web si magazine online. Ghiduri practice.',
     url: 'https://inovex.ro/blog',
     images: [{ url: '/images/og/inovex-og.jpg', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Blog Inovex | Resurse si Ghiduri Web',
+    title: 'Blog Inovex - Resurse si Ghiduri Web',
     description: 'Articole despre SEO, performanta web si magazine online.',
     images: ['/images/og/inovex-og.jpg'],
   },

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Politica de Confidențialitate | Inovex',
+  title: 'Politica de Confidențialitate',
   description: 'Politica de confidențialitate Inovex (VOID SFT GAMES SRL). Cum colectăm, utilizăm și protejăm datele tale personale.',
   robots: { index: false },
 };

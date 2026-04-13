@@ -164,7 +164,7 @@ export function Header() {
                         </div>
                       </div>
                       <div className="border-t border-gray-100 px-5 py-3 bg-gray-50 flex items-center justify-between">
-                        <span className="text-[12px] text-gray-500">Explorează toate serviciile noastre</span>
+                        <span className="text-[12px] text-gray-500">Sună-ne acum pentru o ofertă personalizată</span>
                         <Link href="/servicii" className="text-[12px] text-blue-600 font-semibold hover:text-blue-700">
                           Vezi toate
                         </Link>

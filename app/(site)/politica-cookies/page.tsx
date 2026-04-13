@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Politica Cookies | Inovex',
+  title: 'Politica Cookies',
   description: 'Politica de cookies Inovex: ce cookies folosim, de ce și cum le poți gestiona.',
   robots: { index: false },
 };

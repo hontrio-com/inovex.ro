@@ -10,12 +10,12 @@ import { FAQ } from '@/components/sections/FAQ';
 import CTAAi from '@/components/servicii/ai/CTAAi';
 
 export const metadata: Metadata = {
-  title: 'Automatizari AI si Agenti Inteligenti | Elimini Munca Repetitiva | Inovex',
+  title: 'Automatizari AI si Agenti Inteligenti - Elimini Munca Repetitiva',
   description:
     'Implementam automatizari AI care lucreaza pentru tine 24/7: chatboti antrenati pe datele tale, procesare automata emailuri, calificare lead-uri si rapoarte generate automat. Solicita consultatie gratuita.',
   alternates: { canonical: 'https://inovex.ro/servicii/automatizari-ai' },
   openGraph: {
-    title: 'Automatizari AI si Agenti Inteligenti | Inovex',
+    title: 'Automatizari AI si Agenti Inteligenti',
     description:
       'Implementam automatizari AI care lucreaza pentru tine 24/7: chatboti, procesare emailuri, calificare lead-uri, rapoarte automate.',
     images: [{ url: '/images/og/automatizari-ai.jpg', width: 1200, height: 630 }],

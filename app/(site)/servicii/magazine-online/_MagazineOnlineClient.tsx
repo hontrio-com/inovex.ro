@@ -320,7 +320,7 @@ export default function MagazineOnlineClient() {
   const processRef = useRef<HTMLElement>(null);
   const processInView = useInView(processRef, { once: true, margin: '-80px' });
 
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [openFaq, setOpenFaq] = useState<number - null>(0);
 
   return (
     <>

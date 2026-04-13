@@ -6,13 +6,13 @@ import { Briefcase, ChevronRight, Info } from 'lucide-react';
 import { PORTFOLIO_PROJECTS } from '@/lib/portfolio-data';
 
 export const metadata: Metadata = {
-  title: 'Portofoliu - 200+ Proiecte Web Livrate | Inovex',
+  title: 'Portofoliu - 200+ Proiecte Web Livrate',
   description:
     'Descopera proiectele realizate de echipa Inovex: magazine online, website-uri de prezentare, platforme SaaS si aplicatii web pentru clienti din toata Romania. 200+ proiecte livrate cu succes.',
   keywords: ['portofoliu web', 'proiecte magazine online', 'website realizat Romania', 'exemple website'],
   alternates: { canonical: 'https://inovex.ro/portofoliu' },
   openGraph: {
-    title: 'Portofoliu - 200+ Proiecte Web Livrate | Inovex',
+    title: 'Portofoliu - 200+ Proiecte Web Livrate',
     description: '200+ proiecte livrate: magazine online, website-uri, platforme SaaS pentru clienti din toata Romania.',
     url: 'https://inovex.ro/portofoliu',
     images: [{ url: '/images/og/inovex-og.jpg', width: 1200, height: 630 }],

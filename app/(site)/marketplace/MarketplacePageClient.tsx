@@ -11,7 +11,7 @@ import { CATEGORY_LABELS, PLATFORM_OPTIONS } from '@/types/marketplace';
 const EASE: [number,number,number,number] = [0.4, 0, 0.2, 1];
 const EXCLUSIVITY_BANNER_KEY = 'inovex_exclusivity_banner_dismissed';
 
-type SortOption = 'recomandate' | 'pret-asc' | 'pret-desc' | 'cele-mai-noi';
+type SortOption = 'recomandate' - 'pret-asc' - 'pret-desc' - 'cele-mai-noi';
 
 const SORT_LABELS: Record<SortOption, string> = {
   'recomandate':  'Recomandate',
@@ -62,12 +62,12 @@ export function MarketplacePageClient() {
   }
 
   // Filtre
-  const [category, setCategory] = useState<MarketplaceCategory | 'toate'>('toate');
+  const [category, setCategory] = useState<MarketplaceCategory - 'toate'>('toate');
   const [platform, setPlatform] = useState<string>('toate');
   const [sort,     setSort]     = useState<SortOption>('recomandate');
 
   // Resetare platform cand se schimba categoria
-  function handleCategoryChange(cat: MarketplaceCategory | 'toate') {
+  function handleCategoryChange(cat: MarketplaceCategory - 'toate') {
     setCategory(cat);
     setPlatform('toate');
   }

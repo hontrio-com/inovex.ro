@@ -10,12 +10,12 @@ import { FAQ } from '@/components/sections/FAQ';
 import CTASaas from '@/components/servicii/saas/CTASaas';
 
 export const metadata: Metadata = {
-  title: 'Dezvoltare Aplicatii Web & SaaS | Platforme Scalabile | Inovex',
+  title: 'Dezvoltare Aplicatii Web & SaaS - Platforme Scalabile',
   description:
     'Construim aplicatii web complexe si platforme SaaS de la zero: autentificare, subscriptii, dashboard-uri in timp real, API-uri documentate. MVP sau platforma enterprise. Solicita oferta gratuita.',
   alternates: { canonical: 'https://inovex.ro/servicii/aplicatii-web-saas' },
   openGraph: {
-    title: 'Dezvoltare Aplicatii Web & SaaS | Inovex',
+    title: 'Dezvoltare Aplicatii Web & SaaS',
     description:
       'Platforme SaaS, marketplace-uri, aplicatii de management. De la MVP la enterprise.',
     images: [

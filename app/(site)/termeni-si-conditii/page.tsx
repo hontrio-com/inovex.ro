@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Termeni și Condiții | Inovex',
+  title: 'Termeni și Condiții',
   description: 'Termenii și condițiile de utilizare ale serviciilor Inovex (VOID SFT GAMES SRL).',
   robots: { index: false },
 };

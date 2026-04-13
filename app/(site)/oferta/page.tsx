@@ -6,7 +6,7 @@ import { OfertaFormWrapper } from './OfertaFormWrapper';
 import { OfertaSidebar } from './OfertaSidebar';
 
 export const metadata: Metadata = {
-  title: 'Solicita Oferta Personalizata | Inovex',
+  title: 'Solicita Oferta Personalizata',
   description:
     'Completeaza formularul si un consultant Inovex te contacteaza in maximum 24 de ore cu o propunere personalizata.',
   robots: { index: false },

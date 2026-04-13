@@ -289,8 +289,8 @@ export default function WebsitePrezentareClient() {
   const processRef = useRef<HTMLElement>(null);
   const processInView = useInView(processRef, { once: true, margin: '-80px' });
 
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [hoveredDomeniu, setHoveredDomeniu] = useState<number | null>(null);
+  const [openFaq, setOpenFaq] = useState<number - null>(0);
+  const [hoveredDomeniu, setHoveredDomeniu] = useState<number - null>(null);
 
   return (
     <>

@@ -24,7 +24,7 @@ export const revalidate = 0
 
 const fmt = new Intl.DateTimeFormat('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' })
 
-function formatDate(d: string | null): string {
+function formatDate(d: string - null): string {
   if (!d) return ''
   try { return fmt.format(new Date(d)) } catch { return '' }
 }

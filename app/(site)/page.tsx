@@ -18,7 +18,7 @@ import {
 } from '@/lib/site-data';
 
 export const metadata: Metadata = {
-  title: 'Inovex | Agentie Web Premium | Magazine Online, Website-uri, Aplicatii',
+  title: 'Inovex - Agentie Web Premium - Magazine Online, Website-uri, Aplicatii',
   description:
     'Agentie de dezvoltare web din Romania. Construim magazine online, website-uri de prezentare si aplicatii web care performeaza, se incarca rapid si convertesc. 200+ proiecte livrate.',
   keywords: [
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://inovex.ro' },
   openGraph: {
-    title: 'Inovex | Agentie Web Premium | Magazine Online, Website-uri, Aplicatii',
+    title: 'Inovex - Agentie Web Premium - Magazine Online, Website-uri, Aplicatii',
     description:
       'Agentie de dezvoltare web din Romania. 200+ proiecte livrate. Magazine online, website-uri de prezentare si aplicatii web.',
     url: 'https://inovex.ro',
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Inovex | Agentie Web Premium',
+    title: 'Inovex - Agentie Web Premium',
     description: 'Magazine online, website-uri de prezentare si aplicatii web din Romania.',
     images: ['/images/og/inovex-og.jpg'],
   },

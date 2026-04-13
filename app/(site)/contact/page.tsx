@@ -5,19 +5,19 @@ import { BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import { Badge } from '@/components/ui/badge';
 
 export const metadata: Metadata = {
-  title: 'Contact | Inovex',
+  title: 'Contact',
   description:
     'Contacteaza echipa Inovex pentru un proiect web. Raspundem in maximum 24 de ore. Telefon: 0750 456 096. Email: contact@inovex.ro.',
   alternates: { canonical: 'https://inovex.ro/contact' },
   openGraph: {
-    title: 'Contact | Inovex',
+    title: 'Contact',
     description: 'Contacteaza echipa Inovex. Raspundem in maximum 24 de ore.',
     url: 'https://inovex.ro/contact',
     images: [{ url: '/images/og/inovex-og.jpg', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Contact | Inovex',
+    title: 'Contact',
     description: 'Contacteaza echipa Inovex. Raspundem in maximum 24 de ore.',
     images: ['/images/og/inovex-og.jpg'],
   },
@@ -120,7 +120,7 @@ export default function ContactPage() {
                   <ContactItem icon={MapPin} label="Sedii">
                     <div className="text-[#4A5568] text-[13px] space-y-0.5">
                       <div>Targu Jiu, Gorj</div>
-                      <div>Bucuresti, Sector 1</div>
+                      <div>Bucuresti</div>
                     </div>
                   </ContactItem>
                   <ContactItem icon={Clock} label="Program">

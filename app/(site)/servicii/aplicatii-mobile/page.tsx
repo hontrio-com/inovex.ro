@@ -10,12 +10,12 @@ import CTAMobile from '@/components/servicii/mobile/CTAMobile';
 import type { FaqItem } from '@/lib/site-data';
 
 export const metadata: Metadata = {
-  title: 'Dezvoltare Aplicatii Mobile iOS & Android | React Native & Flutter | Inovex',
+  title: 'Dezvoltare Aplicatii Mobile iOS & Android - React Native & Flutter',
   description:
     'Construim aplicatii mobile native si cross-platform pentru iOS si Android. React Native, Flutter, design nativ per platforma, publicare App Store si Google Play incluse. Solicita oferta gratuita.',
   alternates: { canonical: 'https://inovex.ro/servicii/aplicatii-mobile' },
   openGraph: {
-    title: 'Aplicatii Mobile iOS & Android | React Native & Flutter | Inovex',
+    title: 'Aplicatii Mobile iOS & Android - React Native & Flutter',
     description:
       'Aplicatii mobile native si cross-platform pentru iOS si Android. Design nativ, publicare inclusa.',
     images: [{ url: '/images/og/aplicatii-mobile.jpg', width: 1200, height: 630 }],
