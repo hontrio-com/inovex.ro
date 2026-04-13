@@ -271,6 +271,28 @@ export function Footer() {
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#9CA3AF', margin: 0 }}>
             VOID SFT GAMES SRL &nbsp;|&nbsp; CUI: 43474393
           </p>
+          <button
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                localStorage.removeItem('cookie_consent');
+                window.location.reload();
+              }
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontFamily: 'var(--font-body)',
+              fontSize: 12,
+              color: '#9CA3AF',
+              padding: 0,
+              transition: 'color 150ms ease',
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#6B7280'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF'; }}
+          >
+            Setari cookies
+          </button>
         </div>
       </div>
     </footer>

@@ -2,184 +2,435 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Settings, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
+import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import {
+  getCookieConsent,
+  setCookieConsent,
+  hasConsented,
+  acceptAll as acceptAllFn,
+  rejectAll as rejectAllFn,
+} from '@/lib/cookies';
 
-interface ConsentState {
-  analytics: boolean;
-  marketing: boolean;
-  timestamp: number;
+// ---------------------------------------------------------------------------
+// Toggle row (reused in compact + panel)
+// ---------------------------------------------------------------------------
+
+function ToggleRow({
+  title,
+  description,
+  checked,
+  disabled,
+  onChange,
+  alwaysBadge,
+}: {
+  title: string;
+  description: string;
+  checked: boolean;
+  disabled?: boolean;
+  onChange: (v: boolean) => void;
+  alwaysBadge?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 16,
+        padding: '12px 0',
+      }}
+    >
+      <div style={{ flex: 1 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            marginBottom: 4,
+          }}
+        >
+          <span
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: '#fff',
+              fontFamily: 'var(--font-body)',
+            }}
+          >
+            {title}
+          </span>
+          {alwaysBadge && (
+            <span
+              style={{
+                fontSize: 10,
+                fontWeight: 700,
+                padding: '2px 7px',
+                borderRadius: 20,
+                background: '#064E3B',
+                color: '#6EE7B7',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+              }}
+            >
+              Intotdeauna active
+            </span>
+          )}
+        </div>
+        <p
+          style={{
+            fontSize: 12,
+            color: 'rgba(255,255,255,0.50)',
+            lineHeight: 1.5,
+            margin: 0,
+            fontFamily: 'var(--font-body)',
+          }}
+        >
+          {description}
+        </p>
+      </div>
+
+      <button
+        role="switch"
+        aria-checked={checked}
+        disabled={disabled}
+        onClick={() => !disabled && onChange(!checked)}
+        style={{
+          position: 'relative',
+          flexShrink: 0,
+          width: 42,
+          height: 24,
+          borderRadius: 12,
+          background: checked ? '#2B8FCC' : 'rgba(255,255,255,0.15)',
+          border: 'none',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          transition: 'background 200ms ease',
+          opacity: disabled ? 0.6 : 1,
+        }}
+      >
+        <span
+          style={{
+            position: 'absolute',
+            top: 3,
+            left: checked ? 21 : 3,
+            width: 18,
+            height: 18,
+            borderRadius: '50%',
+            background: '#fff',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+            transition: 'left 200ms ease',
+          }}
+        />
+      </button>
+    </div>
+  );
 }
 
-const CONSENT_KEY = 'inovex_consent';
-const CONSENT_TTL = 180 * 24 * 60 * 60 * 1000;
-
-function getConsent(): ConsentState | null {
-  if (typeof window === 'undefined') return null;
-  try {
-    const raw = localStorage.getItem(CONSENT_KEY);
-    if (!raw) return null;
-    const parsed: ConsentState = JSON.parse(raw);
-    if (Date.now() - parsed.timestamp > CONSENT_TTL) {
-      localStorage.removeItem(CONSENT_KEY);
-      return null;
-    }
-    return parsed;
-  } catch {
-    return null;
-  }
-}
-
-function saveConsent(analytics: boolean, marketing: boolean) {
-  const state: ConsentState = { analytics, marketing, timestamp: Date.now() };
-  localStorage.setItem(CONSENT_KEY, JSON.stringify(state));
-}
+// ---------------------------------------------------------------------------
+// Main banner
+// ---------------------------------------------------------------------------
 
 export function CookieConsent() {
-  const [visible,     setVisible]     = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
-  const [analytics,   setAnalytics]   = useState(false);
-  const [marketing,   setMarketing]   = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [showPanel, setShowPanel] = useState(false);
+  const [analytics, setAnalytics] = useState(false);
+  const [marketing, setMarketing] = useState(false);
 
   useEffect(() => {
-    if (!getConsent()) setTimeout(() => setVisible(true), 1500);
+    if (!hasConsented()) {
+      const t = setTimeout(() => setVisible(true), 500);
+      return () => clearTimeout(t);
+    }
+    // Load saved prefs for panel
+    const c = getCookieConsent();
+    if (c) {
+      setAnalytics(c.analytics);
+      setMarketing(c.marketing);
+    }
   }, []);
 
-  function acceptAll() {
-    saveConsent(true, true);
+  function handleAcceptAll() {
+    acceptAllFn();
     setVisible(false);
-    if (typeof window !== 'undefined' && 'dataLayer' in window) {
-      (window as Window & { dataLayer: unknown[] }).dataLayer.push({ event: 'consent_update', analytics: true, marketing: true });
-    }
   }
 
-  function rejectAll()        { saveConsent(false, false); setVisible(false); }
-  function savePreferences()  { saveConsent(analytics, marketing); setVisible(false); }
+  function handleRejectAll() {
+    rejectAllFn();
+    setVisible(false);
+  }
+
+  function handleSaveSelected() {
+    setCookieConsent({ analytics, marketing });
+    setVisible(false);
+  }
 
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ y: 100, opacity: 0 }}
+          key="cookie-banner"
+          initial={{ y: '100%', opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          className="fixed bottom-0 left-0 right-0 z-[9998] p-4"
+          exit={{ y: '100%', opacity: 0 }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
           role="dialog"
-          aria-labelledby="cookie-banner-titlu"
+          aria-labelledby="cookie-banner-title"
           aria-modal="true"
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 9999,
+            background: '#0D1117',
+            boxShadow: '0 -4px 32px rgba(0,0,0,0.25)',
+          }}
         >
-          <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
-            <div className="p-5 lg:p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <h2 id="cookie-banner-titlu" className="text-base font-semibold text-gray-950 mb-1">
-                    Utilizăm cookie-uri
+          <AnimatePresence mode="wait">
+            {showPanel ? (
+              /* Personalize panel */
+              <motion.div
+                key="panel"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                style={{
+                  maxWidth: 640,
+                  margin: '0 auto',
+                  padding: '24px 24px 20px',
+                  maxHeight: '80vh',
+                  overflowY: 'auto',
+                }}
+              >
+                {/* Panel header */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: 4,
+                  }}
+                >
+                  <h2
+                    id="cookie-banner-title"
+                    style={{
+                      fontFamily: 'var(--font-serif)',
+                      fontWeight: 600,
+                      fontSize: 18,
+                      color: '#fff',
+                      margin: 0,
+                    }}
+                  >
+                    Personalizeaza preferintele de cookie-uri
                   </h2>
-                  <p className="text-sm text-gray-500 leading-relaxed">
-                    Folosim cookie-uri pentru a îmbunătăți experiența ta pe site. Unele sunt necesare funcționării,
-                    altele ne ajută să înțelegem cum este utilizat site-ul.{' '}
-                    <Link href="/politica-cookies" className="text-blue-600 hover:underline">
-                      Politica Cookies
+                  <button
+                    onClick={() => setShowPanel(false)}
+                    aria-label="Inchide panoul"
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: 'rgba(255,255,255,0.40)',
+                      padding: 4,
+                      display: 'flex',
+                    }}
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                {/* Toggle rows */}
+                <div
+                  style={{
+                    borderTop: '1px solid rgba(255,255,255,0.08)',
+                    marginTop: 8,
+                  }}
+                >
+                  <ToggleRow
+                    title="Cookie-uri esentiale"
+                    description="Necesare pentru functionarea de baza a site-ului. Nu pot fi dezactivate."
+                    checked={true}
+                    disabled
+                    onChange={() => {}}
+                    alwaysBadge
+                  />
+                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }} />
+                  <ToggleRow
+                    title="Cookie-uri analitice (Google Analytics 4)"
+                    description="Ne ajuta sa intelegem cum folosesti site-ul. Datele sunt anonimizate."
+                    checked={analytics}
+                    onChange={setAnalytics}
+                  />
+                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }} />
+                  <ToggleRow
+                    title="Cookie-uri de marketing (Google Ads, TikTok)"
+                    description="Folosite pentru masurarea eficientei campaniilor noastre publicitare. Nu afisam reclame pe site."
+                    checked={marketing}
+                    onChange={setMarketing}
+                  />
+                </div>
+
+                {/* Panel footer */}
+                <div
+                  style={{
+                    borderTop: '1px solid rgba(255,255,255,0.08)',
+                    paddingTop: 16,
+                    marginTop: 8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 12,
+                  }}
+                >
+                  <Link
+                    href="/politica-cookies"
+                    style={{
+                      fontSize: 12,
+                      color: '#4AADE8',
+                      textDecoration: 'underline',
+                    }}
+                  >
+                    Politica de cookies completa
+                  </Link>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <Button
+                      size="sm"
+                      onClick={handleSaveSelected}
+                      style={{ background: '#2B8FCC', color: '#fff', border: 'none' }}
+                    >
+                      Accepta selectate
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={handleAcceptAll}
+                      style={{ background: '#10B981', color: '#fff', border: 'none' }}
+                    >
+                      Accepta toate
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              /* Compact banner */
+              <motion.div
+                key="compact"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                style={{ padding: '20px 24px' }}
+              >
+                <style>{`
+                  @media (max-width: 767px) {
+                    .cookie-inner { flex-direction: column !important; }
+                    .cookie-actions { width: 100% !important; }
+                    .cookie-actions button, .cookie-actions a { width: 100% !important; justify-content: center !important; }
+                  }
+                `}</style>
+                <div
+                  id="cookie-banner-title"
+                  className="cookie-inner"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 16,
+                    maxWidth: 1200,
+                    margin: '0 auto',
+                  }}
+                >
+                  {/* Text */}
+                  <p
+                    style={{
+                      fontSize: 14,
+                      color: 'rgba(255,255,255,0.80)',
+                      lineHeight: 1.6,
+                      margin: 0,
+                      maxWidth: 600,
+                      fontFamily: 'var(--font-body)',
+                    }}
+                  >
+                    Folosim cookie-uri pentru a imbunatati experienta ta pe site si pentru a analiza traficul.{' '}
+                    <Link
+                      href="/politica-cookies"
+                      style={{ color: '#4AADE8', textDecoration: 'underline' }}
+                    >
+                      Politica de cookies
                     </Link>
                   </p>
+
+                  {/* Actions */}
+                  <div
+                    className="cookie-actions"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      flexShrink: 0,
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    <button
+                      onClick={() => setShowPanel(true)}
+                      style={{
+                        padding: '8px 16px',
+                        borderRadius: 8,
+                        border: '1px solid rgba(255,255,255,0.20)',
+                        background: 'transparent',
+                        color: 'rgba(255,255,255,0.80)',
+                        fontSize: 13,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        fontFamily: 'var(--font-body)',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      Personalizeaza
+                    </button>
+                    <button
+                      onClick={handleRejectAll}
+                      style={{
+                        padding: '8px 16px',
+                        borderRadius: 8,
+                        border: '1px solid rgba(255,255,255,0.12)',
+                        background: 'transparent',
+                        color: 'rgba(255,255,255,0.55)',
+                        fontSize: 13,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        fontFamily: 'var(--font-body)',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      Refuza toate
+                    </button>
+                    <button
+                      onClick={handleAcceptAll}
+                      style={{
+                        padding: '8px 20px',
+                        borderRadius: 8,
+                        border: 'none',
+                        background: '#2B8FCC',
+                        color: '#fff',
+                        fontSize: 13,
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        fontFamily: 'var(--font-body)',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      Accepta toate
+                    </button>
+                  </div>
                 </div>
-                <button
-                  onClick={rejectAll}
-                  className="shrink-0 p-1 text-gray-400 hover:text-gray-500 transition-colors rounded-md hover:bg-gray-100"
-                  aria-label="Refuză și închide"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-
-              <AnimatePresence>
-                {showDetails && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.28 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
-                      <ToggleRow
-                        titlu="Cookie-uri strict necesare"
-                        descriere="Necesare pentru funcționarea site-ului. Nu pot fi dezactivate."
-                        checked={true} disabled onChange={() => {}}
-                      />
-                      <ToggleRow
-                        titlu="Cookie-uri analitice (Google Analytics)"
-                        descriere="Ne ajută să înțelegem cum interacționezi cu site-ul."
-                        checked={analytics} onChange={setAnalytics}
-                      />
-                      <ToggleRow
-                        titlu="Cookie-uri de marketing (Meta Pixel, TikTok)"
-                        descriere="Folosite pentru reclame personalizate."
-                        checked={marketing} onChange={setMarketing}
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <div className="flex flex-wrap items-center gap-3 mt-4">
-                <Button onClick={acceptAll} size="sm">
-                  Acceptă tot
-                </Button>
-                {showDetails ? (
-                  <Button onClick={savePreferences} variant="secondary" size="sm">
-                    Salvează preferințele
-                  </Button>
-                ) : (
-                  <button
-                    onClick={() => setShowDetails(true)}
-                    className="flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
-                  >
-                    <Settings size={14} />
-                    Personalizează
-                    <ChevronDown size={14} />
-                  </button>
-                )}
-                <button onClick={rejectAll} className="text-sm text-gray-400 hover:text-gray-500 transition-colors">
-                  Refuză
-                </button>
-              </div>
-            </div>
-          </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
     </AnimatePresence>
-  );
-}
-
-function ToggleRow({ titlu, descriere, checked, disabled, onChange }: {
-  titlu: string; descriere: string; checked: boolean; disabled?: boolean; onChange: (v: boolean) => void;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-4">
-      <div>
-        <div className="text-sm font-semibold text-gray-900">{titlu}</div>
-        <div className="text-xs text-gray-400">{descriere}</div>
-      </div>
-      <button
-        role="switch"
-        aria-checked={checked}
-        disabled={disabled}
-        onClick={() => onChange(!checked)}
-        className={cn(
-          'relative shrink-0 w-10 h-6 rounded-full transition-colors',
-          checked ? 'bg-primary' : 'bg-gray-300',
-          disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
-        )}
-      >
-        <span className={cn(
-          'absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow transition-transform',
-          checked ? 'translate-x-4' : 'translate-x-0'
-        )} />
-      </button>
-    </div>
   );
 }
