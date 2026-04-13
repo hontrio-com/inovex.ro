@@ -62,12 +62,12 @@ export function MarketplacePageClient() {
   }
 
   // Filtre
-  const [category, setCategory] = useState<MarketplaceCategory - 'toate'>('toate');
+  const [category, setCategory] = useState<MarketplaceCategory | 'toate'>('toate');
   const [platform, setPlatform] = useState<string>('toate');
   const [sort,     setSort]     = useState<SortOption>('recomandate');
 
   // Resetare platform cand se schimba categoria
-  function handleCategoryChange(cat: MarketplaceCategory - 'toate') {
+  function handleCategoryChange(cat: MarketplaceCategory | 'toate') {
     setCategory(cat);
     setPlatform('toate');
   }
