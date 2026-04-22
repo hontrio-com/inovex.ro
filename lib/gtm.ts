@@ -12,7 +12,9 @@ export const trackConversions = {
   formularOferta:      (): void => { if (isMarketingAllowed()) pushEvent('conversion_oferta'); },
   formularContact:     (): void => { if (isMarketingAllowed()) pushEvent('conversion_contact'); },
   configuratorMagazin: (): void => { if (isMarketingAllowed()) pushEvent('conversion_configurator_magazin'); },
-  configuratorWebsite: (): void => { if (isMarketingAllowed()) pushEvent('conversion_configurator_website'); },
+  configuratorWebsite:      (): void => { if (isMarketingAllowed()) pushEvent('conversion_configurator_website'); },
+  configuratorAplicatieWeb: (): void => { if (isMarketingAllowed()) pushEvent('conversion_configurator_aplicatie_web'); },
+  configuratorAutomatizari: (): void => { if (isMarketingAllowed()) pushEvent('conversion_configurator_automatizari'); },
   whatsapp:            (): void => { if (isMarketingAllowed()) pushEvent('conversion_whatsapp'); },
   telefon:             (): void => { if (isMarketingAllowed()) pushEvent('conversion_telefon'); },
 };

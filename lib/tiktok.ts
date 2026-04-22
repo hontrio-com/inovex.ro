@@ -25,6 +25,14 @@ export const trackTikTok = {
     if (!isMarketingAllowed()) return;
     track('SubmitForm', { content_name: 'Configurator Website Prezentare' });
   },
+  configuratorAplicatieWeb: (): void => {
+    if (!isMarketingAllowed()) return;
+    track('SubmitForm', { content_name: 'Configurator Aplicatie Web' });
+  },
+  configuratorAutomatizari: (): void => {
+    if (!isMarketingAllowed()) return;
+    track('SubmitForm', { content_name: 'Configurator Automatizari AI' });
+  },
   whatsapp: (): void => {
     if (!isMarketingAllowed()) return;
     track('Contact', { content_name: 'WhatsApp' });
