@@ -729,6 +729,7 @@ export function ConfiguratorAutomatizariClient() {
                         setData((p) => ({ ...p, gdprConsent: checked === true }))
                       }
                       aria-invalid={!!errors.gdprConsent}
+                      className="shrink-0 mt-0.5"
                     />
                     <Label htmlFor="aut-gdpr" className="cursor-pointer leading-relaxed">
                       Sunt de acord cu{' '}

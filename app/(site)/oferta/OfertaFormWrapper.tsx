@@ -202,6 +202,28 @@ function OfertaFormInner() {
                 </Link>
               </p>
             )}
+            {watchServiciuValue === 'Aplicatie Web & SaaS' && (
+              <p style={{ fontSize: '12px', color: '#4A5568', marginTop: '4px' }}>
+                Preferi sa folosesti configuratorul dedicat?{' '}
+                <Link
+                  href="/configurare-aplicatie-web"
+                  className="text-[#2B8FCC] hover:underline font-medium"
+                >
+                  Configurator Aplicatie Web
+                </Link>
+              </p>
+            )}
+            {watchServiciuValue === 'Automatizari AI' && (
+              <p style={{ fontSize: '12px', color: '#4A5568', marginTop: '4px' }}>
+                Preferi sa folosesti configuratorul dedicat?{' '}
+                <Link
+                  href="/configurare-automatizari-ai"
+                  className="text-[#2B8FCC] hover:underline font-medium"
+                >
+                  Configurator Automatizari AI
+                </Link>
+              </p>
+            )}
           </div>
 
           {/* Descriere proiect */}
