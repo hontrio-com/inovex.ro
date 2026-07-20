@@ -15,8 +15,13 @@ export function canDeleteClient(user: SessionUser): boolean {
   return isPrivileged(user);
 }
 
-/** Agentul vede/editeaza doar clientii alocati lui. */
-export function canAccessClient(user: SessionUser, assignedTo: string | null): boolean {
+/** Regula generica: owner/admin vad tot; agentul doar resursele alocate lui. */
+export function canAccessAssigned(user: SessionUser, assignedTo: string | null): boolean {
   if (isPrivileged(user)) return true;
   return assignedTo != null && assignedTo === user.id;
+}
+
+/** Agentul vede/editeaza doar clientii alocati lui. */
+export function canAccessClient(user: SessionUser, assignedTo: string | null): boolean {
+  return canAccessAssigned(user, assignedTo);
 }

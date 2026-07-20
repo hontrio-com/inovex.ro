@@ -1,13 +1,14 @@
-import { ComingSoon } from '../_components/ComingSoon';
+import { redirect } from 'next/navigation';
+import { getSessionUser } from '@/lib/auth';
+import { LeadsBoard } from './LeadsBoard';
 
 export const metadata = { title: 'Lead-uri | Admin Inovex', robots: 'noindex,nofollow' };
 
-export default function LeaduriPage() {
-  return (
-    <ComingSoon
-      title="Lead-uri"
-      description="Clienti potentiali in pipeline Kanban (nou to castigat), cu sursa, campanie si conversie in client."
-      phase="Faza D"
-    />
-  );
+export default async function LeaduriPage() {
+  const user = await getSessionUser();
+  if (!user) redirect('/admin/login');
+
+  const privileged = user.role === 'owner' || user.role === 'admin';
+
+  return <LeadsBoard canAssign={privileged} />;
 }

@@ -53,3 +53,36 @@ export const activityCreateSchema = z.object({
   title: optStr(200),
   body:  z.string().trim().min(1, 'Continutul e obligatoriu').max(5000),
 });
+
+const LEAD_STATUSES = ['nou', 'contactat', 'calificat', 'oferta_trimisa', 'castigat', 'pierdut'] as const;
+
+/** Schema lead — creare + editare (formularul trimite setul complet). */
+export const leadSchema = z
+  .object({
+    name:            optStr(200),
+    company:         optStr(200),
+    email:           optEmail,
+    phone:           optStr(50),
+    status:          z.enum(LEAD_STATUSES).default('nou'),
+    source:          optStr(120),
+    platform:        z.preprocess(
+                       (v) => (v === '' || v == null ? null : v),
+                       z.enum(['meta', 'google', 'tiktok', 'website', 'manual']).nullable(),
+                     ),
+    campaign:        optStr(200),
+    estimated_value: z.preprocess(
+                       (v) => (v === '' || v == null ? null : typeof v === 'string' ? Number(v) : v),
+                       z.number().nonnegative('Valoare invalida').nullable(),
+                     ),
+    currency:        z.preprocess((v) => (v == null || v === '' ? 'RON' : v), z.string().max(10)),
+    assigned_to:     optUuid,
+    lost_reason:     optStr(500),
+    notes:           optStr(5000),
+  })
+  .refine((d) => !!(d.name || d.company), { message: 'Completeaza numele sau compania', path: ['name'] });
+
+/** Schimbare rapida de status (drag Kanban / marcare castigat-pierdut). */
+export const leadStatusSchema = z.object({
+  status:      z.enum(LEAD_STATUSES),
+  lost_reason: optStr(500),
+});

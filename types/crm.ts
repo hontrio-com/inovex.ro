@@ -99,6 +99,31 @@ export interface Member {
   is_active: boolean;
 }
 
+export type LeadStatus = 'nou' | 'contactat' | 'calificat' | 'oferta_trimisa' | 'castigat' | 'pierdut';
+export type LeadPlatform = 'meta' | 'google' | 'tiktok' | 'website' | 'manual';
+
+export interface CrmLead {
+  id: string;
+  name: string | null;
+  company: string | null;
+  email: string | null;
+  phone: string | null;
+  status: LeadStatus;
+  source: string | null;
+  platform: LeadPlatform | null;
+  campaign: string | null;
+  estimated_value: number | null;
+  currency: string | null;
+  assigned_to: string | null;
+  lost_reason: string | null;
+  converted_client_id: string | null;
+  converted_at: string | null;
+  notes: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Paginated<T> {
   items: T[];
   total: number;
