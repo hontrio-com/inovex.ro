@@ -1,32 +1,17 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { verifyAdminToken } from '@/lib/admin-auth';
+import { updateSession } from '@/lib/supabase-middleware';
 
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+/* ── Copiaza cookie-urile de sesiune (refresh Supabase) pe un raspuns nou ── */
+function copyCookies(target: NextResponse, source: NextResponse) {
+  source.cookies.getAll().forEach((cookie) => target.cookies.set(cookie));
+  return target;
+}
 
-  /* ── Protectie pagini admin (altele decat /admin/login) ── */
-  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
-    const token = request.cookies.get('admin_token')?.value;
-    if (!token || !verifyAdminToken(token)) {
-      const loginUrl = new URL('/admin/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-  }
-
-  /* ── Protectie API admin (altele decat /api/admin/auth) ── */
-  if (pathname.startsWith('/api/admin') && !pathname.startsWith('/api/admin/auth')) {
-    const token = request.cookies.get('admin_token')?.value;
-    if (!token || !verifyAdminToken(token)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-  }
-
-  const response = NextResponse.next();
+/* ── Security headers + CSP + noindex (aplicate pe orice raspuns) ── */
+function applySecurityHeaders(response: NextResponse, pathname: string) {
   const isDev = process.env.NODE_ENV === 'development';
 
-  /* ── Security headers ── */
   response.headers.set('X-DNS-Prefetch-Control', 'on');
   response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
   response.headers.set('X-Frame-Options', 'SAMEORIGIN');
@@ -66,6 +51,49 @@ export function proxy(request: NextRequest) {
   }
 
   return response;
+}
+
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  const isAdminPage = pathname.startsWith('/admin');
+  const isAdminApi = pathname.startsWith('/api/admin');
+  // Endpointul de login (POST) trebuie accesibil fara sesiune.
+  const isAuthEndpoint = pathname.startsWith('/api/admin/auth');
+
+  let response = NextResponse.next({ request });
+
+  /* ── Auth: doar zona de admin verifica sesiunea Supabase ──
+     (evitam un round-trip catre Supabase pe fiecare pagina publica) */
+  if ((isAdminPage || isAdminApi) && !isAuthEndpoint) {
+    const { response: sessionResponse, user } = await updateSession(request);
+    response = sessionResponse;
+
+    // Pagini admin (fara /admin/login) — necesita sesiune.
+    if (isAdminPage && pathname !== '/admin/login' && !user) {
+      const loginUrl = new URL('/admin/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      return applySecurityHeaders(copyCookies(NextResponse.redirect(loginUrl), response), pathname);
+    }
+
+    // Utilizator deja logat pe pagina de login — trimite-l in dashboard.
+    if (pathname === '/admin/login' && user) {
+      return applySecurityHeaders(
+        copyCookies(NextResponse.redirect(new URL('/admin', request.url)), response),
+        pathname,
+      );
+    }
+
+    // API admin (fara /api/admin/auth) — necesita sesiune.
+    if (isAdminApi && !user) {
+      return applySecurityHeaders(
+        copyCookies(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }), response),
+        pathname,
+      );
+    }
+  }
+
+  return applySecurityHeaders(response, pathname);
 }
 
 export const config = {

@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
-import { verifyAdminToken, COOKIE_NAME } from '@/lib/admin-auth'
-
-function isAdmin(req: NextRequest): boolean {
-  const token = req.cookies.get(COOKIE_NAME)?.value
-  if (!token) return false
-  return verifyAdminToken(token)
-}
+import { requireRole } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {
-  if (!isAdmin(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { error: authError } = await requireRole(['owner', 'admin'])
+  if (authError) return authError
 
   const { searchParams } = new URL(req.url)
   const page = parseInt(searchParams.get('page') ?? '1', 10)
@@ -36,7 +31,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  if (!isAdmin(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { error: authError } = await requireRole(['owner', 'admin'])
+  if (authError) return authError
 
   const body = await req.json()
   const now = new Date().toISOString()

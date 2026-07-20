@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
-import { verifyAdminToken, COOKIE_NAME } from '@/lib/admin-auth'
+import { requireRole } from '@/lib/auth'
 
-function isAdmin(req: NextRequest): boolean {
-  const token = req.cookies.get(COOKIE_NAME)?.value
-  if (!token) return false
-  return verifyAdminToken(token)
-}
-
-export async function GET(req: NextRequest) {
-  if (!isAdmin(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+export async function GET() {
+  const { error: authError } = await requireRole(['owner', 'admin'])
+  if (authError) return authError
 
   const { data, error } = await supabaseAdmin
     .from('learn_categories')
@@ -21,7 +16,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  if (!isAdmin(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { error: authError } = await requireRole(['owner', 'admin'])
+  if (authError) return authError
 
   const body = await req.json()
   const payload = {

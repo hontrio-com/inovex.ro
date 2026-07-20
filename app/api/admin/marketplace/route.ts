@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { requireRole } from '@/lib/auth';
 import { MARKETPLACE_PRODUCTS } from '@/lib/marketplace-data';
 import type { MarketplaceProduct } from '@/types/marketplace';
 
@@ -12,12 +13,18 @@ async function getAll(): Promise<MarketplaceProduct[]> {
 
 /** GET /api/admin/marketplace — all products (including draft) */
 export async function GET() {
+  const { error: authError } = await requireRole(['owner', 'admin']);
+  if (authError) return authError;
+
   const products = await getAll();
   return NextResponse.json(products);
 }
 
 /** POST /api/admin/marketplace — create product */
 export async function POST(req: NextRequest) {
+  const { error: authError } = await requireRole(['owner', 'admin']);
+  if (authError) return authError;
+
   const body    = await req.json() as MarketplaceProduct;
   const newId   = String(Date.now());
   const product = { ...body, id: newId, publishedAt: body.publishedAt || new Date().toISOString().split('T')[0] };

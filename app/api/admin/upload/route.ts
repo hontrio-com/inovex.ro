@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs   from 'fs/promises';
 import path from 'path';
+import { requireRole } from '@/lib/auth';
 
 /** POST /api/admin/upload
  *  Body: multipart/form-data with fields:
@@ -8,6 +9,9 @@ import path from 'path';
  *    dir   — optional subfolder under /public/imagini/ (e.g. "marketplace")
  */
 export async function POST(req: NextRequest) {
+  const { error: authError } = await requireRole(['owner', 'admin']);
+  if (authError) return authError;
+
   try {
     const formData = await req.formData();
     const file     = formData.get('file') as File | null;

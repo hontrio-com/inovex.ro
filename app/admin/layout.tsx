@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { Toaster } from '@/components/ui/sonner';
+import { getSessionUser } from '@/lib/auth';
 import { AdminShell } from './AdminShell';
 
 export const metadata: Metadata = {
@@ -6,6 +8,19 @@ export const metadata: Metadata = {
   robots: 'noindex,nofollow',
 };
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  return <AdminShell>{children}</AdminShell>;
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const user = await getSessionUser();
+
+  return (
+    <>
+      <AdminShell
+        role={user?.role ?? null}
+        userEmail={user?.email ?? null}
+        userName={user?.fullName ?? null}
+      >
+        {children}
+      </AdminShell>
+      <Toaster position="top-right" richColors />
+    </>
+  );
 }

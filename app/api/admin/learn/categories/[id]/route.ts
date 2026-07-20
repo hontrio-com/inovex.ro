@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
-import { verifyAdminToken, COOKIE_NAME } from '@/lib/admin-auth'
-
-function isAdmin(req: NextRequest): boolean {
-  const token = req.cookies.get(COOKIE_NAME)?.value
-  if (!token) return false
-  return verifyAdminToken(token)
-}
+import { requireRole } from '@/lib/auth'
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!isAdmin(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { error: authError } = await requireRole(['owner', 'admin'])
+  if (authError) return authError
   const { id } = await params
 
   const body = await req.json()
@@ -24,8 +19,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   return NextResponse.json(data)
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!isAdmin(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { error: authError } = await requireRole(['owner', 'admin'])
+  if (authError) return authError
   const { id } = await params
 
   const { error } = await supabaseAdmin

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { requireRole } from '@/lib/auth';
 
 type SmtpSettings = {
   host: string;
@@ -17,6 +18,9 @@ type RequestBody = {
 };
 
 export async function POST(req: NextRequest) {
+  const { error: authError } = await requireRole(['owner', 'admin']);
+  if (authError) return authError;
+
   const body = await req.json() as RequestBody;
   const { smtp, to } = body;
 

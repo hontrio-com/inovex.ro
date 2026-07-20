@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { requireRole } from '@/lib/auth';
 import { MARKETPLACE_PRODUCTS } from '@/lib/marketplace-data';
 import type { MarketplaceProduct } from '@/types/marketplace';
 
@@ -15,6 +16,9 @@ async function getById(id: string): Promise<MarketplaceProduct | null> {
 
 /** GET /api/admin/marketplace/[id] */
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { error: authError } = await requireRole(['owner', 'admin']);
+  if (authError) return authError;
+
   const { id } = await params;
   const p = await getById(id);
   if (!p) return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -23,6 +27,9 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
 /** PUT /api/admin/marketplace/[id] */
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { error: authError } = await requireRole(['owner', 'admin']);
+  if (authError) return authError;
+
   const { id } = await params;
   const body   = await req.json() as MarketplaceProduct;
   const { data, error } = await supabaseAdmin
@@ -36,6 +43,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
 /** DELETE /api/admin/marketplace/[id] */
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { error: authError } = await requireRole(['owner', 'admin']);
+  if (authError) return authError;
+
   const { id } = await params;
   const { error } = await supabaseAdmin
     .from('marketplace_products')

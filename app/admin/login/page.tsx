@@ -89,7 +89,7 @@ function LoginFormInner() {
   const params   = useSearchParams();
   const redirect = params.get('redirect') ?? '/admin';
 
-  const [username, setUsername] = useState('');
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [error,    setError]    = useState('');
@@ -103,7 +103,7 @@ function LoginFormInner() {
       const res = await fetch('/api/admin/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       });
       if (!res.ok) {
         const j = await res.json();
@@ -132,10 +132,10 @@ function LoginFormInner() {
 
       <div>
         <label style={{ display: 'block', marginBottom: 7, fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>
-          Utilizator
+          Email
         </label>
-        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}
-          placeholder="admin" required autoFocus style={inp}
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+          placeholder="email@inovex.ro" required autoFocus autoComplete="email" style={inp}
           onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = '#2B8FCC'; }}
           onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = '#E2E8F0'; }}
         />

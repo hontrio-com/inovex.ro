@@ -7,10 +7,19 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, ShoppingBag, Settings,
   Gavel, LogOut, ChevronRight, Globe,
-  BookOpen, Tag, MessageSquare, Mail, Menu, X,
+  BookOpen, Tag, MessageSquare, Mail, Menu, X, Users,
 } from 'lucide-react';
 
-const NAV = [
+type Role = 'owner' | 'admin' | 'agent';
+
+type NavEntry = {
+  label: string;
+  href: string;
+  icon: React.ElementType | null;
+  roles?: Role[];
+};
+
+const NAV: NavEntry[] = [
   { label: 'Dashboard',         href: '/admin',                           icon: LayoutDashboard },
   { label: 'Marketplace',       href: '/admin/marketplace',               icon: ShoppingBag     },
   { label: 'Oferte',            href: '/admin/bids',                      icon: Gavel           },
@@ -21,11 +30,14 @@ const NAV = [
   { label: 'Lead-uri',          href: '/admin/invata-gratuit/leads',      icon: Mail            },
   { label: '─',                 href: '',                                  icon: null            },
   { label: 'Setari site',       href: '/admin/settings',                  icon: Settings        },
+  { label: 'Utilizatori',       href: '/admin/settings/utilizatori',      icon: Users, roles: ['owner'] },
 ];
 
 const SIDEBAR_W = 240;
 
-function NavItem({ item, active, onClick }: { item: typeof NAV[0]; active: boolean; onClick?: () => void }) {
+const ROLE_LABEL: Record<Role, string> = { owner: 'Owner', admin: 'Administrator', agent: 'Agent' };
+
+function NavItem({ item, active, onClick }: { item: NavEntry; active: boolean; onClick?: () => void }) {
   if (!item.href) {
     return <div style={{ height: 1, background: '#F1F5F9', margin: '6px 8px' }} />;
   }
@@ -52,13 +64,21 @@ function NavItem({ item, active, onClick }: { item: typeof NAV[0]; active: boole
   );
 }
 
-function Sidebar({ onClose }: { onClose?: () => void }) {
+function Sidebar({ onClose, role, userEmail, userName }: {
+  onClose?: () => void;
+  role: Role | null;
+  userEmail: string | null;
+  userName: string | null;
+}) {
   const pathname = usePathname();
   const router   = useRouter();
+
+  const visibleNav = NAV.filter((item) => !item.roles || (role != null && item.roles.includes(role)));
 
   async function logout() {
     await fetch('/api/admin/auth', { method: 'DELETE' });
     router.push('/admin/login');
+    router.refresh();
   }
 
   return (
@@ -80,7 +100,7 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
 
       {/* Nav */}
       <nav style={{ flex: 1, overflowY: 'auto', padding: '10px 8px' }}>
-        {NAV.map((item, i) => (
+        {visibleNav.map((item, i) => (
           <NavItem
             key={i}
             item={item}
@@ -92,6 +112,25 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
 
       {/* Footer */}
       <div style={{ padding: '10px 8px', borderTop: '1px solid #F1F5F9' }}>
+        {userEmail && (
+          <div style={{ padding: '6px 12px 10px' }}>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontWeight: 600, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {userName || userEmail}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
+              {role && (
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#2B8FCC', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 5, padding: '1px 6px' }}>
+                  {ROLE_LABEL[role]}
+                </span>
+              )}
+              {userName && (
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.7rem', color: '#94A3B8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {userEmail}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
         <Link href="/" target="_blank"
           style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', borderRadius: 8, color: '#64748B', textDecoration: 'none', fontFamily: 'var(--font-body)', fontSize: '0.8125rem', transition: 'color 150ms ease' }}
           onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#2B8FCC'; }}
@@ -113,7 +152,12 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
   );
 }
 
-export function AdminShell({ children }: { children: React.ReactNode }) {
+export function AdminShell({ children, role = null, userEmail = null, userName = null }: {
+  children: React.ReactNode;
+  role?: Role | null;
+  userEmail?: string | null;
+  userName?: string | null;
+}) {
   const pathname     = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -141,7 +185,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         borderRight: '1px solid #F1F5F9',
         display: 'none',
       }}>
-        <Sidebar />
+        <Sidebar role={role} userEmail={userEmail} userName={userName} />
       </aside>
 
       {/* ── Mobile overlay sidebar ── */}
@@ -152,7 +196,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', zIndex: 60, backdropFilter: 'blur(2px)' }}
           />
           <aside style={{ position: 'fixed', top: 0, left: 0, bottom: 0, width: SIDEBAR_W, zIndex: 70, borderRight: '1px solid #F1F5F9', display: 'flex', boxShadow: '4px 0 24px rgba(0,0,0,0.10)' }}>
-            <Sidebar onClose={() => setOpen(false)} />
+            <Sidebar onClose={() => setOpen(false)} role={role} userEmail={userEmail} userName={userName} />
           </aside>
         </>
       )}
