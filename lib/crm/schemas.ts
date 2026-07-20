@@ -107,6 +107,23 @@ export const contractCreateSchema = z.object({
   currency:    z.preprocess((v) => (v == null || v === '' ? 'RON' : v), z.string().max(10)),
 });
 
+/** Abonament de mentenanta (creare + editare). */
+export const subscriptionSchema = z.object({
+  client_id:         z.string().uuid('Client invalid'),
+  name:              z.string().trim().min(1, 'Numele e obligatoriu').max(200),
+  status:            z.enum(['activ', 'suspendat', 'anulat']).default('activ'),
+  price:             z.preprocess(
+                       (v) => (v === '' || v == null ? null : typeof v === 'string' ? Number(v) : v),
+                       z.number().nonnegative('Pret invalid').nullable(),
+                     ),
+  currency:          z.preprocess((v) => (v == null || v === '' ? 'RON' : v), z.string().max(10)),
+  billing_cycle:     z.enum(['lunar', 'trimestrial', 'anual']).default('lunar'),
+  start_date:        z.preprocess((v) => (v === '' || v == null ? null : v), z.string().nullable()),
+  next_renewal_date: z.preprocess((v) => (v === '' || v == null ? null : v), z.string().nullable()),
+  contract_id:       optUuid,
+  notes:             optStr(2000),
+});
+
 /** Setari firma (contracte + semnatura). */
 export const orgSettingsSchema = z.object({
   company_name:    optStr(200),

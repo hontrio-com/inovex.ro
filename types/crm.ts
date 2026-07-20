@@ -91,6 +91,24 @@ export interface CrmSubscriptionLite {
   next_renewal_date: string | null;
 }
 
+export interface CrmSubscription {
+  id: string;
+  client_id: string;
+  name: string;
+  type: string;
+  status: SubscriptionStatus;
+  price: number | null;
+  currency: string | null;
+  billing_cycle: BillingCycle;
+  start_date: string | null;
+  next_renewal_date: string | null;
+  contract_id: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  client?: { id: string; name: string } | null;
+}
+
 export interface Member {
   id: string;
   full_name: string | null;

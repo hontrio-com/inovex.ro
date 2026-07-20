@@ -1,13 +1,11 @@
-import { ComingSoon } from '../_components/ComingSoon';
+import { redirect } from 'next/navigation';
+import { getSessionUser } from '@/lib/auth';
+import { AbonamenteList } from './AbonamenteList';
 
 export const metadata = { title: 'Abonamente | Admin Inovex', robots: 'noindex,nofollow' };
 
-export default function AbonamentePage() {
-  return (
-    <ComingSoon
-      title="Abonamente mentenanta"
-      description="Abonamente recurente per client: status, pret, ciclu de facturare, urmatoarea reinnoire si MRR."
-      phase="Faza F"
-    />
-  );
+export default async function AbonamentePage() {
+  const user = await getSessionUser();
+  if (!user) redirect('/admin/login');
+  return <AbonamenteList />;
 }

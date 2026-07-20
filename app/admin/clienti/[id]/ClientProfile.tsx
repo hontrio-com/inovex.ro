@@ -4,13 +4,14 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { ArrowLeft, Trash2, Upload, Download, FileText, FileSignature } from 'lucide-react';
+import { ArrowLeft, Trash2, Upload, Download, FileText, FileSignature, Plus, Pencil, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type {
-  CrmClient, Member, CrmClientFile, CrmContractLite, CrmSubscriptionLite, ClientStatus,
+  CrmClient, Member, CrmClientFile, CrmContractLite, CrmSubscription, ClientStatus,
 } from '@/types/crm';
 import { ClientForm, ClientFormValues } from '../ClientForm';
 import { ActivityTimeline } from '../../_components/ActivityTimeline';
+import { SubscriptionForm, SubFormValues } from '../../abonamente/SubscriptionForm';
 
 type Tab = 'detalii' | 'contracte' | 'fisiere' | 'abonamente' | 'activitate';
 
@@ -169,32 +170,89 @@ function ContractsTab({ clientId }: { clientId: string }) {
   );
 }
 
-/* ── Tab Abonamente (read-only; gestionat in Faza F) ── */
+/* ── Tab Abonamente (management per client) ── */
 function SubscriptionsTab({ clientId }: { clientId: string }) {
-  const [items, setItems] = useState<CrmSubscriptionLite[]>([]);
+  const [items, setItems] = useState<CrmSubscription[]>([]);
   const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    fetch(`/api/admin/clienti/${clientId}/abonamente`).then((r) => r.json())
-      .then((j) => setItems(j.items ?? [])).catch(() => {}).finally(() => setLoading(false));
+  const [editing, setEditing] = useState<CrmSubscription | 'new' | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin/abonamente?client_id=${clientId}&perPage=100`);
+      const json = await res.json();
+      if (res.ok) setItems(json.items ?? []);
+    } finally { setLoading(false); }
   }, [clientId]);
+  useEffect(() => { load(); }, [load]);
+
+  async function save(values: SubFormValues) {
+    setSaving(true);
+    try {
+      const isEdit = editing && editing !== 'new';
+      const url = isEdit ? `/api/admin/abonamente/${(editing as CrmSubscription).id}` : '/api/admin/abonamente';
+      const res = await fetch(url, { method: isEdit ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });
+      if (!res.ok) throw new Error((await res.json()).error);
+      toast.success(isEdit ? 'Abonament actualizat' : 'Abonament adaugat');
+      setEditing(null); load();
+    } catch (e) { toast.error(e instanceof Error ? e.message : 'Eroare'); }
+    finally { setSaving(false); }
+  }
+  async function remove(sub: CrmSubscription) {
+    if (!confirm(`Stergi abonamentul "${sub.name}"?`)) return;
+    setBusyId(sub.id);
+    try {
+      const res = await fetch(`/api/admin/abonamente/${sub.id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error((await res.json()).error);
+      setItems((prev) => prev.filter((s) => s.id !== sub.id)); toast.success('Abonament sters');
+    } catch (e) { toast.error(e instanceof Error ? e.message : 'Eroare'); }
+    finally { setBusyId(null); }
+  }
 
   return (
     <div style={card}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#64748B' }}>Abonamente de mentenanta</span>
+        <Button size="sm" leftIcon={<Plus size={14} />} onClick={() => setEditing('new')}>Adauga</Button>
+      </div>
       {loading ? <EmptyState text="Se incarca..." />
-        : items.length === 0 ? <EmptyState text="Niciun abonament de mentenanta. Se adauga in modulul Abonamente." />
+        : items.length === 0 ? <EmptyState text="Niciun abonament de mentenanta." />
         : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--font-body)' }}>
-            <tbody>
-              {items.map((sub) => (
-                <tr key={sub.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                  <td style={{ padding: '12px 8px', fontWeight: 600 }}>{sub.name}</td>
-                  <td style={{ padding: '12px 8px', fontSize: '0.82rem', color: '#64748B' }}>{sub.status} · {sub.billing_cycle}</td>
-                  <td style={{ padding: '12px 8px', fontSize: '0.82rem', color: '#475569', textAlign: 'right' }}>{fmtMoney(sub.price, sub.currency)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {items.map((sub) => (
+              <div key={sub.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', border: '1px solid #F1F5F9', borderRadius: 10 }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.85rem', fontWeight: 600, color: '#0F172A' }}>{sub.name}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: '#94A3B8' }}>{sub.status} · {sub.billing_cycle}{sub.next_renewal_date ? ` · reinnoire ${fmtDate(sub.next_renewal_date)}` : ''}</div>
+                </div>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.85rem', fontWeight: 600, color: '#15803D' }}>{fmtMoney(sub.price, sub.currency)}</span>
+                <Button variant="ghost" size="icon-sm" onClick={() => setEditing(sub)}><Pencil size={14} /></Button>
+                <Button variant="ghost" size="icon-sm" disabled={busyId === sub.id} onClick={() => remove(sub)} className="text-red-400 hover:text-red-600 hover:bg-red-50"><Trash2 size={14} /></Button>
+              </div>
+            ))}
+          </div>
         )}
+
+      {editing && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', zIndex: 100, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '40px 16px', overflowY: 'auto' }} onClick={() => !saving && setEditing(null)}>
+          <div style={{ background: '#fff', borderRadius: 16, width: '100%', maxWidth: 560, padding: 26 }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.05rem', color: '#0F172A' }}>{editing === 'new' ? 'Abonament nou' : 'Editeaza abonament'}</h2>
+              <button onClick={() => !saving && setEditing(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', padding: 4 }}><X size={20} /></button>
+            </div>
+            <SubscriptionForm
+              initial={editing === 'new' ? null : editing}
+              fixedClientId={clientId}
+              submitting={saving}
+              submitLabel={editing === 'new' ? 'Adauga' : 'Salveaza'}
+              onSubmit={save}
+              onCancel={() => setEditing(null)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
