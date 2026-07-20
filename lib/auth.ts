@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { supabaseAdmin } from '@/lib/supabase';
@@ -20,7 +21,7 @@ export interface SessionUser {
  * Sesiunea e validata de Supabase (`getUser` verifica JWT-ul pe server), iar
  * profilul e citit cu service role (bypass RLS) ca sa evitam recursivitatea RLS.
  */
-export async function getSessionUser(): Promise<SessionUser | null> {
+export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
@@ -43,7 +44,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
     fullName: profile.full_name ?? null,
     isActive: profile.is_active ?? true,
   };
-}
+});
 
 type RequireRoleResult =
   | { user: SessionUser; error: null }

@@ -125,7 +125,7 @@ export function ClientiList({ canAssign, canDelete }: { canAssign: boolean; canD
   const to = Math.min(total, page * PER_PAGE);
 
   return (
-    <div style={{ padding: '28px 32px', maxWidth: 1200 }}>
+    <div style={{ padding: '28px 32px' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 20 }}>
         <div>

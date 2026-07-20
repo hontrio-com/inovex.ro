@@ -61,7 +61,7 @@ export function ContractDetail({ initialContract, pdfUrl, canDelete }: {
   function copyLink() { navigator.clipboard.writeText(publicLink).then(() => toast.success('Link copiat')); }
 
   return (
-    <div style={{ padding: '24px 32px', maxWidth: 900 }}>
+    <div style={{ padding: '24px 32px' }}>
       <Link href="/admin/contracte" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#64748B', textDecoration: 'none', marginBottom: 14 }}><ArrowLeft size={15} /> Inapoi la contracte</Link>
 
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 18, flexWrap: 'wrap' }}>

@@ -57,39 +57,24 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isAdminPage = pathname.startsWith('/admin');
-  const isAdminApi = pathname.startsWith('/api/admin');
-  // Endpointul de login (POST) trebuie accesibil fara sesiune.
-  const isAuthEndpoint = pathname.startsWith('/api/admin/auth');
 
   let response = NextResponse.next({ request });
 
-  /* ── Auth: doar zona de admin verifica sesiunea Supabase ──
-     (evitam un round-trip catre Supabase pe fiecare pagina publica) */
-  if ((isAdminPage || isAdminApi) && !isAuthEndpoint) {
+  /* ── Auth: doar PAGINILE de admin verifica sesiunea in proxy.
+     Rutele /api/admin/* se protejeaza singure (requireAuth/requireRole in
+     fiecare handler), deci nu mai facem un getUser aici — economisim un
+     round-trip catre Supabase pe fiecare request de API. */
+  if (isAdminPage) {
     const { response: sessionResponse, user } = await updateSession(request);
     response = sessionResponse;
 
-    // Pagini admin (fara /admin/login) — necesita sesiune.
-    if (isAdminPage && pathname !== '/admin/login' && !user) {
+    if (pathname !== '/admin/login' && !user) {
       const loginUrl = new URL('/admin/login', request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return applySecurityHeaders(copyCookies(NextResponse.redirect(loginUrl), response), pathname);
     }
-
-    // Utilizator deja logat pe pagina de login — trimite-l in dashboard.
     if (pathname === '/admin/login' && user) {
-      return applySecurityHeaders(
-        copyCookies(NextResponse.redirect(new URL('/admin', request.url)), response),
-        pathname,
-      );
-    }
-
-    // API admin (fara /api/admin/auth) — necesita sesiune.
-    if (isAdminApi && !user) {
-      return applySecurityHeaders(
-        copyCookies(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }), response),
-        pathname,
-      );
+      return applySecurityHeaders(copyCookies(NextResponse.redirect(new URL('/admin', request.url)), response), pathname);
     }
   }
 

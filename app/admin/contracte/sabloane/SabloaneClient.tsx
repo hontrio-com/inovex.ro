@@ -59,7 +59,7 @@ export function SabloaneClient() {
   }
 
   return (
-    <div style={{ padding: '28px 32px', maxWidth: 1000 }}>
+    <div style={{ padding: '28px 32px' }}>
       <Link href="/admin/contracte" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#64748B', textDecoration: 'none', marginBottom: 14 }}>
         <ArrowLeft size={15} /> Inapoi la contracte
       </Link>
@@ -132,7 +132,7 @@ function TemplateEditor({ template, onClose, onSaved }: { template: Template | n
   }
 
   return (
-    <div style={{ padding: '24px 32px', maxWidth: 1200 }}>
+    <div style={{ padding: '24px 32px' }}>
       <button onClick={onClose} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#64748B', marginBottom: 14, padding: 0 }}>
         <X size={15} /> Renunta
       </button>

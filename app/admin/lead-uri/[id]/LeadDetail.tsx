@@ -99,7 +99,7 @@ export function LeadDetail({ initialLead, canAssign, canDelete }: {
   const pm = lead.platform ? PLATFORM_META[lead.platform] : null;
 
   return (
-    <div style={{ padding: '24px 32px', maxWidth: 1000 }}>
+    <div style={{ padding: '24px 32px' }}>
       <Link href="/admin/lead-uri" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#64748B', textDecoration: 'none', marginBottom: 14 }}>
         <ArrowLeft size={15} /> Inapoi la lead-uri
       </Link>

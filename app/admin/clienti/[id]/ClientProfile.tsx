@@ -93,7 +93,7 @@ export function ClientProfile({ initialClient, canAssign, canDelete }: {
   ];
 
   return (
-    <div style={{ padding: '24px 32px', maxWidth: 1000 }}>
+    <div style={{ padding: '24px 32px' }}>
       <Link href="/admin/clienti" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#64748B', textDecoration: 'none', marginBottom: 14 }}>
         <ArrowLeft size={15} /> Inapoi la clienti
       </Link>

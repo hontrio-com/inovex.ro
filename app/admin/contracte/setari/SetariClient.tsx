@@ -74,7 +74,7 @@ export function SetariClient() {
   const grid2: React.CSSProperties = { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 };
 
   return (
-    <div style={{ padding: '24px 32px', maxWidth: 820 }}>
+    <div style={{ padding: '24px 32px' }}>
       <Link href="/admin/contracte" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#64748B', textDecoration: 'none', marginBottom: 14 }}><ArrowLeft size={15} /> Inapoi la contracte</Link>
       <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.35rem', color: '#0F172A', marginBottom: 4 }}>Setari firma</h1>
       <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: '#64748B', marginBottom: 20 }}>Datele firmei alimenteaza variabilele din contracte; semnatura se aplica automat pe PDF-ul semnat.</p>

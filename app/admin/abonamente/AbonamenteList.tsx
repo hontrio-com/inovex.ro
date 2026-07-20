@@ -97,7 +97,7 @@ export function AbonamenteList() {
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
 
   return (
-    <div style={{ padding: '28px 32px', maxWidth: 1200 }}>
+    <div style={{ padding: '28px 32px' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 20 }}>
         <div>
           <h1 style={{ display: 'flex', alignItems: 'center', gap: 10, fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.35rem', color: '#0F172A', marginBottom: 4 }}>

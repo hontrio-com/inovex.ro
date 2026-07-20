@@ -10,7 +10,7 @@ export function ComingSoon({ title, description, phase }: {
   phase: string;
 }) {
   return (
-    <div style={{ padding: '28px 32px', maxWidth: 1000 }}>
+    <div style={{ padding: '28px 32px' }}>
       <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.35rem', color: '#0F172A', marginBottom: 4 }}>
         {title}
       </h1>

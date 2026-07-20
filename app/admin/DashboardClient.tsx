@@ -73,7 +73,7 @@ export function DashboardClient({ userName }: { userName: string }) {
   );
 
   return (
-    <div style={{ padding: '28px 32px', maxWidth: 1200 }}>
+    <div style={{ padding: '28px 32px' }}>
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.5rem', color: '#0F172A', marginBottom: 4 }}>Bine ai revenit{userName ? `, ${userName.split(' ')[0]}` : ''}</h1>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: '#64748B' }}>Privire de ansamblu asupra activitatii CRM.</p>
