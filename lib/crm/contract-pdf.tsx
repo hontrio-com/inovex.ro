@@ -12,6 +12,8 @@ function ensureFonts() {
     fonts: [
       { src: path.join(process.cwd(), 'public/fonts/DejaVuSans.ttf') },
       { src: path.join(process.cwd(), 'public/fonts/DejaVuSans-Bold.ttf'), fontWeight: 'bold' },
+      { src: path.join(process.cwd(), 'public/fonts/DejaVuSans-Oblique.ttf'), fontStyle: 'italic' },
+      { src: path.join(process.cwd(), 'public/fonts/DejaVuSans-BoldOblique.ttf'), fontWeight: 'bold', fontStyle: 'italic' },
     ],
   });
   Font.registerHyphenationCallback((w) => [w]); // fara despartire in silabe
@@ -27,7 +29,9 @@ const styles = StyleSheet.create({
   li:       { flexDirection: 'row', marginBottom: 3 },
   bullet:   { width: 12 },
   liText:   { flex: 1 },
-  bold:     { fontWeight: 'bold' },
+  bold:      { fontWeight: 'bold' },
+  italic:    { fontStyle: 'italic' },
+  underline: { textDecoration: 'underline' },
   sigWrap:  { marginTop: 30, flexDirection: 'row', justifyContent: 'space-between' },
   sigBox:   { width: '45%' },
   sigLabel: { fontSize: 9, color: '#64748b', marginBottom: 4 },
@@ -43,6 +47,8 @@ function renderInline(nodes: Node[], keyPrefix: string): React.ReactNode[] {
     if (n instanceof HTMLElement) {
       const tag = n.rawTagName?.toLowerCase();
       if (tag === 'strong' || tag === 'b') out.push(<Text key={key} style={styles.bold}>{renderInline(n.childNodes, key)}</Text>);
+      else if (tag === 'em' || tag === 'i') out.push(<Text key={key} style={styles.italic}>{renderInline(n.childNodes, key)}</Text>);
+      else if (tag === 'u') out.push(<Text key={key} style={styles.underline}>{renderInline(n.childNodes, key)}</Text>);
       else if (tag === 'br') out.push('\n');
       else out.push(...renderInline(n.childNodes, key));
     } else if (n instanceof TextNode) {
@@ -50,6 +56,12 @@ function renderInline(nodes: Node[], keyPrefix: string): React.ReactNode[] {
     }
   });
   return out;
+}
+
+function alignStyle(el: HTMLElement) {
+  const style = el.getAttribute('style') ?? '';
+  const m = /text-align:\s*(left|center|right|justify)/i.exec(style);
+  return m ? { textAlign: m[1].toLowerCase() as 'left' | 'center' | 'right' | 'justify' } : {};
 }
 
 function renderBlocks(nodes: Node[], keyPrefix: string): React.ReactNode[] {
@@ -64,10 +76,10 @@ function renderBlocks(nodes: Node[], keyPrefix: string): React.ReactNode[] {
     if (!(n instanceof HTMLElement)) return;
     const tag = n.rawTagName?.toLowerCase();
     switch (tag) {
-      case 'h1': out.push(<Text key={key} style={styles.h1}>{n.text}</Text>); break;
-      case 'h2': out.push(<Text key={key} style={styles.h2}>{n.text}</Text>); break;
-      case 'h3': case 'h4': case 'h5': out.push(<Text key={key} style={styles.h3}>{n.text}</Text>); break;
-      case 'p': out.push(<Text key={key} style={styles.p}>{renderInline(n.childNodes, key)}</Text>); break;
+      case 'h1': out.push(<Text key={key} style={[styles.h1, alignStyle(n)]}>{n.text}</Text>); break;
+      case 'h2': out.push(<Text key={key} style={[styles.h2, alignStyle(n)]}>{n.text}</Text>); break;
+      case 'h3': case 'h4': case 'h5': out.push(<Text key={key} style={[styles.h3, alignStyle(n)]}>{n.text}</Text>); break;
+      case 'p': out.push(<Text key={key} style={[styles.p, alignStyle(n)]}>{renderInline(n.childNodes, key)}</Text>); break;
       case 'ul': case 'ol':
         n.childNodes.filter((c) => c instanceof HTMLElement && c.rawTagName?.toLowerCase() === 'li').forEach((li, j) => {
           out.push(

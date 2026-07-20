@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { FileText, Plus, Trash2, Pencil, ArrowLeft, Loader2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CONTRACT_VARS } from '@/lib/crm/contract-vars';
+import { RichEditor } from './RichEditor';
 
 interface Template {
   id: string; name: string; description: string | null; content: string; is_active: boolean;
@@ -103,17 +103,6 @@ function TemplateEditor({ template, onClose, onSaved }: { template: Template | n
   const [isActive, setIsActive] = useState(template?.is_active ?? true);
   const [content, setContent] = useState(template?.content ?? SAMPLE);
   const [saving, setSaving] = useState(false);
-  const contentRef = useRef<HTMLTextAreaElement>(null);
-
-  function insertVar(key: string) {
-    const ta = contentRef.current;
-    const token = `{{${key}}}`;
-    if (!ta) { setContent((c) => c + token); return; }
-    const start = ta.selectionStart, end = ta.selectionEnd;
-    const next = content.slice(0, start) + token + content.slice(end);
-    setContent(next);
-    requestAnimationFrame(() => { ta.focus(); ta.selectionStart = ta.selectionEnd = start + token.length; });
-  }
 
   async function save() {
     if (!name.trim() || !content.trim()) { toast.error('Nume si continut obligatorii'); return; }
@@ -146,30 +135,10 @@ function TemplateEditor({ template, onClose, onSaved }: { template: Template | n
         <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} style={{ width: 16, height: 16 }} /> Activ (disponibil la generare)
       </label>
 
-      {/* Variabile */}
-      <div style={{ marginBottom: 10 }}>
-        <div style={lbl}>Insereaza variabila (click):</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-          {CONTRACT_VARS.map((v) => (
-            <button key={v.key} type="button" onClick={() => insertVar(v.key)}
-              style={{ fontFamily: 'var(--font-body)', fontSize: '0.72rem', color: '#2B8FCC', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 6, padding: '3px 8px', cursor: 'pointer' }}
-              title={`{{${v.key}}}`}>{v.label}</button>
-          ))}
-        </div>
-      </div>
-
-      {/* Editor + Preview */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
-        <div>
-          <label style={lbl}>Continut (HTML cu variabile)</label>
-          <textarea ref={contentRef} value={content} onChange={(e) => setContent(e.target.value)}
-            style={{ width: '100%', height: 460, border: '1px solid #E2E8F0', borderRadius: 8, padding: 12, fontFamily: 'monospace', fontSize: '0.8rem', color: '#0F172A', resize: 'vertical', outline: 'none', boxSizing: 'border-box', lineHeight: 1.5 }} />
-        </div>
-        <div>
-          <label style={lbl}>Previzualizare</label>
-          <div style={{ height: 460, overflowY: 'auto', border: '1px solid #E2E8F0', borderRadius: 8, padding: 20, background: '#fff', fontFamily: 'var(--font-body)', fontSize: '0.85rem', color: '#1e293b', lineHeight: 1.6 }}
-            dangerouslySetInnerHTML={{ __html: content }} />
-        </div>
+      {/* Editor WYSIWYG */}
+      <div style={{ marginBottom: 20 }}>
+        <label style={lbl}>Continut contract</label>
+        <RichEditor value={content} onChange={setContent} />
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
