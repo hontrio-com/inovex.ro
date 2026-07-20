@@ -48,7 +48,7 @@ export function UsersClient({ currentUserId }: { currentUserId: string }) {
   async function loadUsers() {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/crm/users');
+      const res = await fetch('/api/admin/users');
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? 'Eroare la incarcare');
       setUsers(json.users ?? []);
@@ -65,7 +65,7 @@ export function UsersClient({ currentUserId }: { currentUserId: string }) {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await fetch('/api/admin/crm/users', {
+      const res = await fetch('/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ full_name: fullName || undefined, email, password, role }),
@@ -86,7 +86,7 @@ export function UsersClient({ currentUserId }: { currentUserId: string }) {
   async function patchUser(id: string, patch: Partial<Pick<CrmUser, 'role' | 'is_active'>>) {
     setBusyId(id);
     try {
-      const res = await fetch(`/api/admin/crm/users/${id}`, {
+      const res = await fetch(`/api/admin/users/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(patch),
@@ -106,7 +106,7 @@ export function UsersClient({ currentUserId }: { currentUserId: string }) {
     if (!confirm(`Stergi utilizatorul ${email}? Actiunea este ireversibila.`)) return;
     setBusyId(id);
     try {
-      const res = await fetch(`/api/admin/crm/users/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? 'Eroare la stergere');
       setUsers((prev) => prev.filter((u) => u.id !== id));

@@ -8,6 +8,7 @@ import {
   LayoutDashboard, ShoppingBag, Settings,
   Gavel, LogOut, ChevronRight, Globe,
   BookOpen, Tag, MessageSquare, Mail, Menu, X, Users,
+  Building2, Target, FileSignature, RefreshCw,
 } from 'lucide-react';
 
 type Role = 'owner' | 'admin' | 'agent';
@@ -21,13 +22,17 @@ type NavEntry = {
 
 const NAV: NavEntry[] = [
   { label: 'Dashboard',         href: '/admin',                           icon: LayoutDashboard },
+  { label: 'Clienti',           href: '/admin/clienti',                   icon: Building2       },
+  { label: 'Lead-uri',          href: '/admin/lead-uri',                  icon: Target          },
+  { label: 'Contracte',         href: '/admin/contracte',                 icon: FileSignature   },
+  { label: 'Abonamente',        href: '/admin/abonamente',                icon: RefreshCw       },
+  { label: 'Site web',          href: '',                                  icon: null            },
   { label: 'Marketplace',       href: '/admin/marketplace',               icon: ShoppingBag     },
   { label: 'Oferte',            href: '/admin/bids',                      icon: Gavel           },
-  { label: '─',                 href: '',                                  icon: null            },
   { label: 'Continut educativ', href: '/admin/invata-gratuit',            icon: BookOpen        },
   { label: 'Categorii',         href: '/admin/invata-gratuit/categorii',  icon: Tag             },
   { label: 'Comentarii',        href: '/admin/invata-gratuit/comentarii', icon: MessageSquare   },
-  { label: 'Lead-uri',          href: '/admin/invata-gratuit/leads',      icon: Mail            },
+  { label: 'Lead-uri resurse',  href: '/admin/invata-gratuit/leads',      icon: Mail            },
   { label: '─',                 href: '',                                  icon: null            },
   { label: 'Setari site',       href: '/admin/settings',                  icon: Settings        },
   { label: 'Utilizatori',       href: '/admin/settings/utilizatori',      icon: Users, roles: ['owner'] },
@@ -39,7 +44,15 @@ const ROLE_LABEL: Record<Role, string> = { owner: 'Owner', admin: 'Administrator
 
 function NavItem({ item, active, onClick }: { item: NavEntry; active: boolean; onClick?: () => void }) {
   if (!item.href) {
-    return <div style={{ height: 1, background: '#F1F5F9', margin: '6px 8px' }} />;
+    // Separator (─) sau titlu de sectiune (orice alt text)
+    if (item.label === '─') {
+      return <div style={{ height: 1, background: '#F1F5F9', margin: '6px 8px' }} />;
+    }
+    return (
+      <div style={{ padding: '14px 12px 5px', fontFamily: 'var(--font-body)', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#94A3B8' }}>
+        {item.label}
+      </div>
+    );
   }
   const Icon = item.icon!;
   return (
