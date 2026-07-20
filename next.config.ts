@@ -3,6 +3,11 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   compress: true,
 
+  // Include fonturile TTF in bundle-ul rutei de semnare (PDF pe serverless).
+  outputFileTracingIncludes: {
+    '/api/contract/[id]/[token]/sign': ['./public/fonts/**'],
+  },
+
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [

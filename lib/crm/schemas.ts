@@ -86,3 +86,37 @@ export const leadStatusSchema = z.object({
   status:      z.enum(LEAD_STATUSES),
   lost_reason: optStr(500),
 });
+
+/** Sablon de contract (creare + editare). */
+export const templateSchema = z.object({
+  name:        z.string().trim().min(1, 'Numele e obligatoriu').max(200),
+  description: optStr(500),
+  content:     z.string().trim().min(1, 'Continutul e obligatoriu'),
+  is_active:   z.preprocess((v) => v ?? true, z.boolean()),
+});
+
+/** Generare contract din client + sablon. */
+export const contractCreateSchema = z.object({
+  client_id:   z.string().uuid('Client invalid'),
+  template_id: z.string().uuid('Sablon invalid'),
+  title:       optStr(200),
+  value:       z.preprocess(
+                 (v) => (v === '' || v == null ? null : typeof v === 'string' ? Number(v) : v),
+                 z.number().nonnegative('Valoare invalida').nullable(),
+               ),
+  currency:    z.preprocess((v) => (v == null || v === '' ? 'RON' : v), z.string().max(10)),
+});
+
+/** Setari firma (contracte + semnatura). */
+export const orgSettingsSchema = z.object({
+  company_name:    optStr(200),
+  company_cui:     optStr(50),
+  company_reg_com: optStr(50),
+  company_address: optStr(500),
+  company_iban:    optStr(50),
+  company_bank:    optStr(120),
+  email:           optEmail,
+  signer_name:     optStr(200),
+  reminder_days:   z.preprocess((v) => (v === '' || v == null ? 3 : typeof v === 'string' ? Number(v) : v), z.number().int().min(1).max(90)),
+  expiry_days:     z.preprocess((v) => (v === '' || v == null ? 14 : typeof v === 'string' ? Number(v) : v), z.number().int().min(1).max(365)),
+});

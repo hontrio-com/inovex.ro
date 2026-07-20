@@ -1,10 +1,17 @@
 import { transporter } from '@/lib/nodemailer';
 
+export interface EmailAttachment {
+  filename: string;
+  content: Buffer;
+  contentType?: string;
+}
+
 export interface SendEmailOptions {
   to: string;
   subject: string;
   html: string;
   replyTo?: string;
+  attachments?: EmailAttachment[];
 }
 
 export async function sendEmail(options: SendEmailOptions): Promise<{ success: boolean; error?: string }> {
@@ -15,6 +22,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<{ success: b
       subject: options.subject,
       html: options.html,
       replyTo: options.replyTo ?? process.env.SMTP_USER,
+      attachments: options.attachments,
     });
 
     if (process.env.NODE_ENV === 'development') {

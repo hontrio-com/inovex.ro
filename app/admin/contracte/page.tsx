@@ -1,13 +1,12 @@
-import { ComingSoon } from '../_components/ComingSoon';
+import { redirect } from 'next/navigation';
+import { getSessionUser } from '@/lib/auth';
+import { ContracteList } from './ContracteList';
 
 export const metadata = { title: 'Contracte | Admin Inovex', robots: 'noindex,nofollow' };
 
-export default function ContractePage() {
-  return (
-    <ComingSoon
-      title="Contracte"
-      description="Sabloane cu variabile, generare din client, trimitere spre semnare electronica si PDF semnat cu audit."
-      phase="Faza E"
-    />
-  );
+export default async function ContractePage() {
+  const user = await getSessionUser();
+  if (!user) redirect('/admin/login');
+  const privileged = user.role === 'owner' || user.role === 'admin';
+  return <ContracteList canManageConfig={privileged} />;
 }
