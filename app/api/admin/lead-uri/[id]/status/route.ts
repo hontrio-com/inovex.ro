@@ -35,6 +35,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const update: Record<string, unknown> = { status: parsed.data.status };
   // Motivul pierderii se pastreaza doar pentru status 'pierdut'.
   update.lost_reason = parsed.data.status === 'pierdut' ? parsed.data.lost_reason ?? null : null;
+  // Valoarea contractului se seteaza la conversie (pleaca in semnalul lead_converted).
+  if (parsed.data.status === 'convertit' && parsed.data.estimated_value != null) {
+    update.estimated_value = parsed.data.estimated_value;
+  }
 
   const { data, error } = await supabaseAdmin
     .from('crm_leads')

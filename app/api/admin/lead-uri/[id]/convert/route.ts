@@ -9,10 +9,18 @@ import { recordSignals, flushLeadSignals } from '@/lib/crm/ads/signals';
  * POST /api/admin/lead-uri/[id]/convert — converteste lead-ul intr-un client.
  * Idempotent: daca lead-ul e deja convertit, intoarce clientul existent.
  */
-export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireRole(['owner', 'admin']);
   if (auth.error) return auth.error;
   const { id } = await params;
+
+  // Valoarea contractului (optionala) — pleaca in semnalul lead_converted.
+  let estimatedValue: number | null = null;
+  try {
+    const body = await req.json();
+    const n = Number(body?.estimated_value);
+    if (Number.isFinite(n) && n >= 0) estimatedValue = n;
+  } catch { /* fara body — ok */ }
 
   const { data: lead } = await supabaseAdmin.from('crm_leads').select('*').eq('id', id).single();
   if (!lead) return NextResponse.json({ error: 'Lead inexistent' }, { status: 404 });
@@ -48,6 +56,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
       converted_client_id: client.id,
       converted_at: new Date().toISOString(),
       status: 'convertit',
+      ...(estimatedValue != null ? { estimated_value: estimatedValue } : {}),
     })
     .eq('id', id);
 

@@ -68,9 +68,18 @@ export function LeadDetail({ initialLead, canAssign, canDelete, canConvert }: {
 
   async function convert() {
     if (!confirm('Convertesti lead-ul in client? Se creeaza un client nou, pre-populat din lead.')) return;
+    const v = window.prompt('Valoarea contractului in RON (optional — pleaca ca semnal de valoare catre platformele de ads):',
+      lead.estimated_value != null ? String(lead.estimated_value) : '');
+    let estimated_value: number | null = null;
+    if (v !== null && v.trim()) {
+      const n = Number(v.replace(',', '.'));
+      if (Number.isFinite(n) && n >= 0) estimated_value = n;
+    }
     setBusy(true);
     try {
-      const res = await fetch(`/api/admin/lead-uri/${lead.id}/convert`, { method: 'POST' });
+      const res = await fetch(`/api/admin/lead-uri/${lead.id}/convert`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ estimated_value }),
+      });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? 'Eroare');
       toast.success('Lead convertit in client');

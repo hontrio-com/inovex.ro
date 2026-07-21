@@ -105,14 +105,23 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
     const lead = leads.find((l) => l.id === id);
     if (!lead || lead.status === status) return;
     let lost_reason: string | null = null;
+    let estimated_value: number | null = null;
     if (status === 'pierdut') {
       lost_reason = window.prompt('Motiv pierdere (optional):') ?? null;
     }
+    if (status === 'convertit') {
+      const v = window.prompt('Valoarea contractului in RON (optional — pleaca ca semnal de valoare catre platformele de ads):',
+        lead.estimated_value != null ? String(lead.estimated_value) : '');
+      if (v !== null && v.trim()) {
+        const n = Number(v.replace(',', '.'));
+        if (Number.isFinite(n) && n >= 0) estimated_value = n;
+      }
+    }
     const prev = lead.status;
-    setLeads((ls) => ls.map((l) => (l.id === id ? { ...l, status } : l)));
+    setLeads((ls) => ls.map((l) => (l.id === id ? { ...l, status, ...(estimated_value != null ? { estimated_value } : {}) } : l)));
     try {
       const res = await fetch(`/api/admin/lead-uri/${id}/status`, {
-        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status, lost_reason }),
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status, lost_reason, estimated_value }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? 'Eroare');
     } catch (e) {

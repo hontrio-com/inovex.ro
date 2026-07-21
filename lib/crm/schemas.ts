@@ -81,10 +81,15 @@ export const leadSchema = z
   })
   .refine((d) => !!(d.name || d.phone || d.email || d.company), { message: 'Completeaza cel putin numele sau telefonul', path: ['name'] });
 
-/** Schimbare rapida de status (drag Kanban / marcare castigat-pierdut). */
+/** Schimbare rapida de status (drag Kanban / marcare convertit-pierdut). */
 export const leadStatusSchema = z.object({
-  status:      z.enum(LEAD_STATUSES),
-  lost_reason: optStr(500),
+  status:          z.enum(LEAD_STATUSES),
+  lost_reason:     optStr(500),
+  // Valoarea contractului, ceruta la mutarea pe Convertit (pleaca in semnalul de ads).
+  estimated_value: z.preprocess(
+                     (v) => (v === '' || v == null ? null : typeof v === 'string' ? Number(v) : v),
+                     z.number().nonnegative('Valoare invalida').nullable(),
+                   ),
 });
 
 /** Sablon de contract (creare + editare). */
