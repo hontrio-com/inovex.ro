@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { ArrowLeft, Send, Download, Trash2, Copy, RefreshCw, CheckCircle2, Pencil, Check, Link2 } from 'lucide-react';
+import { ArrowLeft, Send, Download, Trash2, Copy, RefreshCw, CheckCircle2, Pencil, Check, Link2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CONTRACT_STATUS } from '../ContracteList';
 import { RichEditor } from '../sabloane/RichEditor';
@@ -20,13 +20,13 @@ interface Contract {
 
 function fmtMoney(v: number | null, cur: string | null) { if (v == null) return null; try { return new Intl.NumberFormat('ro-RO', { style: 'currency', currency: cur || 'RON' }).format(v); } catch { return `${v} RON`; } }
 function fmtDateTime(iso: string | null) { return iso ? new Date(iso).toLocaleString('ro-RO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''; }
-function fmtDate(iso: string | null) { return iso ? new Date(iso).toLocaleDateString('ro-RO', { day: '2-digit', month: 'short', year: 'numeric' }) : ''; }
 
 const fld: React.CSSProperties = { width: '100%', height: 40, border: '1px solid #E2E8F0', borderRadius: 8, padding: '0 12px', fontFamily: 'var(--font-body)', fontSize: '0.875rem', outline: 'none', boxSizing: 'border-box' };
 const lbl: React.CSSProperties = { display: 'block', marginBottom: 6, fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.8rem', color: '#374151' };
 
-export function ContractDetail({ initialContract, pdfUrl, canDelete }: {
+export function ContractDetail({ initialContract, pdfUrl, canDelete, views }: {
   initialContract: Contract; pdfUrl: string | null; canDelete: boolean;
+  views?: { count: number; first: string | null; last: string | null };
 }) {
   const router = useRouter();
   const [contract, setContract] = useState<Contract>(initialContract);
@@ -41,7 +41,7 @@ export function ContractDetail({ initialContract, pdfUrl, canDelete }: {
   const [savingEdit, setSavingEdit] = useState(false);
 
   const st = CONTRACT_STATUS[contract.status] ?? CONTRACT_STATUS.draft;
-  const publicLink = contract.sign_token ? `${typeof window !== 'undefined' ? window.location.origin : ''}/contract/${contract.id}/${contract.sign_token}` : '';
+  const publicLink = contract.sign_token ? `${typeof window !== 'undefined' ? window.location.origin : ''}/contract/${contract.sign_token}` : '';
 
   async function send(withEmail: boolean) {
     if (withEmail && (!email || !email.includes('@'))) { toast.error('Email destinatar invalid'); return; }
@@ -129,11 +129,14 @@ export function ContractDetail({ initialContract, pdfUrl, canDelete }: {
       {contract.status === 'trimis' && !editing && (
         <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 12, padding: 16, marginBottom: 18 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-body)', fontSize: '0.85rem', color: '#1D4ED8', fontWeight: 600, marginBottom: 8 }}>
-            <Link2 size={15} /> Link de semnare — trimite-l clientului{contract.sent_at ? ` · generat ${fmtDateTime(contract.sent_at)}` : ''}{contract.expires_at ? ` · expira ${fmtDate(contract.expires_at)}` : ''}
+            <Link2 size={15} /> Link de semnare (permanent) — trimite-l clientului
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <input readOnly value={publicLink} onFocus={(e) => e.target.select()} style={{ flex: 1, minWidth: 220, height: 36, border: '1px solid #BFDBFE', borderRadius: 7, padding: '0 10px', fontFamily: 'monospace', fontSize: '0.74rem', color: '#334155', background: '#fff' }} />
+            <input readOnly value={publicLink} onFocus={(e) => e.target.select()} style={{ flex: 1, minWidth: 220, height: 36, border: '1px solid #BFDBFE', borderRadius: 7, padding: '0 10px', fontFamily: 'monospace', fontSize: '0.78rem', color: '#334155', background: '#fff' }} />
             <Button variant="outline" size="sm" onClick={copyLink} leftIcon={<Copy size={13} />}>Copiaza link</Button>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10, fontFamily: 'var(--font-body)', fontSize: '0.78rem', color: '#64748B' }}>
+            <Eye size={14} /> {views && views.count > 0 ? `Deschis de ${views.count} ${views.count === 1 ? 'data' : 'ori'}${views.last ? ` · ultima data ${fmtDateTime(views.last)}` : ''}` : 'Nedeschis inca de client'}
           </div>
         </div>
       )}

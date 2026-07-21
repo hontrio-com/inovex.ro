@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { randomBytes } from 'crypto';
 import { z } from 'zod';
 import { supabaseAdmin } from '@/lib/supabase';
 import { requireAuth } from '@/lib/auth';
 import { canAccessAssigned } from '@/lib/crm/access';
+import { shortToken } from '@/lib/crm/token';
 import { sendEmail } from '@/lib/email/send';
 import { signRequestHtml, signRequestSubject } from '@/lib/email/templates/contract';
 
 const schema = z.object({ email: z.union([z.string().email('Email invalid'), z.literal('')]).optional() });
 
-/** POST /api/admin/contracte/[id]/send — trimite contractul spre semnare (email cu link public). */
+/** POST /api/admin/contracte/[id]/send — activeaza linkul de semnare (+ email optional). */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireAuth();
   if (auth.error) return auth.error;
@@ -26,23 +26,21 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const parsed = schema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Date invalide' }, { status: 400 });
 
-  const { data: org } = await supabaseAdmin.from('crm_org_settings').select('company_name, expiry_days').eq('id', 1).single();
-  const expiryDays = org?.expiry_days ?? 14;
+  const { data: org } = await supabaseAdmin.from('crm_org_settings').select('company_name').eq('id', 1).single();
 
-  const token = contract.sign_token ?? randomBytes(32).toString('hex');
-  const now = new Date();
-  const expiresAt = new Date(now.getTime() + expiryDays * 86_400_000);
+  // Token permanent (generat de la creare); nu se regenereaza, nu expira.
+  const token = contract.sign_token ?? shortToken();
 
   const { data: updated, error } = await supabaseAdmin
     .from('crm_contracts')
-    .update({ sign_token: token, status: 'trimis', sent_at: now.toISOString(), expires_at: expiresAt.toISOString() })
+    .update({ sign_token: token, status: 'trimis', sent_at: new Date().toISOString(), expires_at: null })
     .eq('id', id)
     .select('*, client:crm_clients(id, name, email)')
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://inovex.ro';
-  const signUrl = `${siteUrl}/contract/${id}/${token}`;
+  const signUrl = `${siteUrl}/contract/${token}`;
 
   const recipient = parsed.data.email || '';
   let emailSent = false;
@@ -56,7 +54,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         title: contract.title,
         companyName: org?.company_name,
         signUrl,
-        expires: expiresAt.toLocaleDateString('ro-RO'),
+        expires: null,
       }),
     });
     emailSent = emailRes.success;

@@ -4,6 +4,7 @@ import { requireAuth } from '@/lib/auth';
 import { canAccessClient } from '@/lib/crm/access';
 import { contractCreateSchema } from '@/lib/crm/schemas';
 import { buildContractValues, fillVariables } from '@/lib/crm/contract-vars';
+import { shortToken } from '@/lib/crm/token';
 import type { CrmClient } from '@/types/crm';
 
 const STATUSES = ['draft', 'trimis', 'semnat', 'expirat', 'anulat'];
@@ -79,6 +80,7 @@ export async function POST(req: NextRequest) {
       value: parsed.data.value,
       currency: parsed.data.currency,
       status: 'draft',
+      sign_token: shortToken(), // link permanent, generat de la creare
       assigned_to: client.assigned_to,
       created_by: auth.user.id,
     })

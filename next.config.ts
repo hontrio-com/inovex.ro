@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
 
   // Include fonturile TTF in bundle-ul rutei de semnare (PDF pe serverless).
   outputFileTracingIncludes: {
-    '/api/contract/[id]/[token]/sign': ['./public/fonts/**'],
+    '/api/contract/[token]/sign': ['./public/fonts/**'],
   },
 
   images: {

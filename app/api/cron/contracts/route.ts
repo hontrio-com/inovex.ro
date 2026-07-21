@@ -8,9 +8,8 @@ export const maxDuration = 60;
 
 /**
  * GET /api/cron/contracts — job zilnic (Vercel Cron):
- *  - marcheaza 'expirat' contractele 'trimis' cu termenul depasit;
  *  - trimite un reminder pentru contractele 'trimis' nesemnate dupa X zile.
- * Protejat cu CRON_SECRET (header Authorization: Bearer ...).
+ * Linkurile nu expira. Protejat cu CRON_SECRET (header Authorization: Bearer ...).
  */
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
@@ -21,27 +20,13 @@ export async function GET(req: NextRequest) {
   const now = new Date();
   const nowIso = now.toISOString();
 
-  // ── 1) Expirare ──
-  const { data: expired } = await supabaseAdmin
-    .from('crm_contracts')
-    .update({ status: 'expirat' })
-    .eq('status', 'trimis')
-    .lt('expires_at', nowIso)
-    .select('id');
-  if (expired && expired.length > 0) {
-    await supabaseAdmin.from('crm_activities').insert(
-      expired.map((c) => ({ type: 'system', title: 'Contract expirat', contract_id: c.id })),
-    );
-  }
-
-  // ── 2) Remindere ──
   const { data: org } = await supabaseAdmin.from('crm_org_settings').select('company_name, reminder_days').eq('id', 1).single();
   const reminderDays = org?.reminder_days ?? 3;
   const threshold = new Date(now.getTime() - reminderDays * 86_400_000).toISOString();
 
   const { data: toRemind } = await supabaseAdmin
     .from('crm_contracts')
-    .select('id, contract_number, sign_token, expires_at, client_id')
+    .select('id, contract_number, sign_token, client_id')
     .eq('status', 'trimis')
     .is('reminder_sent_at', null)
     .lt('sent_at', threshold);
@@ -65,15 +50,14 @@ export async function GET(req: NextRequest) {
         html: reminderHtml({
           contractNumber: c.contract_number || '',
           companyName: org?.company_name,
-          signUrl: `${siteUrl}/contract/${c.id}/${c.sign_token}`,
-          expires: c.expires_at ? new Date(c.expires_at).toLocaleDateString('ro-RO') : null,
+          signUrl: `${siteUrl}/contract/${c.sign_token}`,
+          expires: null,
         }),
       });
       remindersSent++;
     }
-    // Marcam reminderul ca trimis (chiar daca nu exista email) ca sa nu reprocesam zilnic.
     await supabaseAdmin.from('crm_contracts').update({ reminder_sent_at: nowIso }).eq('id', c.id);
   }
 
-  return NextResponse.json({ expired: expired?.length ?? 0, remindersSent });
+  return NextResponse.json({ remindersSent });
 }

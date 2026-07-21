@@ -32,6 +32,15 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
     pdfUrl = s?.signedUrl ?? null;
   }
 
+  // Statistici deschideri link
+  const { data: viewRows } = await supabaseAdmin
+    .from('crm_contract_views').select('viewed_at').eq('contract_id', id).order('viewed_at', { ascending: true });
+  const views = {
+    count: viewRows?.length ?? 0,
+    first: viewRows?.[0]?.viewed_at ?? null,
+    last: viewRows && viewRows.length > 0 ? viewRows[viewRows.length - 1].viewed_at : null,
+  };
+
   const privileged = user.role === 'owner' || user.role === 'admin';
-  return <ContractDetail initialContract={contract} pdfUrl={pdfUrl} canDelete={privileged} />;
+  return <ContractDetail initialContract={contract} pdfUrl={pdfUrl} canDelete={privileged} views={views} />;
 }
