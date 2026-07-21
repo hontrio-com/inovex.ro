@@ -17,7 +17,7 @@ export interface SendEmailOptions {
 export async function sendEmail(options: SendEmailOptions): Promise<{ success: boolean; error?: string }> {
   try {
     const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM ?? 'contact@inovex.ro',
+      from: process.env.SMTP_FROM ?? 'office@inovex.ro',
       to: options.to,
       subject: options.subject,
       html: options.html,

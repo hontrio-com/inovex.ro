@@ -98,7 +98,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const signedAtStr = new Date(signedAt).toLocaleString('ro-RO');
   const subject = signedSubject(contract.contract_number || '');
   const clientEmail = parsed.data.signer_email || null;
-  const companyEmail = org?.email || process.env.SMTP_TO || process.env.SMTP_USER || null;
+  // Copia interna merge la contact@inovex.ro (SMTP_TO), exact ca la formularele site-ului.
+  const companyEmail = process.env.SMTP_TO || 'contact@inovex.ro';
 
   if (clientEmail) {
     await sendEmail({ to: clientEmail, subject, html: signedHtml({ contractNumber: contract.contract_number || '', signerName: parsed.data.signer_name, signedAt: signedAtStr, forClient: true }), attachments });
