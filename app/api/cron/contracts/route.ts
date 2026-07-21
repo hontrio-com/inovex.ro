@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { sendEmail } from '@/lib/email/send';
 import { reminderHtml, reminderSubject } from '@/lib/email/templates/contract';
 import { renewalReminderHtml, renewalReminderSubject } from '@/lib/email/templates/subscription';
+import { flushPendingSignals } from '@/lib/crm/ads/signals';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -10,7 +11,8 @@ export const maxDuration = 60;
 /**
  * GET /api/cron/contracts — job zilnic (Vercel Cron, 08:00):
  *  1) reminder catre client pentru contractele 'trimis' nesemnate dupa X zile;
- *  2) reminder intern (office -> contact) pentru abonamentele care se reinnoiesc curand.
+ *  2) reminder intern (office -> contact) pentru abonamentele care se reinnoiesc curand;
+ *  3) retry pentru semnalele de ads (Meta/TikTok/Google) ramase pending/failed.
  * Linkurile de contract nu expira. Protejat cu CRON_SECRET (Authorization: Bearer ...).
  */
 export async function GET(req: NextRequest) {
@@ -104,5 +106,13 @@ export async function GET(req: NextRequest) {
     subReminders++;
   }
 
-  return NextResponse.json({ contractReminders, subReminders });
+  // ── 3) Retry semnale ads (pending/failed, max 8 incercari) ──
+  let signalsProcessed = 0;
+  try {
+    signalsProcessed = await flushPendingSignals(100);
+  } catch (e) {
+    console.error('[cron] flushPendingSignals:', e instanceof Error ? e.message : e);
+  }
+
+  return NextResponse.json({ contractReminders, subReminders, signalsProcessed });
 }

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { after } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { requireAuth } from '@/lib/auth';
 import { guardLead } from '@/lib/crm/guard';
 import { leadStatusSchema } from '@/lib/crm/schemas';
+import { recordSignals, flushLeadSignals, SIGNAL_STAGES, type SignalStage } from '@/lib/crm/ads/signals';
 
 /**
  * PATCH /api/admin/lead-uri/[id]/status — schimbare rapida de status
@@ -50,6 +52,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       lead_id: id,
       created_by: auth.user.id,
     });
+
+    // Semnal de calitate catre platforma de ads (dupa raspuns, fara sa blocheze UI-ul).
+    if (SIGNAL_STAGES.includes(parsed.data.status as SignalStage)) {
+      await recordSignals(id, parsed.data.status as SignalStage);
+      after(() => flushLeadSignals(id));
+    }
   }
 
   return NextResponse.json({ lead: data });

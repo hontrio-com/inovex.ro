@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { after } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { requireRole } from '@/lib/auth';
 import { canAccessAssigned } from '@/lib/crm/access';
+import { recordSignals, flushLeadSignals } from '@/lib/crm/ads/signals';
 
 /**
  * POST /api/admin/lead-uri/[id]/convert — converteste lead-ul intr-un client.
@@ -53,6 +55,10 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     { type: 'system', title: 'Client creat din lead', client_id: client.id, created_by: auth.user.id },
     { type: 'system', title: 'Lead convertit in client', lead_id: id, created_by: auth.user.id },
   ]);
+
+  // Semnalul de aur catre platforma de ads: lead-ul a devenit client.
+  await recordSignals(id, 'convertit');
+  after(() => flushLeadSignals(id));
 
   return NextResponse.json({ client_id: client.id }, { status: 201 });
 }

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { after } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { requireAuth } from '@/lib/auth';
 import { leadSchema } from '@/lib/crm/schemas';
 import { canAccessAssigned, isPrivileged } from '@/lib/crm/access';
+import { recordSignals, flushLeadSignals, SIGNAL_STAGES, type SignalStage } from '@/lib/crm/ads/signals';
 
 async function loadLead(id: string) {
   const { data } = await supabaseAdmin.from('crm_leads').select('*').eq('id', id).single();
@@ -64,6 +66,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       lead_id: id,
       created_by: auth.user.id,
     });
+
+    if (SIGNAL_STAGES.includes(parsed.data.status as SignalStage)) {
+      await recordSignals(id, parsed.data.status as SignalStage);
+      after(() => flushLeadSignals(id));
+    }
   }
 
   return NextResponse.json({ lead: data });
