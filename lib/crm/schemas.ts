@@ -79,7 +79,7 @@ export const leadSchema = z
     lost_reason:     optStr(500),
     notes:           optStr(5000),
   })
-  .refine((d) => !!(d.name || d.company), { message: 'Completeaza numele sau compania', path: ['name'] });
+  .refine((d) => !!(d.name || d.phone || d.email || d.company), { message: 'Completeaza cel putin numele sau telefonul', path: ['name'] });
 
 /** Schimbare rapida de status (drag Kanban / marcare castigat-pierdut). */
 export const leadStatusSchema = z.object({

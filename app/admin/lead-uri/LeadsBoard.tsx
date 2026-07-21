@@ -91,10 +91,9 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? 'Eroare la creare');
-      toast.success('Lead creat — noteaza discutia in Activitate');
+      toast.success('Lead creat');
       setShowNew(false);
-      if (json.lead?.id) router.push(`/admin/lead-uri/${json.lead.id}`);
-      else load();
+      load();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Eroare la creare');
     } finally {
@@ -151,7 +150,7 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
           <input value={qInput} onChange={(e) => setQInput(e.target.value)} placeholder="Cauta nume, companie, campanie..." style={{ ...ctrl, width: '100%', paddingLeft: 34, boxSizing: 'border-box' }} />
         </div>
         <select style={{ ...ctrl, cursor: 'pointer' }} value={platform} onChange={(e) => { setPlatform(e.target.value); setPage(1); }}>
-          <option value="">Toate platformele</option>
+          <option value="">Toate sursele</option>
           <option value="meta">Meta</option>
           <option value="google">Google</option>
           <option value="tiktok">TikTok</option>
@@ -231,7 +230,7 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--font-body)' }}>
                 <thead>
                   <tr style={{ background: '#F8FAFC', textAlign: 'left' }}>
-                    {['Lead', 'Platforma', 'Campanie', 'Valoare', 'Status', 'Alocat', 'Data'].map((h) => (
+                    {['Lead', 'Sursa', 'Campanie', 'Valoare', 'Status', 'Alocat', 'Data'].map((h) => (
                       <th key={h} style={{ padding: '11px 16px', fontSize: '0.72rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid #E2E8F0', whiteSpace: 'nowrap' }}>{h}</th>
                     ))}
                   </tr>
