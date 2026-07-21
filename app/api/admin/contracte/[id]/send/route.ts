@@ -7,7 +7,7 @@ import { canAccessAssigned } from '@/lib/crm/access';
 import { sendEmail } from '@/lib/email/send';
 import { signRequestHtml, signRequestSubject } from '@/lib/email/templates/contract';
 
-const schema = z.object({ email: z.string().email('Email invalid') });
+const schema = z.object({ email: z.union([z.string().email('Email invalid'), z.literal('')]).optional() });
 
 /** POST /api/admin/contracte/[id]/send — trimite contractul spre semnare (email cu link public). */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -44,25 +44,32 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://inovex.ro';
   const signUrl = `${siteUrl}/contract/${id}/${token}`;
 
-  const emailRes = await sendEmail({
-    to: parsed.data.email,
-    subject: signRequestSubject(contract.contract_number || ''),
-    html: signRequestHtml({
-      contractNumber: contract.contract_number || '',
-      title: contract.title,
-      companyName: org?.company_name,
-      signUrl,
-      expires: expiresAt.toLocaleDateString('ro-RO'),
-    }),
-  });
+  const recipient = parsed.data.email || '';
+  let emailSent = false;
+  let emailError: string | null = null;
+  if (recipient) {
+    const emailRes = await sendEmail({
+      to: recipient,
+      subject: signRequestSubject(contract.contract_number || ''),
+      html: signRequestHtml({
+        contractNumber: contract.contract_number || '',
+        title: contract.title,
+        companyName: org?.company_name,
+        signUrl,
+        expires: expiresAt.toLocaleDateString('ro-RO'),
+      }),
+    });
+    emailSent = emailRes.success;
+    emailError = emailRes.error ?? null;
+  }
 
   await supabaseAdmin.from('crm_activities').insert({
     type: 'system',
-    title: `Contract trimis spre semnare catre ${parsed.data.email}`,
+    title: recipient ? `Contract trimis spre semnare catre ${recipient}` : 'Link de semnare generat',
     contract_id: id,
     client_id: contract.client_id,
     created_by: auth.user.id,
   });
 
-  return NextResponse.json({ contract: updated, emailSent: emailRes.success, emailError: emailRes.error ?? null });
+  return NextResponse.json({ contract: updated, emailSent, emailError });
 }

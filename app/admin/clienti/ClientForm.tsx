@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
+import { toast } from 'sonner';
+import { Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { CrmClient, Member } from '@/types/crm';
 
@@ -59,6 +61,28 @@ export function ClientForm({ initial, members, canAssign, submitting, submitLabe
   const set = (k: keyof ClientFormValues) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setV((prev) => ({ ...prev, [k]: e.target.value }));
 
+  const [anafLoading, setAnafLoading] = useState(false);
+  async function fetchAnaf() {
+    const cui = (v.cui || '').replace(/\D/g, '');
+    if (cui.length < 2) { toast.error('Introdu mai intai CUI-ul'); return; }
+    setAnafLoading(true);
+    try {
+      const res = await fetch(`/api/admin/anaf?cui=${cui}`);
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? 'Eroare');
+      const c = json.company;
+      setV((prev) => ({
+        ...prev, type: 'PJ',
+        name: c.name || prev.name, cui: c.cui || prev.cui, reg_com: c.reg_com || prev.reg_com,
+        address: c.address || prev.address, city: c.city || prev.city, county: c.county || prev.county,
+        phone: c.phone || prev.phone, iban: c.iban || prev.iban,
+      }));
+      toast.success('Date preluate de la ANAF');
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Eroare la preluarea de la ANAF');
+    } finally { setAnafLoading(false); }
+  }
+
   function submit(e: FormEvent) {
     e.preventDefault();
     onSubmit(v);
@@ -81,7 +105,12 @@ export function ClientForm({ initial, members, canAssign, submitting, submitLabe
               <option value="PF">Persoana fizica (PF)</option>
             </select>
           </Field>
-          <Field label="CUI / CIF"><input style={inp} value={v.cui} onChange={set('cui')} placeholder="RO12345678" /></Field>
+          <Field label="CUI / CIF — completeaza automat de la ANAF">
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input style={{ ...inp, flex: 1 }} value={v.cui} onChange={set('cui')} placeholder="RO12345678 sau 12345678" />
+              <Button type="button" variant="outline" onClick={fetchAnaf} loading={anafLoading} leftIcon={<Building2 size={14} />} style={{ height: 40, flexShrink: 0 }}>Preia</Button>
+            </div>
+          </Field>
           <Field label="Nr. Reg. Comertului"><input style={inp} value={v.reg_com} onChange={set('reg_com')} placeholder="J40/1234/2020" /></Field>
           <Field label="IBAN"><input style={inp} value={v.iban} onChange={set('iban')} placeholder="RO49 AAAA 1B31..." /></Field>
           <Field label="Banca"><input style={inp} value={v.bank} onChange={set('bank')} /></Field>
