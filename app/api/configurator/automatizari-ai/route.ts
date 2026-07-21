@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { sendEmail } from '@/lib/email/send';
 import { internSubject, internHtml, clientSubject, clientHtml } from '@/lib/email/templates/automatizari-ai';
+import { createWebsiteLead } from '@/lib/crm/website-lead';
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
@@ -58,6 +59,18 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const data = schema.parse(body);
+
+    // Lead in CRM (best-effort, nu afecteaza emailurile).
+    await createWebsiteLead({
+      req, source: 'Configurator automatizari AI',
+      name: data.numeComplet, email: data.email || null, phone: data.telefon,
+      notes: [
+        `Tip afacere: ${data.tipAfacere}`,
+        `Procese de automatizat: ${data.proceseAutomatizare.join(', ')}`,
+        data.descriereAltceva ? `Detalii: ${data.descriereAltceva}` : null,
+      ].filter(Boolean).join('\n'),
+      raw: data,
+    });
 
     const to = process.env.SMTP_TO ?? 'contact@inovex.ro';
     const emailData = { ...data, ip };

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { sendEmail } from '@/lib/email/send';
 import { bidInternSubject, bidInternHtml, bidClientSubject, bidClientHtml } from '@/lib/email/templates/marketplace';
+import { createWebsiteLead } from '@/lib/crm/website-lead';
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
@@ -36,6 +37,19 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const data = schema.parse(body);
+
+    // Lead in CRM (best-effort, nu afecteaza emailurile/bid-urile).
+    await createWebsiteLead({
+      req, source: 'Marketplace — oferta produs',
+      name: data.name, email: data.email, phone: data.phone,
+      estimatedValue: data.offeredPrice,
+      notes: [
+        `Produs: ${data.productTitle}`,
+        `Pret oferit: ${data.offeredPrice} RON`,
+        data.message ? `Mesaj: ${data.message}` : null,
+      ].filter(Boolean).join('\n'),
+      raw: data,
+    });
 
     const to = process.env.SMTP_TO ?? 'contact@inovex.ro';
     const emailData = { ...data, ip };

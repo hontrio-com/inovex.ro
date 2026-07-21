@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { sendEmail } from '@/lib/email/send';
 import { internSubject, internHtml, clientSubject, clientHtml } from '@/lib/email/templates/contact';
+import { createWebsiteLead } from '@/lib/crm/website-lead';
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
@@ -35,6 +36,13 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const data = schema.parse(body);
+
+    // Lead in CRM (best-effort, nu afecteaza emailurile).
+    await createWebsiteLead({
+      req, source: 'Formular contact',
+      name: data.nume, email: data.email, phone: data.telefon, company: data.companie,
+      notes: data.mesaj, raw: data,
+    });
 
     const to = process.env.SMTP_TO ?? 'contact@inovex.ro';
     const emailData = { ...data, ip };
