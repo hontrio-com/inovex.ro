@@ -11,7 +11,7 @@ function Shell({ children }: { children: React.ReactNode }) {
     <div style={{ minHeight: '100vh', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
       <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: 16, padding: '40px 32px', maxWidth: 460, textAlign: 'center' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={LOGO} alt="Inovex" style={{ height: 34, objectFit: 'contain', marginBottom: 20 }} />
+        <img src={LOGO} alt="Inovex" style={{ height: 34, objectFit: 'contain', display: 'block', margin: '0 auto 20px' }} />
         {children}
       </div>
     </div>

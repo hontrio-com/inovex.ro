@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { ArrowLeft, Trash2, UserPlus, Trophy, XCircle, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Trash2, UserPlus, XCircle, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { CrmLead, Member, LeadStatus } from '@/types/crm';
 import { LeadForm, LeadFormValues } from '../LeadForm';
@@ -121,10 +121,7 @@ export function LeadDetail({ initialLead, canAssign, canDelete }: {
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {!lead.converted_client_id && (
-            <Button variant="outline" disabled={busy} onClick={convert} leftIcon={<UserPlus size={15} />}>Converteste in client</Button>
-          )}
-          {lead.status !== 'castigat' && (
-            <Button variant="outline" disabled={busy} onClick={() => changeStatus('castigat')} leftIcon={<Trophy size={15} />} className="text-green-700 border-green-200 hover:bg-green-50">Castigat</Button>
+            <Button variant="outline" disabled={busy} onClick={convert} leftIcon={<UserPlus size={15} />} className="text-green-700 border-green-200 hover:bg-green-50">Converteste in client</Button>
           )}
           {lead.status !== 'pierdut' && (
             <Button variant="outline" disabled={busy} onClick={markLost} leftIcon={<XCircle size={15} />} className="text-red-600 border-red-200 hover:bg-red-50">Pierdut</Button>

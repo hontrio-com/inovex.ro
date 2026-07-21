@@ -1,17 +1,14 @@
 import type { LeadStatus } from '@/types/crm';
 
 export const LEAD_COLUMNS: { key: LeadStatus; label: string; color: string }[] = [
-  { key: 'nou',            label: 'Nou',            color: '#64748B' },
-  { key: 'contactat',      label: 'Contactat',      color: '#2B8FCC' },
-  { key: 'calificat',      label: 'Calificat',      color: '#7C3AED' },
-  { key: 'oferta_trimisa', label: 'Oferta trimisa', color: '#EA580C' },
-  { key: 'castigat',       label: 'Castigat',       color: '#15803D' },
-  { key: 'pierdut',        label: 'Pierdut',        color: '#DC2626' },
+  { key: 'nou',       label: 'Nou',       color: '#64748B' },
+  { key: 'calificat', label: 'Calificat', color: '#7C3AED' },
+  { key: 'convertit', label: 'Convertit', color: '#15803D' },
+  { key: 'pierdut',   label: 'Pierdut',   color: '#DC2626' },
 ];
 
 export const STATUS_LABEL: Record<LeadStatus, string> = {
-  nou: 'Nou', contactat: 'Contactat', calificat: 'Calificat',
-  oferta_trimisa: 'Oferta trimisa', castigat: 'Castigat', pierdut: 'Pierdut',
+  nou: 'Nou', calificat: 'Calificat', convertit: 'Convertit', pierdut: 'Pierdut',
 };
 
 export const PLATFORM_META: Record<string, { label: string; color: string }> = {

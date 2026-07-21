@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useEffect, FormEvent } from 'react';
-import { X } from 'lucide-react';
+import { X, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import type { CrmSubscription } from '@/types/crm';
+import type { CrmSubscription, CrmMaintenancePackage } from '@/types/crm';
 
 export interface SubFormValues {
   client_id: string; name: string; status: string; price: string; currency: string;
-  billing_cycle: string; start_date: string; next_renewal_date: string; notes: string;
+  billing_cycle: string; start_date: string; next_renewal_date: string; package_id: string; notes: string;
 }
 
 const s = (v: string | null | undefined) => v ?? '';
@@ -22,6 +22,7 @@ export function toSubValues(sub?: Partial<CrmSubscription> | null, fixedClientId
     billing_cycle: sub?.billing_cycle ?? 'lunar',
     start_date: s(sub?.start_date),
     next_renewal_date: s(sub?.next_renewal_date),
+    package_id: s(sub?.package_id),
     notes: s(sub?.notes),
   };
 }
@@ -40,6 +41,26 @@ export function SubscriptionForm({ initial, fixedClientId, fixedClientName, subm
 }) {
   const [v, setV] = useState<SubFormValues>(() => toSubValues(initial, fixedClientId));
   const set = (k: keyof SubFormValues) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setV((p) => ({ ...p, [k]: e.target.value }));
+
+  // Pachete active — pentru pre-completare rapida
+  const [packages, setPackages] = useState<CrmMaintenancePackage[]>([]);
+  useEffect(() => {
+    fetch('/api/admin/pachete').then((r) => r.json()).then((j) => setPackages((j.items ?? []).filter((p: CrmMaintenancePackage) => p.is_active))).catch(() => {});
+  }, []);
+
+  function applyPackage(id: string) {
+    if (!id) { setV((p) => ({ ...p, package_id: '' })); return; }
+    const pkg = packages.find((p) => p.id === id);
+    if (!pkg) return;
+    setV((p) => ({
+      ...p,
+      package_id: id,
+      name: p.name || pkg.name,
+      price: pkg.price != null ? String(pkg.price) : p.price,
+      currency: pkg.currency || p.currency,
+      billing_cycle: pkg.billing_cycle || p.billing_cycle,
+    }));
+  }
 
   // Client picker (doar cand nu e fixat)
   const [clientQ, setClientQ] = useState('');
@@ -84,6 +105,16 @@ export function SubscriptionForm({ initial, fixedClientId, fixedClientName, subm
         </div>
       )}
 
+      {packages.length > 0 && (
+        <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: 12 }}>
+          <label style={{ ...lbl, display: 'flex', alignItems: 'center', gap: 6 }}><Package size={14} color="#2B8FCC" /> Porneste dintr-un pachet (optional)</label>
+          <select style={{ ...inp, cursor: 'pointer' }} value={v.package_id} onChange={(e) => applyPackage(e.target.value)}>
+            <option value="">Fara pachet — completez manual</option>
+            {packages.map((p) => <option key={p.id} value={p.id}>{p.name}{p.price != null ? ` — ${p.price} ${p.currency}/${p.billing_cycle}` : ''}</option>)}
+          </select>
+        </div>
+      )}
+
       <div style={grid2}>
         <div><label style={lbl}>Nume abonament *</label><input style={inp} value={v.name} onChange={set('name')} placeholder="Mentenanta website" /></div>
         <div>
@@ -91,15 +122,17 @@ export function SubscriptionForm({ initial, fixedClientId, fixedClientName, subm
           <select style={{ ...inp, cursor: 'pointer' }} value={v.status} onChange={set('status')}>
             <option value="activ">Activ</option>
             <option value="suspendat">Suspendat</option>
+            <option value="expirat">Expirat</option>
             <option value="anulat">Anulat</option>
           </select>
         </div>
         <div><label style={lbl}>Pret</label><input style={inp} type="number" min="0" step="0.01" value={v.price} onChange={set('price')} placeholder="0" /></div>
         <div>
-          <label style={lbl}>Ciclu facturare</label>
+          <label style={lbl}>Interval de facturare</label>
           <select style={{ ...inp, cursor: 'pointer' }} value={v.billing_cycle} onChange={set('billing_cycle')}>
             <option value="lunar">Lunar</option>
             <option value="trimestrial">Trimestrial</option>
+            <option value="semestrial">Semestrial</option>
             <option value="anual">Anual</option>
           </select>
         </div>

@@ -95,7 +95,7 @@ export function SignClient({ token, contractNumber, title, content, clientName, 
         {/* Header cu logo */}
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logo} alt="Inovex" style={{ height: 38, objectFit: 'contain' }} />
+          <img src={logo} alt="Inovex" style={{ height: 38, objectFit: 'contain', display: 'block', margin: '0 auto' }} />
           <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#94A3B8', marginTop: 8 }}>Semnare electronica contract{contractNumber ? ` nr. ${contractNumber}` : ''}</p>
         </div>
 

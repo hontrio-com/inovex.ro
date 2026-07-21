@@ -31,7 +31,7 @@ export async function GET() {
     return agent ? q.eq('assigned_to', agent) : q;
   };
 
-  let pipeQ = supabaseAdmin.from('crm_leads').select('status, estimated_value').neq('status', 'castigat').neq('status', 'pierdut');
+  let pipeQ = supabaseAdmin.from('crm_leads').select('status, estimated_value').neq('status', 'convertit').neq('status', 'pierdut');
   if (agent) pipeQ = pipeQ.eq('assigned_to', agent);
   let platQ = supabaseAdmin.from('crm_leads').select('platform');
   if (agent) platQ = platQ.eq('assigned_to', agent);
@@ -48,7 +48,7 @@ export async function GET() {
     leadCount().gte('created_at', d30),
     leadCount().gte('created_at', d60).lt('created_at', d30),
     leadCount(),
-    leadCount().eq('status', 'castigat'),
+    leadCount().eq('status', 'convertit'),
     leadCount().eq('status', 'pierdut'),
     clientCount(),
     pipeQ,

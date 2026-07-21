@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { RefreshCw, Plus, Search, Loader2, Trash2, Pencil, X, TrendingUp, CheckCircle2, CalendarClock } from 'lucide-react';
+import { RefreshCw, Plus, Search, Loader2, Trash2, Pencil, X, TrendingUp, CheckCircle2, CalendarClock, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { CrmSubscription, SubscriptionStatus } from '@/types/crm';
 import { SubscriptionForm, SubFormValues } from './SubscriptionForm';
@@ -11,9 +11,10 @@ import { SubscriptionForm, SubFormValues } from './SubscriptionForm';
 const STATUS_STYLE: Record<SubscriptionStatus, { label: string; fg: string; bg: string; bd: string }> = {
   activ:     { label: 'Activ',     fg: '#15803D', bg: '#F0FDF4', bd: '#BBF7D0' },
   suspendat: { label: 'Suspendat', fg: '#B45309', bg: '#FFFBEB', bd: '#FDE68A' },
-  anulat:    { label: 'Anulat',    fg: '#DC2626', bg: '#FEF2F2', bd: '#FECACA' },
+  expirat:   { label: 'Expirat',   fg: '#DC2626', bg: '#FEF2F2', bd: '#FECACA' },
+  anulat:    { label: 'Anulat',    fg: '#64748B', bg: '#F1F5F9', bd: '#E2E8F0' },
 };
-const CYCLE_LABEL: Record<string, string> = { lunar: 'lunar', trimestrial: 'trimestrial', anual: 'anual' };
+const CYCLE_LABEL: Record<string, string> = { lunar: 'lunar', trimestrial: 'trimestrial', semestrial: 'semestrial', anual: 'anual' };
 const ctrl: React.CSSProperties = { height: 38, border: '1px solid #E2E8F0', borderRadius: 8, padding: '0 12px', fontFamily: 'var(--font-body)', fontSize: '0.85rem', color: '#0F172A', background: '#fff', outline: 'none' };
 const PER_PAGE = 30;
 
@@ -105,7 +106,10 @@ export function AbonamenteList() {
           </h1>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: '#64748B' }}>Venit recurent si reinnoiri.</p>
         </div>
-        <Button leftIcon={<Plus size={15} />} onClick={() => setEditing('new')}>Abonament nou</Button>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <Button variant="outline" href="/admin/pachete" leftIcon={<Package size={15} />}>Pachete</Button>
+          <Button leftIcon={<Plus size={15} />} onClick={() => setEditing('new')}>Abonament nou</Button>
+        </div>
       </div>
 
       {/* Statistici */}
@@ -125,12 +129,14 @@ export function AbonamenteList() {
           <option value="">Toate statusurile</option>
           <option value="activ">Activ</option>
           <option value="suspendat">Suspendat</option>
+          <option value="expirat">Expirat</option>
           <option value="anulat">Anulat</option>
         </select>
         <select style={{ ...ctrl, cursor: 'pointer' }} value={cycle} onChange={(e) => { setCycle(e.target.value); setPage(1); }}>
           <option value="">Toate ciclurile</option>
           <option value="lunar">Lunar</option>
           <option value="trimestrial">Trimestrial</option>
+          <option value="semestrial">Semestrial</option>
           <option value="anual">Anual</option>
         </select>
       </div>
@@ -151,7 +157,10 @@ export function AbonamenteList() {
                     return (
                       <tr key={sub.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
                         <td style={{ padding: '12px 16px', fontSize: '0.85rem' }}>{sub.client ? <Link href={`/admin/clienti/${sub.client.id}`} style={{ color: '#2B8FCC', textDecoration: 'none', fontWeight: 600 }}>{sub.client.name}</Link> : '—'}</td>
-                        <td style={{ padding: '12px 16px', fontSize: '0.85rem', color: '#334155', fontWeight: 600 }}>{sub.name}</td>
+                        <td style={{ padding: '12px 16px', fontSize: '0.85rem', color: '#334155', fontWeight: 600 }}>
+                          {sub.name}
+                          {sub.package && <span style={{ display: 'block', fontWeight: 500, fontSize: '0.72rem', color: '#94A3B8' }}>Pachet: {sub.package.name}</span>}
+                        </td>
                         <td style={{ padding: '12px 16px' }}><span style={{ padding: '2px 9px', borderRadius: 999, fontSize: '0.72rem', fontWeight: 600, background: st.bg, color: st.fg, border: `1px solid ${st.bd}` }}>{st.label}</span></td>
                         <td style={{ padding: '12px 16px', fontSize: '0.82rem', color: '#475569', whiteSpace: 'nowrap' }}>{fmtMoney(sub.price, sub.currency)} <span style={{ color: '#94A3B8', fontSize: '0.72rem' }}>/ {CYCLE_LABEL[sub.billing_cycle]}</span></td>
                         <td style={{ padding: '12px 16px', fontSize: '0.8rem', color: '#64748B', whiteSpace: 'nowrap' }}>{fmtDate(sub.next_renewal_date)}</td>

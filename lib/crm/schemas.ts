@@ -54,7 +54,7 @@ export const activityCreateSchema = z.object({
   body:  z.string().trim().min(1, 'Continutul e obligatoriu').max(5000),
 });
 
-const LEAD_STATUSES = ['nou', 'contactat', 'calificat', 'oferta_trimisa', 'castigat', 'pierdut'] as const;
+const LEAD_STATUSES = ['nou', 'calificat', 'convertit', 'pierdut'] as const;
 
 /** Schema lead — creare + editare (formularul trimite setul complet). */
 export const leadSchema = z
@@ -107,21 +107,64 @@ export const contractCreateSchema = z.object({
   currency:    z.preprocess((v) => (v == null || v === '' ? 'RON' : v), z.string().max(10)),
 });
 
+const BILLING_CYCLES = ['lunar', 'trimestrial', 'semestrial', 'anual'] as const;
+
 /** Abonament de mentenanta (creare + editare). */
 export const subscriptionSchema = z.object({
   client_id:         z.string().uuid('Client invalid'),
   name:              z.string().trim().min(1, 'Numele e obligatoriu').max(200),
-  status:            z.enum(['activ', 'suspendat', 'anulat']).default('activ'),
+  status:            z.enum(['activ', 'suspendat', 'expirat', 'anulat']).default('activ'),
   price:             z.preprocess(
                        (v) => (v === '' || v == null ? null : typeof v === 'string' ? Number(v) : v),
                        z.number().nonnegative('Pret invalid').nullable(),
                      ),
   currency:          z.preprocess((v) => (v == null || v === '' ? 'RON' : v), z.string().max(10)),
-  billing_cycle:     z.enum(['lunar', 'trimestrial', 'anual']).default('lunar'),
+  billing_cycle:     z.enum(BILLING_CYCLES).default('lunar'),
   start_date:        z.preprocess((v) => (v === '' || v == null ? null : v), z.string().nullable()),
   next_renewal_date: z.preprocess((v) => (v === '' || v == null ? null : v), z.string().nullable()),
   contract_id:       optUuid,
+  package_id:        optUuid,
   notes:             optStr(2000),
+});
+
+/** Pachet de mentenanta (sablon reutilizabil). */
+export const packageSchema = z.object({
+  name:          z.string().trim().min(1, 'Numele e obligatoriu').max(200),
+  description:   optStr(1000),
+  price:         z.preprocess(
+                   (v) => (v === '' || v == null ? null : typeof v === 'string' ? Number(v) : v),
+                   z.number().nonnegative('Pret invalid').nullable(),
+                 ),
+  currency:      z.preprocess((v) => (v == null || v === '' ? 'RON' : v), z.string().max(10)),
+  billing_cycle: z.enum(BILLING_CYCLES).default('lunar'),
+  features:      z.preprocess(
+                   (v) => (Array.isArray(v) ? v.map((x) => String(x).trim()).filter(Boolean) : []),
+                   z.array(z.string().max(300)).max(50),
+                 ),
+  is_active:     z.preprocess((v) => v ?? true, z.boolean()),
+});
+
+/** O intrare de logare pentru website. */
+const credentialSchema = z.object({
+  label:    optStr(120),
+  url:      optStr(300),
+  username: optStr(200),
+  password: optStr(500),
+});
+
+/** Website administrat sub mentenanta. */
+export const websiteSchema = z.object({
+  client_id:       z.string().uuid('Client invalid'),
+  subscription_id: optUuid,
+  label:           optStr(200),
+  domain:          optStr(200),
+  platform:        optStr(120),
+  hosting:         optStr(200),
+  hosting_url:     optStr(300),
+  admin_url:       optStr(300),
+  status:          z.enum(['activ', 'in_dezvoltare', 'suspendat', 'arhivat']).default('activ'),
+  credentials:     z.preprocess((v) => (Array.isArray(v) ? v : []), z.array(credentialSchema).max(30)),
+  notes:           optStr(2000),
 });
 
 /** Setari firma (contracte + semnatura). */

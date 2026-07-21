@@ -8,7 +8,7 @@ import {
   LayoutDashboard, ShoppingBag, Settings,
   Gavel, LogOut, ChevronRight, Globe,
   BookOpen, Tag, MessageSquare, Mail, Menu, X, Users,
-  Building2, Target, FileSignature, RefreshCw,
+  Building2, Target, FileSignature, RefreshCw, Package, Server,
 } from 'lucide-react';
 
 type Role = 'owner' | 'admin' | 'agent';
@@ -26,6 +26,8 @@ const NAV: NavEntry[] = [
   { label: 'Lead-uri',          href: '/admin/lead-uri',                  icon: Target          },
   { label: 'Contracte',         href: '/admin/contracte',                 icon: FileSignature   },
   { label: 'Abonamente',        href: '/admin/abonamente',                icon: RefreshCw       },
+  { label: 'Pachete',           href: '/admin/pachete',                   icon: Package         },
+  { label: 'Website-uri',       href: '/admin/website-uri',               icon: Server, roles: ['owner', 'admin'] },
   { label: 'Site web',          href: '',                                  icon: null            },
   { label: 'Marketplace',       href: '/admin/marketplace',               icon: ShoppingBag     },
   { label: 'Oferte',            href: '/admin/bids',                      icon: Gavel           },

@@ -45,7 +45,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     .update({
       converted_client_id: client.id,
       converted_at: new Date().toISOString(),
-      status: 'castigat',
+      status: 'convertit',
     })
     .eq('id', id);
 

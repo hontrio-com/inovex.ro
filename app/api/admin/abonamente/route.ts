@@ -4,12 +4,13 @@ import { requireAuth } from '@/lib/auth';
 import { guardClient } from '@/lib/crm/guard';
 import { subscriptionSchema } from '@/lib/crm/schemas';
 
-const STATUSES = ['activ', 'suspendat', 'anulat'];
+const STATUSES = ['activ', 'suspendat', 'expirat', 'anulat'];
 
 /** Normalizeaza pretul la valoare lunara (pentru MRR). */
 function monthly(price: number | null, cycle: string): number {
   if (price == null) return 0;
   if (cycle === 'trimestrial') return price / 3;
+  if (cycle === 'semestrial') return price / 6;
   if (cycle === 'anual') return price / 12;
   return price; // lunar
 }
@@ -17,6 +18,7 @@ function monthly(price: number | null, cycle: string): number {
 function addCycle(dateStr: string, cycle: string): string {
   const d = new Date(dateStr);
   if (cycle === 'trimestrial') d.setMonth(d.getMonth() + 3);
+  else if (cycle === 'semestrial') d.setMonth(d.getMonth() + 6);
   else if (cycle === 'anual') d.setFullYear(d.getFullYear() + 1);
   else d.setMonth(d.getMonth() + 1);
   return d.toISOString().slice(0, 10);
@@ -34,7 +36,7 @@ export async function GET(req: NextRequest) {
 
   let query = supabaseAdmin
     .from('crm_subscriptions')
-    .select('*, client:crm_clients!inner(id, name, assigned_to)', { count: 'exact' });
+    .select('*, client:crm_clients!inner(id, name, assigned_to), package:crm_maintenance_packages(id, name)', { count: 'exact' });
   if (isAgent) query = query.eq('client.assigned_to', auth.user.id);
 
   const status = sp.get('status');

@@ -78,8 +78,57 @@ export interface CrmContractLite {
   signed_at: string | null;
 }
 
-export type SubscriptionStatus = 'activ' | 'suspendat' | 'anulat';
-export type BillingCycle = 'lunar' | 'trimestrial' | 'anual';
+export type SubscriptionStatus = 'activ' | 'suspendat' | 'expirat' | 'anulat';
+export type BillingCycle = 'lunar' | 'trimestrial' | 'semestrial' | 'anual';
+
+/** Un beneficiu dintr-un pachet de mentenanta. */
+export interface CrmMaintenancePackage {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number | null;
+  currency: string | null;
+  billing_cycle: BillingCycle;
+  features: string[];
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+  /** Numar de abonamente care folosesc pachetul (derivat la citire). */
+  usage_count?: number;
+}
+
+/** O intrare de logare pentru un website (parola decriptata doar la nevoie, server-side). */
+export interface WebsiteCredential {
+  label: string;
+  url: string | null;
+  username: string | null;
+  password: string | null;
+}
+
+export type WebsiteStatus = 'activ' | 'in_dezvoltare' | 'suspendat' | 'arhivat';
+
+export interface CrmWebsite {
+  id: string;
+  client_id: string;
+  subscription_id: string | null;
+  label: string | null;
+  domain: string | null;
+  platform: string | null;
+  hosting: string | null;
+  hosting_url: string | null;
+  admin_url: string | null;
+  status: WebsiteStatus;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  client?: { id: string; name: string } | null;
+  subscription?: { id: string; name: string; status: SubscriptionStatus } | null;
+  /** Prezente doar in detaliu (decriptate server-side). */
+  credentials?: WebsiteCredential[];
+  /** Cate intrari de logare are (pentru lista, fara a expune parolele). */
+  credentials_count?: number;
+}
 
 export interface CrmSubscriptionLite {
   id: string;
@@ -103,10 +152,12 @@ export interface CrmSubscription {
   start_date: string | null;
   next_renewal_date: string | null;
   contract_id: string | null;
+  package_id: string | null;
   notes: string | null;
   created_at: string;
   updated_at: string;
   client?: { id: string; name: string } | null;
+  package?: { id: string; name: string } | null;
 }
 
 export interface Member {
@@ -117,7 +168,7 @@ export interface Member {
   is_active: boolean;
 }
 
-export type LeadStatus = 'nou' | 'contactat' | 'calificat' | 'oferta_trimisa' | 'castigat' | 'pierdut';
+export type LeadStatus = 'nou' | 'calificat' | 'convertit' | 'pierdut';
 export type LeadPlatform = 'meta' | 'google' | 'tiktok' | 'website' | 'manual';
 
 export interface CrmLead {

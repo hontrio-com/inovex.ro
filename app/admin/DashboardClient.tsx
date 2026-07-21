@@ -60,7 +60,7 @@ export function DashboardClient({ userName }: { userName: string }) {
 
   const trend = stats.leads.prev30 > 0 ? Math.round(((stats.leads.last30 - stats.leads.prev30) / stats.leads.prev30) * 100) : (stats.leads.last30 > 0 ? 100 : 0);
   const trendUp = trend >= 0;
-  const activeCols = LEAD_COLUMNS.filter((c) => c.key !== 'castigat' && c.key !== 'pierdut');
+  const activeCols = LEAD_COLUMNS.filter((c) => c.key !== 'convertit' && c.key !== 'pierdut');
   const pipeMax = Math.max(1, ...activeCols.map((c) => stats.pipeline[c.key]?.count ?? 0));
   const pipeValue = activeCols.reduce((a, c) => a + (stats.pipeline[c.key]?.value ?? 0), 0);
   const platEntries = Object.entries(stats.platforms).sort((a, b) => b[1] - a[1]);
