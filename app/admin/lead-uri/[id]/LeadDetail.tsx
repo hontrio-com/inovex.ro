@@ -21,7 +21,7 @@ export function LeadDetail({ initialLead, canAssign, canDelete }: {
   const router = useRouter();
   const [lead, setLead] = useState<CrmLead>(initialLead);
   const [members, setMembers] = useState<Member[]>([]);
-  const [tab, setTab] = useState<Tab>('detalii');
+  const [tab, setTab] = useState<Tab>('activitate');
   const [saving, setSaving] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -140,7 +140,7 @@ export function LeadDetail({ initialLead, canAssign, canDelete }: {
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid #E2E8F0', marginBottom: 20 }}>
-        {(['detalii', 'activitate'] as Tab[]).map((t) => (
+        {(['activitate', 'detalii'] as Tab[]).map((t) => (
           <button key={t} onClick={() => setTab(t)}
             style={{
               padding: '10px 16px', border: 'none', background: 'none', cursor: 'pointer',

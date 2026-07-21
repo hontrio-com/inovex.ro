@@ -91,9 +91,10 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? 'Eroare la creare');
-      toast.success('Lead creat');
+      toast.success('Lead creat — noteaza discutia in Activitate');
       setShowNew(false);
-      load();
+      if (json.lead?.id) router.push(`/admin/lead-uri/${json.lead.id}`);
+      else load();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Eroare la creare');
     } finally {
