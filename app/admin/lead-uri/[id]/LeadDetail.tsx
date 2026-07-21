@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { ArrowLeft, Trash2, UserPlus, XCircle, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Trash2, UserPlus, XCircle, ExternalLink, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { CrmLead, Member, LeadStatus } from '@/types/crm';
 import { LeadForm, LeadFormValues } from '../LeadForm';
@@ -124,6 +124,9 @@ export function LeadDetail({ initialLead, canAssign, canDelete, canConvert }: {
           {canConvert && !lead.converted_client_id && (
             <Button variant="outline" disabled={busy} onClick={convert} leftIcon={<UserPlus size={15} />} className="text-green-700 border-green-200 hover:bg-green-50">Converteste in client</Button>
           )}
+          {lead.status !== 'edinio' && (
+            <Button variant="outline" disabled={busy} onClick={() => changeStatus('edinio')} leftIcon={<Rocket size={15} />} className="text-teal-700 border-teal-200 hover:bg-teal-50">Catre Edinio</Button>
+          )}
           {lead.status !== 'pierdut' && (
             <Button variant="outline" disabled={busy} onClick={markLost} leftIcon={<XCircle size={15} />} className="text-red-600 border-red-200 hover:bg-red-50">Pierdut</Button>
           )}
@@ -136,6 +139,14 @@ export function LeadDetail({ initialLead, canAssign, canDelete, canConvert }: {
       {lead.status === 'pierdut' && lead.lost_reason && (
         <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 10, padding: '10px 14px', marginBottom: 16, fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#B91C1C' }}>
           <strong>Motiv pierdere:</strong> {lead.lost_reason}
+        </div>
+      )}
+      {lead.status === 'edinio' && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#F0FDFA', border: '1px solid #99F6E4', borderRadius: 10, padding: '10px 14px', marginBottom: 16, fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#0F766E' }}>
+          <Rocket size={15} style={{ flexShrink: 0 }} />
+          <span>
+            Lead directionat catre <a href="https://edinio.com" target="_blank" rel="noreferrer" style={{ color: '#0D9488', fontWeight: 700, textDecoration: 'none' }}>Edinio.com</a> — solutia SaaS potrivita pentru bugete mai mici.
+          </span>
         </div>
       )}
 

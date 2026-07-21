@@ -168,7 +168,7 @@ export interface Member {
   is_active: boolean;
 }
 
-export type LeadStatus = 'nou' | 'calificat' | 'convertit' | 'pierdut';
+export type LeadStatus = 'nou' | 'calificat' | 'convertit' | 'edinio' | 'pierdut';
 export type LeadPlatform = 'meta' | 'google' | 'tiktok' | 'website' | 'manual';
 
 export interface CrmLead {

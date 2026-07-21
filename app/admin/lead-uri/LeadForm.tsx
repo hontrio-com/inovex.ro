@@ -79,6 +79,7 @@ export function LeadForm({ initial, members, canAssign, submitting, submitLabel,
             <option value="nou">Nou</option>
             <option value="calificat">Calificat</option>
             <option value="convertit">Convertit</option>
+            <option value="edinio">Catre Edinio</option>
             <option value="pierdut">Pierdut</option>
           </select>
         </Field>
