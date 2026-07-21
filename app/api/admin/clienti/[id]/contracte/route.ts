@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { requireAuth } from '@/lib/auth';
+import { requireRole } from '@/lib/auth';
 import { guardClient } from '@/lib/crm/guard';
 
 /** GET /api/admin/clienti/[id]/contracte — contractele clientului (read-only; gestionate in Faza E). */
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireAuth();
+  const auth = await requireRole(['owner', 'admin']);
   if (auth.error) return auth.error;
   const { id } = await params;
 

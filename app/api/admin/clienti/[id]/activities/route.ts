@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { requireAuth } from '@/lib/auth';
+import { requireRole } from '@/lib/auth';
 import { guardClient } from '@/lib/crm/guard';
 import { activityCreateSchema } from '@/lib/crm/schemas';
 
 /** GET /api/admin/clienti/[id]/activities — timeline activitati. */
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireAuth();
+  const auth = await requireRole(['owner', 'admin']);
   if (auth.error) return auth.error;
   const { id } = await params;
 
@@ -26,7 +26,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
 /** POST /api/admin/clienti/[id]/activities — adauga nota/apel/email/meeting/task. */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireAuth();
+  const auth = await requireRole(['owner', 'admin']);
   if (auth.error) return auth.error;
   const { id } = await params;
 

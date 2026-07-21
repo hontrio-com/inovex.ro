@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { requireAuth, requireRole } from '@/lib/auth';
+import { requireRole } from '@/lib/auth';
 import { packageSchema } from '@/lib/crm/schemas';
 
 /** GET /api/admin/pachete — lista pachetelor de mentenanta (+ nr. abonamente care le folosesc). */
 export async function GET() {
-  const auth = await requireAuth();
+  const auth = await requireRole(['owner', 'admin']);
   if (auth.error) return auth.error;
 
   const { data, error } = await supabaseAdmin

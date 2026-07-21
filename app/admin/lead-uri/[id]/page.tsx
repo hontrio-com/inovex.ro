@@ -25,5 +25,5 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
   }
 
   const privileged = user.role === 'owner' || user.role === 'admin';
-  return <LeadDetail initialLead={lead as CrmLead} canAssign={privileged} canDelete={privileged} />;
+  return <LeadDetail initialLead={lead as CrmLead} canAssign={privileged} canDelete={privileged} canConvert={privileged} />;
 }

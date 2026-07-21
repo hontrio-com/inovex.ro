@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { requireAuth } from '@/lib/auth';
+import { requireRole } from '@/lib/auth';
 import { clientSchema } from '@/lib/crm/schemas';
 
 const SORTABLE = ['created_at', 'updated_at', 'name', 'status'] as const;
@@ -8,7 +8,7 @@ const STATUSES = ['activ', 'inactiv', 'prospect'];
 
 /** GET /api/admin/clienti — lista cu cautare, filtre, sortare si paginare server-side. */
 export async function GET(req: NextRequest) {
-  const auth = await requireAuth();
+  const auth = await requireRole(['owner', 'admin']);
   if (auth.error) return auth.error;
   const { user } = auth;
 
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
 
 /** POST /api/admin/clienti — creare client. */
 export async function POST(req: NextRequest) {
-  const auth = await requireAuth();
+  const auth = await requireRole(['owner', 'admin']);
   if (auth.error) return auth.error;
   const { user } = auth;
 

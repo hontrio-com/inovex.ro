@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import { NextResponse } from 'next/server';
+import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { supabaseAdmin } from '@/lib/supabase';
 
@@ -77,4 +78,16 @@ export async function requireRole(allowed: Role[]): Promise<RequireRoleResult> {
 /** Prescurtare: orice utilizator autentificat cu profil activ (orice rol). */
 export function requireAuth(): Promise<RequireRoleResult> {
   return requireRole(['owner', 'admin', 'agent']);
+}
+
+/**
+ * Guard pentru PAGINI (server components) rezervate staff-ului (owner/admin).
+ * Neautentificat -> /admin/login; agent -> /admin/lead-uri (singura lui sectiune).
+ * Returneaza userul (garantat owner/admin).
+ */
+export async function requireStaffPage(): Promise<SessionUser> {
+  const user = await getSessionUser();
+  if (!user) redirect('/admin/login');
+  if (user.role === 'agent') redirect('/admin/lead-uri');
+  return user;
 }

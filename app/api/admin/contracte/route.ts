@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { requireAuth } from '@/lib/auth';
+import { requireRole } from '@/lib/auth';
 import { canAccessClient } from '@/lib/crm/access';
 import { contractCreateSchema } from '@/lib/crm/schemas';
 import { buildContractValues, fillVariables } from '@/lib/crm/contract-vars';
@@ -11,7 +11,7 @@ const STATUSES = ['draft', 'trimis', 'semnat', 'expirat', 'anulat'];
 
 /** GET /api/admin/contracte — lista contractelor (scoping rol + filtre). */
 export async function GET(req: NextRequest) {
-  const auth = await requireAuth();
+  const auth = await requireRole(['owner', 'admin']);
   if (auth.error) return auth.error;
 
   const sp = new URL(req.url).searchParams;
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
 
 /** POST /api/admin/contracte — genereaza un contract din client + sablon. */
 export async function POST(req: NextRequest) {
-  const auth = await requireAuth();
+  const auth = await requireRole(['owner', 'admin']);
   if (auth.error) return auth.error;
 
   let body: unknown;

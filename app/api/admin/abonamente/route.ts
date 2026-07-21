@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { requireAuth } from '@/lib/auth';
+import { requireRole } from '@/lib/auth';
 import { guardClient } from '@/lib/crm/guard';
 import { subscriptionSchema } from '@/lib/crm/schemas';
 
@@ -26,7 +26,7 @@ function addCycle(dateStr: string, cycle: string): string {
 
 /** GET /api/admin/abonamente — lista + agregate MRR / active / reinnoiri 30 zile. */
 export async function GET(req: NextRequest) {
-  const auth = await requireAuth();
+  const auth = await requireRole(['owner', 'admin']);
   if (auth.error) return auth.error;
   const isAgent = auth.user.role === 'agent';
 
@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
 
 /** POST /api/admin/abonamente — creare abonament. */
 export async function POST(req: NextRequest) {
-  const auth = await requireAuth();
+  const auth = await requireRole(['owner', 'admin']);
   if (auth.error) return auth.error;
 
   let body: unknown;

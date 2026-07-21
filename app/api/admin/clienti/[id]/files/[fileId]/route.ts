@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { requireAuth } from '@/lib/auth';
+import { requireRole } from '@/lib/auth';
 import { guardClient } from '@/lib/crm/guard';
 
 const BUCKET = 'crm-files';
@@ -10,7 +10,7 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string; fileId: string }> },
 ) {
-  const auth = await requireAuth();
+  const auth = await requireRole(['owner', 'admin']);
   if (auth.error) return auth.error;
   const { id, fileId } = await params;
 

@@ -13,10 +13,11 @@ import { LEAD_COLUMNS, STATUS_LABEL, PLATFORM_META, fmtMoney } from '../meta';
 
 type Tab = 'detalii' | 'activitate';
 
-export function LeadDetail({ initialLead, canAssign, canDelete }: {
+export function LeadDetail({ initialLead, canAssign, canDelete, canConvert }: {
   initialLead: CrmLead;
   canAssign: boolean;
   canDelete: boolean;
+  canConvert: boolean;
 }) {
   const router = useRouter();
   const [lead, setLead] = useState<CrmLead>(initialLead);
@@ -120,7 +121,7 @@ export function LeadDetail({ initialLead, canAssign, canDelete }: {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {!lead.converted_client_id && (
+          {canConvert && !lead.converted_client_id && (
             <Button variant="outline" disabled={busy} onClick={convert} leftIcon={<UserPlus size={15} />} className="text-green-700 border-green-200 hover:bg-green-50">Converteste in client</Button>
           )}
           {lead.status !== 'pierdut' && (

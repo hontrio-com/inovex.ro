@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import NextImage from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -20,23 +20,26 @@ type NavEntry = {
   roles?: Role[];
 };
 
+/** Owner + Administrator. Agentul vede DOAR Lead-uri. */
+const STAFF: Role[] = ['owner', 'admin'];
+
 const NAV: NavEntry[] = [
-  { label: 'Dashboard',         href: '/admin',                           icon: LayoutDashboard },
-  { label: 'Clienti',           href: '/admin/clienti',                   icon: Building2       },
+  { label: 'Dashboard',         href: '/admin',                           icon: LayoutDashboard, roles: STAFF },
+  { label: 'Clienti',           href: '/admin/clienti',                   icon: Building2,       roles: STAFF },
   { label: 'Lead-uri',          href: '/admin/lead-uri',                  icon: Target          },
-  { label: 'Contracte',         href: '/admin/contracte',                 icon: FileSignature   },
-  { label: 'Abonamente',        href: '/admin/abonamente',                icon: RefreshCw       },
-  { label: 'Pachete',           href: '/admin/pachete',                   icon: Package         },
-  { label: 'Website-uri',       href: '/admin/website-uri',               icon: Server, roles: ['owner', 'admin'] },
-  { label: 'Site web',          href: '',                                  icon: null            },
-  { label: 'Marketplace',       href: '/admin/marketplace',               icon: ShoppingBag     },
-  { label: 'Oferte',            href: '/admin/bids',                      icon: Gavel           },
-  { label: 'Continut educativ', href: '/admin/invata-gratuit',            icon: BookOpen        },
-  { label: 'Categorii',         href: '/admin/invata-gratuit/categorii',  icon: Tag             },
-  { label: 'Comentarii',        href: '/admin/invata-gratuit/comentarii', icon: MessageSquare   },
-  { label: 'Lead-uri resurse',  href: '/admin/invata-gratuit/leads',      icon: Mail            },
-  { label: '─',                 href: '',                                  icon: null            },
-  { label: 'Setari site',       href: '/admin/settings',                  icon: Settings        },
+  { label: 'Contracte',         href: '/admin/contracte',                 icon: FileSignature,   roles: STAFF },
+  { label: 'Abonamente',        href: '/admin/abonamente',                icon: RefreshCw,       roles: STAFF },
+  { label: 'Pachete',           href: '/admin/pachete',                   icon: Package,         roles: STAFF },
+  { label: 'Website-uri',       href: '/admin/website-uri',               icon: Server,          roles: STAFF },
+  { label: 'Site web',          href: '',                                  icon: null,            roles: STAFF },
+  { label: 'Marketplace',       href: '/admin/marketplace',               icon: ShoppingBag,     roles: STAFF },
+  { label: 'Oferte',            href: '/admin/bids',                      icon: Gavel,           roles: STAFF },
+  { label: 'Continut educativ', href: '/admin/invata-gratuit',            icon: BookOpen,        roles: STAFF },
+  { label: 'Categorii',         href: '/admin/invata-gratuit/categorii',  icon: Tag,             roles: STAFF },
+  { label: 'Comentarii',        href: '/admin/invata-gratuit/comentarii', icon: MessageSquare,   roles: STAFF },
+  { label: 'Lead-uri resurse',  href: '/admin/invata-gratuit/leads',      icon: Mail,            roles: STAFF },
+  { label: '─',                 href: '',                                  icon: null,            roles: STAFF },
+  { label: 'Setari site',       href: '/admin/settings',                  icon: Settings,        roles: STAFF },
   { label: 'Utilizatori',       href: '/admin/settings/utilizatori',      icon: Users, roles: ['owner'] },
 ];
 
@@ -174,9 +177,17 @@ export function AdminShell({ children, role = null, userEmail = null, userName =
   userName?: string | null;
 }) {
   const pathname     = usePathname();
+  const router       = useRouter();
   const [open, setOpen] = useState(false);
 
+  // Agentul are acces doar la Lead-uri: orice alta pagina admin il redirectioneaza.
+  const agentBlocked = role === 'agent' && pathname !== '/admin/login' && !pathname.startsWith('/admin/lead-uri');
+  useEffect(() => {
+    if (agentBlocked) router.replace('/admin/lead-uri');
+  }, [agentBlocked, router]);
+
   if (pathname === '/admin/login') return <>{children}</>;
+  if (agentBlocked) return null; // se redirectioneaza catre /admin/lead-uri
 
   return (
     <>

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth';
+import { requireRole } from '@/lib/auth';
 
 // API-ul public ANAF pentru date firma dupa CUI (v9).
 const ANAF_URL = 'https://webservicesp.anaf.ro/api/PlatitorTvaRest/v9/tva';
 
 /** GET /api/admin/anaf?cui=RO12345678 — preia datele firmei de la ANAF. */
 export async function GET(req: NextRequest) {
-  const { error } = await requireAuth();
+  const { error } = await requireRole(['owner', 'admin']);
   if (error) return error;
 
   const raw = new URL(req.url).searchParams.get('cui') ?? '';

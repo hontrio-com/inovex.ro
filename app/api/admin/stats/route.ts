@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { requireAuth } from '@/lib/auth';
+import { requireRole } from '@/lib/auth';
 
 function monthlyMRR(price: number | null, cycle: string): number {
   if (price == null) return 0;
@@ -11,7 +11,7 @@ function monthlyMRR(price: number | null, cycle: string): number {
 
 /** GET /api/admin/stats — agregate pentru dashboard (scoping pe rol). Toate query-urile in paralel. */
 export async function GET() {
-  const auth = await requireAuth();
+  const auth = await requireRole(['owner', 'admin']);
   if (auth.error) return auth.error;
   const agent = auth.user.role === 'agent' ? auth.user.id : null;
 

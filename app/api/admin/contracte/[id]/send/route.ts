@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { supabaseAdmin } from '@/lib/supabase';
-import { requireAuth } from '@/lib/auth';
+import { requireRole } from '@/lib/auth';
 import { canAccessAssigned } from '@/lib/crm/access';
 import { shortToken } from '@/lib/crm/token';
 import { sendEmail } from '@/lib/email/send';
@@ -11,7 +11,7 @@ const schema = z.object({ email: z.union([z.string().email('Email invalid'), z.l
 
 /** POST /api/admin/contracte/[id]/send — activeaza linkul de semnare (+ email optional). */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireAuth();
+  const auth = await requireRole(['owner', 'admin']);
   if (auth.error) return auth.error;
   const { id } = await params;
 
