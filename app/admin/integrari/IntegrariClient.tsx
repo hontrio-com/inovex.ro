@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import {
   Plug, Loader2, Check, X, Copy, Inbox, Send, RefreshCw,
-  CircleCheck, CircleAlert, ChevronDown, ChevronUp,
+  CircleCheck, CircleAlert, ChevronDown, ChevronUp, Link2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -78,6 +78,48 @@ function SignalRow({ signals }: { signals: SignalStats }) {
 
 const sectionLbl: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 7, fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '0.82rem', color: '#0F172A', marginBottom: 10 };
 const subtle: React.CSSProperties = { fontFamily: 'var(--font-body)', fontSize: '0.78rem', color: '#64748B', lineHeight: 1.55 };
+
+/** Aboneaza pagina de Facebook la evenimentele leadgen (un click in loc de Graph API Explorer). */
+function MetaPageConnect() {
+  const [pageId, setPageId] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+
+  async function connect() {
+    if (!/^\d{5,20}$/.test(pageId.trim())) { toast.error('Introdu ID-ul numeric al paginii de Facebook'); return; }
+    setBusy(true);
+    try {
+      const res = await fetch('/api/admin/integrari/meta-page', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pageId: pageId.trim() }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? 'Eroare');
+      setDone(true);
+      toast.success('Pagina conectata — lead-urile din Instant Forms vor intra in CRM');
+    } catch (e) { toast.error(e instanceof Error ? e.message : 'Eroare'); }
+    finally { setBusy(false); }
+  }
+
+  return (
+    <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: 12 }}>
+      <div style={{ ...subtle, marginBottom: 8 }}>
+        <strong style={{ color: '#0F172A' }}>Conecteaza pagina de Facebook</strong> — aboneaza pagina la evenimentele de lead
+        (dupa ce ai setat META_PAGE_TOKEN). Gasesti ID-ul paginii in Business Settings → Accounts → Pages.
+      </div>
+      {done ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-body)', fontSize: '0.8rem', color: '#15803D', fontWeight: 600 }}>
+          <CircleCheck size={15} /> Pagina conectata
+        </div>
+      ) : (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <input value={pageId} onChange={(e) => setPageId(e.target.value)} placeholder="ID pagina (ex: 103456789012345)"
+            style={{ flex: 1, minWidth: 180, height: 34, border: '1px solid #E2E8F0', borderRadius: 7, padding: '0 10px', fontFamily: 'monospace', fontSize: '0.75rem', color: '#334155', background: '#fff' }} />
+          <Button size="sm" onClick={connect} loading={busy} leftIcon={<Link2 size={13} />}>Conecteaza pagina</Button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function PlatformCard({ name, color, state, steps, extraInbound }: {
   name: string; color: string; state: PlatformState; steps: string[]; extraInbound?: React.ReactNode;
@@ -176,12 +218,17 @@ export function IntegrariClient() {
             name="Meta (Facebook & Instagram)"
             color="#1877F2"
             state={data.meta}
-            extraInbound={data.meta.inbound.verifyToken ? (
-              <div style={subtle}>
-                Verify token (il ceri la abonarea webhook-ului in aplicatia Meta):
-                <div style={{ marginTop: 6 }}><CopyBox value={data.meta.inbound.verifyToken} /></div>
-              </div>
-            ) : null}
+            extraInbound={(
+              <>
+                {data.meta.inbound.verifyToken && (
+                  <div style={subtle}>
+                    Verify token (il ceri la abonarea webhook-ului in aplicatia Meta):
+                    <div style={{ marginTop: 6 }}><CopyBox value={data.meta.inbound.verifyToken} /></div>
+                  </div>
+                )}
+                <MetaPageConnect />
+              </>
+            )}
             steps={[
               'In Meta Business Manager creeaza o aplicatie de tip Business (developers.facebook.com).',
               'Adauga produsul Webhooks -> obiect "Page" -> abonare la campul "leadgen" cu URL-ul si verify token-ul de mai sus.',
