@@ -59,7 +59,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   });
 
   // Semnatura firmei (optional, aplicata automat).
-  const { data: org } = await supabaseAdmin.from('crm_org_settings').select('signature_url, signer_name, email').eq('id', 1).single();
+  const { data: org } = await supabaseAdmin.from('crm_org_settings').select('signature_url, signer_name, email, company_name, company_cui, company_reg_com').eq('id', 1).single();
   let companySig: string | null = null;
   if (org?.signature_url) {
     const { data: blob } = await supabaseAdmin.storage.from(BUCKET).download(org.signature_url);
@@ -79,6 +79,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     signedAt, ip, userAgent: ua,
     companySignature: companySig,
     companySigner: org?.signer_name,
+    companyName: org?.company_name,
+    companyCui: org?.company_cui,
+    companyRegCom: org?.company_reg_com,
   });
 
   const pdfPath = `contracts/${id}/contract-${(contract.contract_number || id).replace(/[^A-Za-z0-9-]/g, '_')}.pdf`;

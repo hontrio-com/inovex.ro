@@ -18,14 +18,23 @@ const inp: React.CSSProperties = {
 };
 const lbl: React.CSSProperties = { display: 'block', marginBottom: 6, fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.8rem', color: '#374151' };
 
-const SAMPLE = `<h2>Contract de prestari servicii nr. {{contract_number}}</h2>
-<p>Incheiat astazi, {{date}}, intre:</p>
-<p><strong>{{company_name}}</strong>, CUI {{company_cui}}, cu sediul in {{company_address}}, reprezentata prin {{company_signer}}, in calitate de Prestator,</p>
-<p>si <strong>{{client_name}}</strong>, {{client_type}}, CUI {{client_cui}}, cu sediul in {{client_address}}, in calitate de Beneficiar.</p>
-<h3>1. Obiectul contractului</h3>
-<p>Prestatorul se obliga sa presteze serviciile convenite, in valoare de {{value}} {{currency}}.</p>
-<h3>2. Semnaturi</h3>
-<p>Prestator: {{company_signer}}<br/>Beneficiar: {{client_name}}</p>`;
+const SAMPLE = `<h1 style="text-align: center">CONTRACT DE PRESTĂRI SERVICII</h1>
+<p style="text-align: center">Nr. {{contract_number}} din {{date}}</p>
+<h2>Părțile contractante</h2>
+<p style="text-align: justify"><strong>{{company_name}}</strong>, cu sediul în {{company_address}}, CUI {{company_cui}}, înregistrată la Registrul Comerțului sub nr. {{company_reg_com}}, reprezentată prin {{company_signer}}, denumită în continuare <strong>Prestator</strong>,</p>
+<p style="text-align: center">și</p>
+<p style="text-align: justify"><strong>{{client_name}}</strong>, {{client_type}}, cu sediul în {{client_address}}, CUI {{client_cui}}, denumit(ă) în continuare <strong>Beneficiar</strong>,</p>
+<p style="text-align: justify">au convenit încheierea prezentului contract, cu respectarea următoarelor clauze:</p>
+<h2>1. Obiectul contractului</h2>
+<p style="text-align: justify">Prestatorul se obligă să presteze în favoarea Beneficiarului serviciile convenite de comun acord între părți, conform specificațiilor agreate.</p>
+<h2>2. Valoarea contractului și modalitatea de plată</h2>
+<p style="text-align: justify">Valoarea totală a serviciilor este de <strong>{{value}} {{currency}}</strong>. Plata se efectuează conform termenelor convenite, în contul indicat de Prestator.</p>
+<h2>3. Durata contractului</h2>
+<p style="text-align: justify">Prezentul contract intră în vigoare la data semnării de către ambele părți și rămâne valabil până la îndeplinirea integrală a obligațiilor asumate.</p>
+<h2>4. Obligațiile părților</h2>
+<ul><li>Prestatorul se obligă să execute serviciile la standardele de calitate convenite și în termenele stabilite.</li><li>Beneficiarul se obligă să achite contravaloarea serviciilor și să pună la dispoziție informațiile necesare.</li></ul>
+<h2>5. Dispoziții finale</h2>
+<p style="text-align: justify">Prezentul contract a fost încheiat în două exemplare, câte unul pentru fiecare parte. Orice modificare se realizează prin act adițional semnat de ambele părți. Eventualele litigii se soluționează pe cale amiabilă sau, în caz contrar, de către instanțele competente.</p>`;
 
 export function SabloaneClient() {
   const [items, setItems] = useState<Template[]>([]);
