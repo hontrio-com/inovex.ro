@@ -222,7 +222,9 @@ async function sendGoogle(lead: LeadRow, stage: SignalStage, occurredAt: string)
   if (!token) return { ok: false, error: 'OAuth: nu s-a putut obtine access token' };
 
   const cid = process.env.GOOGLE_ADS_CUSTOMER_ID!.replace(/-/g, '');
-  const version = process.env.GOOGLE_ADS_API_VERSION || 'v20';
+  // Google Ads API sunseteaza versiunile majore ~anual (v20 a murit 2026-06-10).
+  // Update periodic necesar; override rapid via GOOGLE_ADS_API_VERSION fara redeploy de cod.
+  const version = process.env.GOOGLE_ADS_API_VERSION || 'v24';
   const dt = new Date(occurredAt).toISOString().replace('T', ' ').slice(0, 19) + '+00:00';
 
   const userIdentifiers: Record<string, unknown>[] = [];
