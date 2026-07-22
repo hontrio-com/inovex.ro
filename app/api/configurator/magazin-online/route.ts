@@ -20,7 +20,7 @@ function checkRateLimit(ip: string): boolean {
 
 const schema = z.object({
   tipEntitate:      z.string().min(1),
-  industrie:        z.string().min(1),
+  produseVandute:   z.string().min(1),
   areProduse:       z.string().min(1),
   nrProduse:        z.string().optional(),
   buget:            z.string().min(1),
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
       name: data.nume, email: data.email, phone: data.telefon,
       notes: [
         `Tip entitate: ${data.tipEntitate}`,
-        `Industrie: ${data.industrie}`,
+        `Produse vandute: ${data.produseVandute}`,
         `Are produse: ${data.areProduse}`,
         data.nrProduse ? `Nr. produse: ${data.nrProduse}` : null,
         `Buget estimat: ${data.buget}`,

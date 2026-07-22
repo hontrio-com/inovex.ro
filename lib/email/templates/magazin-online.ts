@@ -6,7 +6,7 @@ import {
 
 export interface MagazinOnlineData {
   tipEntitate: string;
-  industrie: string;
+  produseVandute: string;
   areProduse: string;
   nrProduse?: string;
   buget: string;
@@ -48,7 +48,7 @@ export function internHtml(d: MagazinOnlineData): string {
     ${sectionHeading('Detalii proiect')}
     ${dataTable(
       dataRow('Tip entitate', d.tipEntitate) +
-      dataRow('Industrie', d.industrie) +
+      dataRow('Produse vandute', d.produseVandute) +
       dataRow('Are produse', d.areProduse) +
       (d.nrProduse ? dataRow('Numar produse', d.nrProduse) : '') +
       dataRow('Buget estimat', d.buget)
@@ -100,7 +100,7 @@ export function clientHtml(d: MagazinOnlineData): string {
       </div>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
         ${dataRow('Tip entitate', d.tipEntitate)}
-        ${dataRow('Industrie', d.industrie)}
+        ${dataRow('Produse vandute', d.produseVandute)}
         ${dataRow('Are produse', d.areProduse)}
         ${d.nrProduse ? dataRow('Numar produse', d.nrProduse) : ''}
         ${dataRow('Buget estimat', d.buget)}

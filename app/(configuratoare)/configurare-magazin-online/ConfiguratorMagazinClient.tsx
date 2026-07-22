@@ -30,8 +30,7 @@ import Link from 'next/link';
 
 type MagazinData = {
   tipEntitate: string;
-  industrie: string;
-  altDomeniu: string;
+  produseVandute: string;
   areProduse: string;
   nrProduse: string;
   buget: string;
@@ -44,8 +43,7 @@ type MagazinData = {
 
 const INITIAL_DATA: MagazinData = {
   tipEntitate: '',
-  industrie: '',
-  altDomeniu: '',
+  produseVandute: '',
   areProduse: '',
   nrProduse: '',
   buget: '',
@@ -65,17 +63,6 @@ const BUGET_OPTIONS = [
   'Între 5.000 și 10.000 lei',
   'Peste 10.000 lei',
   'Nu știu încă',
-];
-
-const INDUSTRII = [
-  'Auto',
-  'Construcții',
-  'Fashion',
-  'Casă și Grădină',
-  'Electronice',
-  'Mobilier',
-  'Parfumuri',
-  'Alt domeniu',
 ];
 
 const STIAI_CA: Record<number, string> = {
@@ -335,13 +322,11 @@ export function ConfiguratorMagazinClient() {
   }, [data]);
 
   /* ---- canContinue per step ---- */
-  const industrie1Valid =
-    data.industrie !== '' &&
-    (data.industrie !== 'Alt domeniu' || data.altDomeniu.trim() !== '');
+  const produseValid = data.produseVandute.trim() !== '';
 
   const canContinue =
     step === 1
-      ? data.tipEntitate === 'Persoana juridica' && industrie1Valid
+      ? data.tipEntitate === 'Persoana juridica' && produseValid
       : step === 2
         ? data.areProduse !== '' && (data.areProduse === 'nu' || data.nrProduse !== '')
         : step === 3
@@ -368,14 +353,10 @@ export function ConfiguratorMagazinClient() {
     if (!validateContactStep()) return;
     setSubmitStatus('loading');
     try {
-      const payload = {
-        ...data,
-        industrie: data.industrie === 'Alt domeniu' ? data.altDomeniu.trim() : data.industrie,
-      };
       const res = await fetch('/api/configurator/magazin-online', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(data),
       });
       if (res.ok) {
         localStorage.removeItem(LS_KEY);
@@ -565,35 +546,14 @@ export function ConfiguratorMagazinClient() {
                   </motion.div>
                 )}
 
-                {/* Industry section */}
-                <SectionLabel text="În ce industrie activezi?" />
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {INDUSTRII.map((ind) => (
-                    <IndustryCard
-                      key={ind}
-                      label={ind}
-                      selected={data.industrie === ind}
-                      onClick={() => setData((p) => ({ ...p, industrie: ind, altDomeniu: '' }))}
-                    />
-                  ))}
-                </div>
-
-                {/* Alt domeniu input */}
-                {data.industrie === 'Alt domeniu' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-3"
-                  >
-                    <Input
-                      autoFocus
-                      value={data.altDomeniu}
-                      onChange={(e) => setData((p) => ({ ...p, altDomeniu: e.target.value }))}
-                      placeholder="Scrie domeniul tău de activitate..."
-                      style={{ border: '1.5px solid #2B8FCC' }}
-                    />
-                  </motion.div>
-                )}
+                {/* Produse section */}
+                <SectionLabel text="Ce produse vinzi?" />
+                <Textarea
+                  rows={3}
+                  value={data.produseVandute}
+                  onChange={(e) => setData((p) => ({ ...p, produseVandute: e.target.value }))}
+                  placeholder="Ex: Haine și accesorii pentru femei, genți din piele, bijuterii handmade..."
+                />
 
                 <StiaiCaBanner tip={STIAI_CA[1]} />
               </>
