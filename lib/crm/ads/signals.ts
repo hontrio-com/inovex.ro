@@ -71,10 +71,11 @@ export function tiktokOutboundConfigured() {
   return Boolean(process.env.TIKTOK_ACCESS_TOKEN && (process.env.TIKTOK_EVENT_SOURCE_ID || process.env.TIKTOK_PIXEL_CODE));
 }
 export function googleOutboundConfigured() {
+  // Data Manager API (inlocuieste ConversionUploadService de la 2026-06-15) nu
+  // mai cere developer token — doar OAuth + ID-urile de cont.
   return Boolean(
-    process.env.GOOGLE_ADS_DEVELOPER_TOKEN && process.env.GOOGLE_ADS_CLIENT_ID &&
-    process.env.GOOGLE_ADS_CLIENT_SECRET && process.env.GOOGLE_ADS_REFRESH_TOKEN &&
-    process.env.GOOGLE_ADS_CUSTOMER_ID,
+    process.env.GOOGLE_ADS_CLIENT_ID && process.env.GOOGLE_ADS_CLIENT_SECRET &&
+    process.env.GOOGLE_ADS_REFRESH_TOKEN && process.env.GOOGLE_ADS_CUSTOMER_ID,
   );
 }
 
@@ -207,6 +208,13 @@ async function googleAccessToken(): Promise<string | null> {
   return res.ok ? (json?.access_token ?? null) : null;
 }
 
+/**
+ * Trimite conversia offline prin Data Manager API (datamanager.googleapis.com),
+ * singura cale acceptata pentru integrari noi incepand cu 2026-06-15 — Google a
+ * blocat adoptatorii noi pe vechiul ConversionUploadService.uploadClickConversions.
+ * Nu mai necesita developer token; doar OAuth (scope datamanager) + ID-urile de cont.
+ * Docs: https://developers.google.com/data-manager/api/devguides/events
+ */
 async function sendGoogle(lead: LeadRow, stage: SignalStage, occurredAt: string): Promise<SendResult> {
   if (!googleOutboundConfigured()) return { ok: false, unconfigured: true };
   // Google nu are conversii "negative" — pierdut nu se trimite.
@@ -219,44 +227,47 @@ async function sendGoogle(lead: LeadRow, stage: SignalStage, occurredAt: string)
   }
 
   const token = await googleAccessToken();
-  if (!token) return { ok: false, error: 'OAuth: nu s-a putut obtine access token' };
+  if (!token) return { ok: false, error: 'OAuth: nu s-a putut obtine access token (posibil lipseste scope-ul datamanager pe refresh token)' };
 
   const cid = process.env.GOOGLE_ADS_CUSTOMER_ID!.replace(/-/g, '');
-  // Google Ads API sunseteaza versiunile majore ~anual (v20 a murit 2026-06-10).
-  // Update periodic necesar; override rapid via GOOGLE_ADS_API_VERSION fara redeploy de cod.
-  const version = process.env.GOOGLE_ADS_API_VERSION || 'v24';
-  const dt = new Date(occurredAt).toISOString().replace('T', ' ').slice(0, 19) + '+00:00';
+  const loginCid = (process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID || process.env.GOOGLE_ADS_CUSTOMER_ID)!.replace(/-/g, '');
 
   const userIdentifiers: Record<string, unknown>[] = [];
-  if (lead.email) userIdentifiers.push({ userIdentifierSource: 'FIRST_PARTY', hashedEmail: hashEmail(lead.email) });
-  if (lead.phone) userIdentifiers.push({ userIdentifierSource: 'FIRST_PARTY', hashedPhoneNumber: hashPhoneE164(lead.phone) });
+  if (lead.email) userIdentifiers.push({ emailAddress: hashEmail(lead.email) });
+  if (lead.phone) userIdentifiers.push({ phoneNumber: hashPhoneE164(lead.phone) });
 
-  const conversion: Record<string, unknown> = {
-    conversionAction: `customers/${cid}/conversionActions/${caId}`,
-    conversionDateTime: dt,
-    currencyCode: lead.currency || 'RON',
-    ...(stage === 'convertit' && lead.estimated_value != null ? { conversionValue: lead.estimated_value } : {}),
+  const event: Record<string, unknown> = {
+    eventTimestamp: new Date(occurredAt).toISOString(),
+    // Stabil pe lead+etapa: Data Manager API dedubleaza pe transactionId, deci
+    // reincercarile noastre (cron retry) nu creeaza conversii duplicate.
+    transactionId: `${lead.id}-${stage}`,
+    eventSource: 'WEB',
+    ...(lead.gclid ? { adIdentifiers: { gclid: lead.gclid } } : {}),
+    ...(userIdentifiers.length > 0 ? { userData: { userIdentifiers } } : {}),
+    ...(stage === 'convertit' && lead.estimated_value != null
+      ? { conversionValue: lead.estimated_value, currency: lead.currency || 'RON' }
+      : {}),
   };
-  if (lead.gclid) conversion.gclid = lead.gclid;
-  if (userIdentifiers.length > 0) conversion.userIdentifiers = userIdentifiers;
 
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
-    'developer-token': process.env.GOOGLE_ADS_DEVELOPER_TOKEN!,
+  const body = {
+    destinations: [{
+      operatingAccount: { accountType: 'GOOGLE_ADS', accountId: cid },
+      loginAccount: { accountType: 'GOOGLE_ADS', accountId: loginCid },
+      productDestinationId: caId,
+    }],
+    encoding: 'HEX',
+    // Lead-urile provin din formulare cu consimtamant explicit (acordPrivacitate/gdprConsent).
+    consent: { adPersonalization: 'CONSENT_GRANTED', adUserData: 'CONSENT_GRANTED' },
+    events: [event],
   };
-  if (process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID) {
-    headers['login-customer-id'] = process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID.replace(/-/g, '');
-  }
 
-  const res = await fetch(`https://googleads.googleapis.com/${version}/customers/${cid}:uploadClickConversions`, {
+  const res = await fetch('https://datamanager.googleapis.com/v1/events:ingest', {
     method: 'POST',
-    headers,
-    body: JSON.stringify({ conversions: [conversion], partialFailure: true }),
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(body),
   });
   const json = await res.json().catch(() => null);
   if (!res.ok) return { ok: false, error: JSON.stringify(json?.error ?? json ?? res.status).slice(0, 500) };
-  if (json?.partialFailureError) return { ok: false, error: JSON.stringify(json.partialFailureError).slice(0, 500) };
   return { ok: true };
 }
 

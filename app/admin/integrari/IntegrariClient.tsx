@@ -262,10 +262,11 @@ export function IntegrariClient() {
             ) : null}
             steps={[
               'PRIMIRE (5 minute, fara API): in Google Ads -> Assets -> Lead form -> "Export lead-uri" -> Webhook: lipeste URL-ul si cheia de mai sus, apoi apasa "Trimite date de test".',
-              'SEMNALE: aplica pentru un Developer Token (Google Ads API, cont MCC) -> GOOGLE_ADS_DEVELOPER_TOKEN.',
-              'Creeaza credentiale OAuth in Google Cloud Console -> GOOGLE_ADS_CLIENT_ID + GOOGLE_ADS_CLIENT_SECRET + GOOGLE_ADS_REFRESH_TOKEN.',
-              'ID-ul contului (fara liniute) -> GOOGLE_ADS_CUSTOMER_ID (+ GOOGLE_ADS_LOGIN_CUSTOMER_ID daca folosesti MCC).',
-              'In Google Ads creeaza actiuni de conversie de tip "Import" (Lead calificat / Client semnat) si pune ID-urile in GOOGLE_ADS_CA_QUALIFIED / GOOGLE_ADS_CA_CONVERTED.',
+              'SEMNALE: trimise prin Data Manager API (Google a inlocuit vechiul Google Ads API conversion upload din 2026-06-15) — nu mai necesita developer token.',
+              'In Google Cloud Console activeaza "Data Manager API" pentru proiect, apoi in OAuth consent screen -> Data Access -> adauga scope-ul https://www.googleapis.com/auth/datamanager.',
+              'Genereaza (sau regenereaza) refresh token-ul din OAuth Playground cu ambele scope-uri: adwords + datamanager -> GOOGLE_ADS_CLIENT_ID + GOOGLE_ADS_CLIENT_SECRET + GOOGLE_ADS_REFRESH_TOKEN.',
+              'ID-ul contului de Google Ads (fara liniute) -> GOOGLE_ADS_CUSTOMER_ID (+ GOOGLE_ADS_LOGIN_CUSTOMER_ID daca ai cont manager MCC).',
+              'In Google Ads creeaza actiuni de conversie de tip "Import" (Lead calificat / Client semnat) si pune ID-urile numerice in GOOGLE_ADS_CA_QUALIFIED / GOOGLE_ADS_CA_CONVERTED.',
               'Nota: Google nu are conversii negative — statusul Pierdut nu se trimite (doar Calificat/Convertit/Edinio).',
             ]}
           />
