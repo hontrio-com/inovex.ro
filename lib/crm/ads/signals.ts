@@ -193,19 +193,22 @@ async function sendTikTok(lead: LeadRow, stage: SignalStage, occurredAt: string)
   return { ok: true };
 }
 
-async function googleAccessToken(): Promise<string | null> {
+async function googleAccessToken(): Promise<{ token: string | null; error?: string }> {
   const res = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
-      client_id: process.env.GOOGLE_ADS_CLIENT_ID!,
-      client_secret: process.env.GOOGLE_ADS_CLIENT_SECRET!,
-      refresh_token: process.env.GOOGLE_ADS_REFRESH_TOKEN!,
+      client_id: (process.env.GOOGLE_ADS_CLIENT_ID ?? '').trim(),
+      client_secret: (process.env.GOOGLE_ADS_CLIENT_SECRET ?? '').trim(),
+      refresh_token: (process.env.GOOGLE_ADS_REFRESH_TOKEN ?? '').trim(),
       grant_type: 'refresh_token',
     }),
   });
   const json = await res.json().catch(() => null);
-  return res.ok ? (json?.access_token ?? null) : null;
+  if (!res.ok) {
+    return { token: null, error: `oauth2.googleapis.com/token ${res.status}: ${JSON.stringify(json ?? {}).slice(0, 300)}` };
+  }
+  return { token: json?.access_token ?? null };
 }
 
 /**
@@ -226,8 +229,8 @@ async function sendGoogle(lead: LeadRow, stage: SignalStage, occurredAt: string)
     return { ok: false, skip: true, error: 'Fara identificatori Google (gclid/email/telefon)' };
   }
 
-  const token = await googleAccessToken();
-  if (!token) return { ok: false, error: 'OAuth: nu s-a putut obtine access token (posibil lipseste scope-ul datamanager pe refresh token)' };
+  const { token, error: tokenError } = await googleAccessToken();
+  if (!token) return { ok: false, error: tokenError ?? 'OAuth: nu s-a putut obtine access token' };
 
   const cid = process.env.GOOGLE_ADS_CUSTOMER_ID!.replace(/-/g, '');
   const loginCid = (process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID || process.env.GOOGLE_ADS_CUSTOMER_ID)!.replace(/-/g, '');
