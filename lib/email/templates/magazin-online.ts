@@ -9,6 +9,7 @@ export interface MagazinOnlineData {
   industrie: string;
   areProduse: string;
   nrProduse?: string;
+  buget: string;
   nume: string;
   email: string;
   telefon: string;
@@ -49,7 +50,8 @@ export function internHtml(d: MagazinOnlineData): string {
       dataRow('Tip entitate', d.tipEntitate) +
       dataRow('Industrie', d.industrie) +
       dataRow('Are produse', d.areProduse) +
-      (d.nrProduse ? dataRow('Numar produse', d.nrProduse) : '')
+      (d.nrProduse ? dataRow('Numar produse', d.nrProduse) : '') +
+      dataRow('Buget estimat', d.buget)
     )}
 
     ${d.observatii ? `
@@ -101,6 +103,7 @@ export function clientHtml(d: MagazinOnlineData): string {
         ${dataRow('Industrie', d.industrie)}
         ${dataRow('Are produse', d.areProduse)}
         ${d.nrProduse ? dataRow('Numar produse', d.nrProduse) : ''}
+        ${dataRow('Buget estimat', d.buget)}
       </table>
     </div>
 

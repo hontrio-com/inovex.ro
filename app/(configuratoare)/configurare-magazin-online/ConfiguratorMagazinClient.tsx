@@ -34,6 +34,7 @@ type MagazinData = {
   altDomeniu: string;
   areProduse: string;
   nrProduse: string;
+  buget: string;
   nume: string;
   email: string;
   telefon: string;
@@ -47,6 +48,7 @@ const INITIAL_DATA: MagazinData = {
   altDomeniu: '',
   areProduse: '',
   nrProduse: '',
+  buget: '',
   nume: '',
   email: '',
   telefon: '',
@@ -56,7 +58,14 @@ const INITIAL_DATA: MagazinData = {
 
 const LS_KEY = 'inovex_config_mo';
 
-const STEPS = ['Entitate & Industrie', 'Produse', 'Contact'];
+const STEPS = ['Entitate & Industrie', 'Produse', 'Buget', 'Contact'];
+
+const BUGET_OPTIONS = [
+  'Sub 5.000 lei',
+  'Între 5.000 și 10.000 lei',
+  'Peste 10.000 lei',
+  'Nu știu încă',
+];
 
 const INDUSTRII = [
   'Auto',
@@ -308,7 +317,9 @@ export function ConfiguratorMagazinClient() {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(LS_KEY);
-      if (saved) setData(JSON.parse(saved) as MagazinData);
+      // Merge cu INITIAL_DATA — protejeaza campurile noi (ex. buget) daca
+      // exista un progres salvat dintr-o versiune anterioara a formularului.
+      if (saved) setData({ ...INITIAL_DATA, ...JSON.parse(saved) });
     } catch {
       /* ignore */
     }
@@ -333,13 +344,15 @@ export function ConfiguratorMagazinClient() {
       ? data.tipEntitate === 'Persoana juridica' && industrie1Valid
       : step === 2
         ? data.areProduse !== '' && (data.areProduse === 'nu' || data.nrProduse !== '')
-        : data.nume.length >= 2 &&
-          data.email.includes('@') &&
-          data.telefon.length >= 10 &&
-          data.acordPrivacitate;
+        : step === 3
+          ? data.buget !== ''
+          : data.nume.length >= 2 &&
+            data.email.includes('@') &&
+            data.telefon.length >= 10 &&
+            data.acordPrivacitate;
 
-  /* ---- validate step 3 ---- */
-  const validateStep3 = (): boolean => {
+  /* ---- validate contact step ---- */
+  const validateContactStep = (): boolean => {
     const newErrors: Partial<Record<keyof MagazinData, string>> = {};
     if (!data.nume || data.nume.length < 2) newErrors.nume = 'Minim 2 caractere';
     if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
@@ -352,7 +365,7 @@ export function ConfiguratorMagazinClient() {
 
   /* ---- submit ---- */
   const handleSubmit = async () => {
-    if (!validateStep3()) return;
+    if (!validateContactStep()) return;
     setSubmitStatus('loading');
     try {
       const payload = {
@@ -379,7 +392,7 @@ export function ConfiguratorMagazinClient() {
 
   /* ---- navigation ---- */
   const handleNext = () => {
-    if (step === 3) {
+    if (step === 4) {
       handleSubmit();
       return;
     }
@@ -658,8 +671,46 @@ export function ConfiguratorMagazinClient() {
               </>
             )}
 
-            {/* ---- STEP 3 ---- */}
+            {/* ---- STEP 3 (Buget) ---- */}
             {step === 3 && (
+              <>
+                <h1
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 600,
+                    fontSize: 'clamp(1.6rem,2.5vw,2rem)',
+                    color: '#0D1117',
+                    marginBottom: '8px',
+                  }}
+                >
+                  Care este bugetul estimat pentru proiect?
+                </h1>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '15px',
+                    color: '#4A5568',
+                    marginBottom: '24px',
+                  }}
+                >
+                  Ne ajută să îți recomandăm de la bun început soluția potrivită.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {BUGET_OPTIONS.map((b) => (
+                    <IndustryCard
+                      key={b}
+                      label={b}
+                      selected={data.buget === b}
+                      onClick={() => setData((p) => ({ ...p, buget: b }))}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* ---- STEP 4 ---- */}
+            {step === 4 && (
               <>
                 <h1
                   style={{
@@ -799,9 +850,9 @@ export function ConfiguratorMagazinClient() {
                 onClick={handleNext}
                 disabled={!canContinue}
                 loading={submitStatus === 'loading'}
-                rightIcon={step === 3 ? <Send size={16} /> : <ArrowRight size={16} />}
+                rightIcon={step === 4 ? <Send size={16} /> : <ArrowRight size={16} />}
               >
-                {step === 3 ? 'Trimite cererea' : 'Continuă'}
+                {step === 4 ? 'Trimite cererea' : 'Continuă'}
               </Button>
             </div>
           </motion.div>
