@@ -571,7 +571,7 @@ export function ConfiguratorMagazinClient() {
                     marginBottom: '8px',
                   }}
                 >
-                  Ai produse de vânzare?
+                  Ai deja stocul de produse?
                 </h1>
                 <p
                   style={{
@@ -609,16 +609,10 @@ export function ConfiguratorMagazinClient() {
                   >
                     <SectionLabel text="Câte produse vrei să vinzi?" />
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      {[
-                        { value: '1-50', sub: 'Magazin mic' },
-                        { value: '50-200', sub: 'Magazin mediu' },
-                        { value: '200-1000', sub: 'Magazin mare' },
-                        { value: 'Peste 1000', sub: 'Catalog extins' },
-                      ].map(({ value, sub }) => (
+                      {['1-50', '50-200', '200-1000', 'Peste 1000'].map((value) => (
                         <CounterCard
                           key={value}
                           value={value}
-                          sublabel={sub}
                           selected={data.nrProduse === value}
                           onClick={() => setData((p) => ({ ...p, nrProduse: value }))}
                         />
