@@ -9,7 +9,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Send, CheckCircle2 } from 'lucide-react';
 import { trackConversions } from '@/lib/gtm';
 import { trackTikTok } from '@/lib/tiktok';
-import { trackEvent } from '@/lib/meta-pixel';
+import { trackEvent, generateEventId } from '@/lib/meta-pixel';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -74,10 +74,11 @@ function OfertaFormInner() {
 
   const onSubmit = async (values: FormValues) => {
     setSubmitStatus('loading');
+    const metaEventId = generateEventId();
     try {
       const res = await fetch('/api/oferta', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Meta-Event-Id': metaEventId },
         body: JSON.stringify(values),
       });
       if (res.ok) {
@@ -85,7 +86,7 @@ function OfertaFormInner() {
         trackConversions.formularOferta();
         trackTikTok.formularOferta();
         trackEvent('SubmitApplication');
-        trackEvent('Lead', { content_name: 'oferta', content_category: values.serviciu });
+        trackEvent('Lead', { content_name: 'oferta', content_category: values.serviciu }, metaEventId);
       } else {
         setSubmitStatus('error');
       }

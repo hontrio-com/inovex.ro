@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import { trackConversions } from '@/lib/gtm';
 import { trackTikTok } from '@/lib/tiktok';
-import { trackEvent } from '@/lib/meta-pixel';
+import { trackEvent, generateEventId } from '@/lib/meta-pixel';
 import {
   Form,
   FormControl,
@@ -58,10 +58,11 @@ export function ContactForm() {
 
   async function onSubmit(data: FormData) {
     setStatus('loading');
+    const metaEventId = generateEventId();
     try {
       const res = await fetch('/api/contact', {
         method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Meta-Event-Id': metaEventId },
         body:    JSON.stringify(data),
       });
       if (!res.ok) throw new Error();
@@ -70,7 +71,7 @@ export function ContactForm() {
       trackConversions.formularContact();
       trackTikTok.formularContact();
       trackEvent('Contact');
-      trackEvent('Lead', { content_name: 'contact', content_category: data.serviciu });
+      trackEvent('Lead', { content_name: 'contact', content_category: data.serviciu }, metaEventId);
     } catch {
       setStatus('error');
     }

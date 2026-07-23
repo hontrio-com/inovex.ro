@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 
     // Lead in CRM (best-effort, nu afecteaza emailurile).
     await createWebsiteLead({
-      req, source: 'Configurator aplicatie web',
+      req, source: 'Configurator aplicatie web', metaEventId: req.headers.get('x-meta-event-id'),
       name: data.numeComplet, email: data.email || null, phone: data.telefon,
       notes: [
         `Claritate idee: ${data.ideaClaritate}`,

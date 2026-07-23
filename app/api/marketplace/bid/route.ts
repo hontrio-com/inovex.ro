@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 
     // Lead in CRM (best-effort, nu afecteaza emailurile/bid-urile).
     await createWebsiteLead({
-      req, source: 'Marketplace — oferta produs',
+      req, source: 'Marketplace — oferta produs', metaEventId: req.headers.get('x-meta-event-id'),
       name: data.name, email: data.email, phone: data.phone,
       estimatedValue: data.offeredPrice,
       notes: [

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { trackConversions } from '@/lib/gtm';
 import { trackTikTok } from '@/lib/tiktok';
+import { trackEvent, generateEventId } from '@/lib/meta-pixel';
 import { Send, AlertCircle, CheckCircle2, Euro } from 'lucide-react';
 import {
   Dialog,
@@ -46,15 +47,17 @@ export function BidModal({ open, onClose, productSlug, productTitle, listedPrice
 
     const payload: BidPayload = { productSlug, productTitle, name, email, phone, offeredPrice: price, message: message || undefined };
 
+    const metaEventId = generateEventId();
     try {
       const res = await fetch('/api/marketplace/bid', {
         method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Meta-Event-Id': metaEventId },
         body:    JSON.stringify(payload),
       });
       if (!res.ok) throw new Error('server');
       trackConversions.formularOferta();
       trackTikTok.marketplace(productTitle);
+      trackEvent('Lead', { content_name: 'marketplace_bid', content_category: productTitle }, metaEventId);
       setStatus('success');
     } catch {
       setStatus('error');

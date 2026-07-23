@@ -1,5 +1,7 @@
 import type { NextRequest } from 'next/server';
+import { after } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { sendMetaLeadCapi } from '@/lib/crm/ads/signals';
 
 /**
  * Creeaza un lead in CRM dintr-un formular public al site-ului.
@@ -9,6 +11,8 @@ import { supabaseAdmin } from '@/lib/supabase';
  *   (_fbp/_fbc de la Meta Pixel, _gcl_aw de la Google tag, ttclid de la TikTok),
  *   astfel incat si lead-urile venite de pe site primesc semnale de calitate
  *   inapoi catre platforme cand devin Calificat/Convertit.
+ * - Trimite si un eveniment Meta CAPI "Lead" (pereche server-side a Pixelului),
+ *   deduplicat prin metaEventId — vezi lib/crm/ads/signals.ts#sendMetaLeadCapi.
  */
 export interface WebsiteLeadInput {
   req: NextRequest;
@@ -22,6 +26,8 @@ export interface WebsiteLeadInput {
   notes?: string | null;
   estimatedValue?: number | null;
   raw?: unknown;
+  /** ID generat client-side la fbq('track','Lead') — pt deduplicare CAPI/Pixel. */
+  metaEventId?: string | null;
 }
 
 const clean = (v: string | null | undefined, max: number) => {
@@ -30,17 +36,29 @@ const clean = (v: string | null | undefined, max: number) => {
 };
 
 export async function createWebsiteLead(input: WebsiteLeadInput): Promise<void> {
-  try {
-    const c = input.req.cookies;
-    const fbp = c.get('_fbp')?.value ?? null;
-    // _fbc are formatul fb.1.<timestamp>.<fbclid> — extragem fbclid-ul.
-    const fbc = c.get('_fbc')?.value ?? null;
-    const fbclid = fbc ? fbc.split('.').slice(3).join('.') || null : null;
-    // _gcl_aw are formatul GCL.<timestamp>.<gclid>.
-    const gclAw = c.get('_gcl_aw')?.value ?? null;
-    const gclid = gclAw ? gclAw.split('.').slice(2).join('.') || null : null;
-    const ttclid = c.get('ttclid')?.value ?? c.get('_ttclid')?.value ?? null;
+  const c = input.req.cookies;
+  const fbp = c.get('_fbp')?.value ?? null;
+  // _fbc are formatul fb.1.<timestamp>.<fbclid> — extragem fbclid-ul.
+  const fbc = c.get('_fbc')?.value ?? null;
+  const fbclid = fbc ? fbc.split('.').slice(3).join('.') || null : null;
+  // _gcl_aw are formatul GCL.<timestamp>.<gclid>.
+  const gclAw = c.get('_gcl_aw')?.value ?? null;
+  const gclid = gclAw ? gclAw.split('.').slice(2).join('.') || null : null;
+  const ttclid = c.get('ttclid')?.value ?? c.get('_ttclid')?.value ?? null;
 
+  // Eveniment Meta CAPI "Lead" — pereche server-side pt Pixel, deduplicat prin
+  // metaEventId. Best-effort, programat dupa raspuns (nu blocheaza formularul).
+  after(() => sendMetaLeadCapi({
+    eventId: input.metaEventId ?? null,
+    email: input.email,
+    phone: input.phone,
+    fbp, fbclid,
+    clientIp: input.req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null,
+    userAgent: input.req.headers.get('user-agent'),
+    sourceUrl: input.req.headers.get('referer'),
+  }).catch(() => {}));
+
+  try {
     const { data, error } = await supabaseAdmin
       .from('crm_leads')
       .insert({

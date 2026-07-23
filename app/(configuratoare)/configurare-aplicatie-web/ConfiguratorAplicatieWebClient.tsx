@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { trackConversions } from '@/lib/gtm';
 import { trackTikTok } from '@/lib/tiktok';
+import { trackEvent, generateEventId } from '@/lib/meta-pixel';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
   Lightbulb,
@@ -276,16 +277,18 @@ export function ConfiguratorAplicatieWebClient() {
   const handleSubmit = async () => {
     if (!validateStep3()) return;
     setSubmitStatus('loading');
+    const metaEventId = generateEventId();
     try {
       const res = await fetch('/api/configurator/aplicatie-web', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Meta-Event-Id': metaEventId },
         body: JSON.stringify({ ...data, gdprConsent: true }),
       });
       if (res.ok) {
         localStorage.removeItem(LS_KEY);
         trackConversions.configuratorAplicatieWeb();
         trackTikTok.configuratorAplicatieWeb();
+        trackEvent('Lead', { content_name: 'configurator_aplicatie_web' }, metaEventId);
         setSubmitStatus('success');
       } else {
         setSubmitStatus('error');

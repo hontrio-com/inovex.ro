@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { trackConversions } from '@/lib/gtm';
 import { trackTikTok } from '@/lib/tiktok';
+import { trackEvent, generateEventId } from '@/lib/meta-pixel';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
   User,
@@ -357,15 +358,17 @@ export function ConfiguratorWebsiteClient() {
         ...data,
         industrie: data.industrie === 'Alt domeniu' ? data.altDomeniu.trim() : data.industrie,
       };
+      const metaEventId = generateEventId();
       const res = await fetch('/api/configurator/website-prezentare', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Meta-Event-Id': metaEventId },
         body: JSON.stringify(payload),
       });
       if (res.ok) {
         localStorage.removeItem(LS_KEY);
         trackConversions.configuratorWebsite();
         trackTikTok.configuratorWebsite();
+        trackEvent('Lead', { content_name: 'configurator_website_prezentare' }, metaEventId);
         setSubmitStatus('success');
       } else {
         setSubmitStatus('error');

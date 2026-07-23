@@ -49,7 +49,7 @@ const LEAD_FIELDS = 'id, platform, platform_lead_id, email, phone, fbclid, gclid
 
 /* ── Hashing (cerut de toate platformele pentru date personale) ── */
 const sha256 = (v: string) => crypto.createHash('sha256').update(v).digest('hex');
-const hashEmail = (email: string) => sha256(email.trim().toLowerCase());
+export const hashEmail = (email: string) => sha256(email.trim().toLowerCase());
 
 /** Normalizeaza telefonul la cifre cu prefix de tara (implicit RO: 07... -> 407...). */
 function phoneDigits(phone: string): string {
@@ -58,7 +58,7 @@ function phoneDigits(phone: string): string {
   else if (d.startsWith('0')) d = `4${d}`; // 07xx -> 407xx
   return d;
 }
-const hashPhone = (phone: string) => sha256(phoneDigits(phone));
+export const hashPhone = (phone: string) => sha256(phoneDigits(phone));
 const hashPhoneE164 = (phone: string) => sha256(`+${phoneDigits(phone)}`);
 
 /* ── Ce platforme primesc semnale pentru un lead ── */
@@ -148,6 +148,59 @@ async function sendMeta(lead: LeadRow, stage: SignalStage, occurredAt: string): 
   const json = await res.json().catch(() => null);
   if (!res.ok) return { ok: false, error: JSON.stringify(json?.error ?? json ?? res.status).slice(0, 500) };
   return { ok: true };
+}
+
+/**
+ * Eveniment Meta CAPI "Lead" — pereche server-side pentru evenimentul de Pixel
+ * (fbq('track','Lead')) trimis din browser la completarea unui formular.
+ * Deduplicat prin acelasi event_id (generat client-side). Scop: acopera
+ * cazurile in care Pixelul din browser e blocat (ad-blockers, Safari ITP,
+ * cookie blocking) — evenimentul tot ajunge la Meta, trimis de pe server.
+ * Independent de sistemul de SignalStage/crm_lead_signals — e un eveniment
+ * imediat, best-effort (nu arunca), apelat din after() la trimiterea
+ * formularului, nu la schimbarea statusului unui lead.
+ */
+export async function sendMetaLeadCapi(input: {
+  eventId: string | null;
+  email?: string | null;
+  phone?: string | null;
+  fbp?: string | null;
+  fbclid?: string | null;
+  clientIp?: string | null;
+  userAgent?: string | null;
+  sourceUrl?: string | null;
+}): Promise<void> {
+  const dataset = process.env.META_DATASET_ID;
+  const token = process.env.META_CAPI_TOKEN || process.env.META_PAGE_TOKEN;
+  if (!dataset || !token) return;
+
+  const user_data: Record<string, unknown> = {};
+  if (input.email) user_data.em = [hashEmail(input.email)];
+  if (input.phone) user_data.ph = [hashPhone(input.phone)];
+  if (input.fbp) user_data.fbp = input.fbp;
+  if (input.fbclid) user_data.fbc = `fb.1.${Date.now()}.${input.fbclid}`;
+  if (input.clientIp) user_data.client_ip_address = input.clientIp;
+  if (input.userAgent) user_data.client_user_agent = input.userAgent;
+  if (Object.keys(user_data).length === 0) return; // fara identificatori — nimic de trimis
+
+  const event: Record<string, unknown> = {
+    event_name: 'Lead',
+    event_time: Math.floor(Date.now() / 1000),
+    action_source: 'website',
+    user_data,
+    ...(input.sourceUrl ? { event_source_url: input.sourceUrl } : {}),
+    ...(input.eventId ? { event_id: input.eventId } : {}),
+  };
+
+  try {
+    await fetch(`https://graph.facebook.com/v23.0/${dataset}/events`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: [event], access_token: token }),
+    });
+  } catch {
+    // best-effort — nu blocam fluxul de formular pentru un eveniment de tracking
+  }
 }
 
 async function sendTikTok(lead: LeadRow, stage: SignalStage, occurredAt: string): Promise<SendResult> {
