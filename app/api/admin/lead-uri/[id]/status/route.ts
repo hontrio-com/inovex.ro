@@ -33,8 +33,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { data: current } = await supabaseAdmin.from('crm_leads').select('status').eq('id', id).single();
 
   const update: Record<string, unknown> = { status: parsed.data.status };
-  // Motivul pierderii se pastreaza doar pentru status 'pierdut'.
-  update.lost_reason = parsed.data.status === 'pierdut' ? parsed.data.lost_reason ?? null : null;
+  // Motivul (pierdere sau necalificare) se pastreaza doar pentru statusurile negative.
+  update.lost_reason = (parsed.data.status === 'pierdut' || parsed.data.status === 'necalificat')
+    ? parsed.data.lost_reason ?? null
+    : null;
   // Valoarea contractului se seteaza la conversie (pleaca in semnalul lead_converted).
   if (parsed.data.status === 'convertit' && parsed.data.estimated_value != null) {
     update.estimated_value = parsed.data.estimated_value;
@@ -52,7 +54,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     await supabaseAdmin.from('crm_activities').insert({
       type: 'status_change',
       title: `Status: ${current.status} → ${parsed.data.status}`,
-      body: parsed.data.status === 'pierdut' && parsed.data.lost_reason ? `Motiv: ${parsed.data.lost_reason}` : null,
+      body: (parsed.data.status === 'pierdut' || parsed.data.status === 'necalificat') && parsed.data.lost_reason
+        ? `Motiv: ${parsed.data.lost_reason}` : null,
       lead_id: id,
       created_by: auth.user.id,
     });

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { ArrowLeft, Trash2, UserPlus, XCircle, ExternalLink, Rocket } from 'lucide-react';
+import { ArrowLeft, Trash2, UserPlus, XCircle, ExternalLink, Rocket, UserX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { CrmLead, Member, LeadStatus } from '@/types/crm';
 import { LeadForm, LeadFormValues } from '../LeadForm';
@@ -64,6 +64,12 @@ export function LeadDetail({ initialLead, canAssign, canDelete, canConvert }: {
     const reason = window.prompt('Motiv pierdere (optional):');
     if (reason === null) return; // anulat
     changeStatus('pierdut', reason);
+  }
+
+  function markNotQualified() {
+    const reason = window.prompt('Motiv necalificare (optional):');
+    if (reason === null) return; // anulat
+    changeStatus('necalificat', reason);
   }
 
   async function convert() {
@@ -136,6 +142,9 @@ export function LeadDetail({ initialLead, canAssign, canDelete, canConvert }: {
           {lead.status !== 'edinio' && (
             <Button variant="outline" disabled={busy} onClick={() => changeStatus('edinio')} leftIcon={<Rocket size={15} />} className="text-teal-700 border-teal-200 hover:bg-teal-50">Catre Edinio</Button>
           )}
+          {lead.status !== 'necalificat' && (
+            <Button variant="outline" disabled={busy} onClick={markNotQualified} leftIcon={<UserX size={15} />} className="text-amber-700 border-amber-200 hover:bg-amber-50">Necalificat</Button>
+          )}
           {lead.status !== 'pierdut' && (
             <Button variant="outline" disabled={busy} onClick={markLost} leftIcon={<XCircle size={15} />} className="text-red-600 border-red-200 hover:bg-red-50">Pierdut</Button>
           )}
@@ -148,6 +157,12 @@ export function LeadDetail({ initialLead, canAssign, canDelete, canConvert }: {
       {lead.status === 'pierdut' && lead.lost_reason && (
         <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 10, padding: '10px 14px', marginBottom: 16, fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#B91C1C' }}>
           <strong>Motiv pierdere:</strong> {lead.lost_reason}
+        </div>
+      )}
+      {lead.status === 'necalificat' && (
+        <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 10, padding: '10px 14px', marginBottom: 16, fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: '#B45309' }}>
+          <strong>Necalificat</strong> — nu a fost niciodata un fit (spre deosebire de &quot;Pierdut&quot;, care e un lead calificat pierdut la inchidere).
+          {lead.lost_reason && <> <strong>Motiv:</strong> {lead.lost_reason}</>}
         </div>
       )}
       {lead.status === 'edinio' && (

@@ -4,22 +4,29 @@ import { supabaseAdmin } from '@/lib/supabase';
 /**
  * Semnale de calitate catre platformele de ads — bucla de feedback care invata
  * algoritmii cine e clientul ideal:
- *   calificat  -> lead_qualified
- *   convertit  -> lead_converted (+ valoare)
- *   edinio     -> lead_edinio (eveniment separat, sa nu polueze optimizarea custom)
- *   pierdut    -> lead_disqualified (Google nu are conversii negative -> skip)
+ *   calificat   -> lead_qualified
+ *   convertit   -> lead_converted (+ valoare)
+ *   edinio      -> lead_edinio (eveniment separat, sa nu polueze optimizarea custom)
+ *   necalificat -> lead_not_qualified (lead care NU a fost niciodata un fit —
+ *                  semnal de targetare gresita)
+ *   pierdut     -> lead_disqualified (lead CALIFICAT, urmarit, dar pierdut la
+ *                  inchidere — profilul era totusi potrivit, semnal separat de
+ *                  cel de mai sus ca sa nu strice targetarea pe cei care chiar
+ *                  se califica)
+ * Google nu are conversii negative -> necalificat si pierdut se sar (skip).
  *
  * Fluxul: recordSignals() insereaza randuri 'pending' (rapid, in request), iar
  * flushLeadSignals() trimite efectiv (apelat cu after() dupa raspuns + cron retry).
  */
 
-export type SignalStage = 'calificat' | 'convertit' | 'edinio' | 'pierdut';
-export const SIGNAL_STAGES: SignalStage[] = ['calificat', 'convertit', 'edinio', 'pierdut'];
+export type SignalStage = 'calificat' | 'convertit' | 'edinio' | 'necalificat' | 'pierdut';
+export const SIGNAL_STAGES: SignalStage[] = ['calificat', 'convertit', 'edinio', 'necalificat', 'pierdut'];
 
 const EVENT_NAME: Record<SignalStage, string> = {
   calificat: 'lead_qualified',
   convertit: 'lead_converted',
   edinio: 'lead_edinio',
+  necalificat: 'lead_not_qualified',
   pierdut: 'lead_disqualified',
 };
 
@@ -220,8 +227,10 @@ async function googleAccessToken(): Promise<{ token: string | null; error?: stri
  */
 async function sendGoogle(lead: LeadRow, stage: SignalStage, occurredAt: string): Promise<SendResult> {
   if (!googleOutboundConfigured()) return { ok: false, unconfigured: true };
-  // Google nu are conversii "negative" — pierdut nu se trimite.
-  if (stage === 'pierdut') return { ok: false, skip: true, error: 'Google nu suporta conversii negative' };
+  // Google nu are conversii "negative" — pierdut/necalificat nu se trimit.
+  if (stage === 'pierdut' || stage === 'necalificat') {
+    return { ok: false, skip: true, error: 'Google nu suporta conversii negative' };
+  }
   const caId = googleConversionAction(stage);
   if (!caId) return { ok: false, unconfigured: true }; // actiunea de conversie nu e configurata inca
 

@@ -31,7 +31,7 @@ export async function GET() {
     return agent ? q.eq('assigned_to', agent) : q;
   };
 
-  let pipeQ = supabaseAdmin.from('crm_leads').select('status, estimated_value').neq('status', 'convertit').neq('status', 'edinio').neq('status', 'pierdut');
+  let pipeQ = supabaseAdmin.from('crm_leads').select('status, estimated_value').neq('status', 'convertit').neq('status', 'edinio').neq('status', 'necalificat').neq('status', 'pierdut');
   if (agent) pipeQ = pipeQ.eq('assigned_to', agent);
   let platQ = supabaseAdmin.from('crm_leads').select('platform');
   if (agent) platQ = platQ.eq('assigned_to', agent);

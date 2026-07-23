@@ -54,7 +54,7 @@ export const activityCreateSchema = z.object({
   body:  z.string().trim().min(1, 'Continutul e obligatoriu').max(5000),
 });
 
-const LEAD_STATUSES = ['nou', 'calificat', 'convertit', 'edinio', 'pierdut'] as const;
+const LEAD_STATUSES = ['nou', 'calificat', 'convertit', 'edinio', 'necalificat', 'pierdut'] as const;
 
 /** Schema lead — creare + editare (formularul trimite setul complet). */
 export const leadSchema = z

@@ -77,6 +77,7 @@ export function LeadForm({ initial, members, canAssign, submitting, submitLabel,
         <Field label="Status">
           <select style={{ ...inp, cursor: 'pointer' }} value={v.status} onChange={set('status')}>
             <option value="nou">Nou</option>
+            <option value="necalificat">Necalificat</option>
             <option value="calificat">Calificat</option>
             <option value="convertit">Convertit</option>
             <option value="edinio">Catre Edinio</option>

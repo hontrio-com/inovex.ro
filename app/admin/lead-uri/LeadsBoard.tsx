@@ -109,6 +109,9 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
     if (status === 'pierdut') {
       lost_reason = window.prompt('Motiv pierdere (optional):') ?? null;
     }
+    if (status === 'necalificat') {
+      lost_reason = window.prompt('Motiv necalificare (optional):') ?? null;
+    }
     if (status === 'convertit') {
       const v = window.prompt('Valoarea contractului in RON (optional — pleaca ca semnal de valoare catre platformele de ads):',
         lead.estimated_value != null ? String(lead.estimated_value) : '');
