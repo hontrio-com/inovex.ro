@@ -38,10 +38,17 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   return <div><label style={lbl}>{label}</label>{children}</div>;
 }
 
-export function LeadForm({ initial, members, canAssign, submitting, submitLabel, onSubmit, onCancel }: {
+export function LeadForm({ initial, members, canAssign, showValue, submitting, submitLabel, onSubmit, onCancel }: {
   initial?: Partial<CrmLead> | null;
   members: Member[];
   canAssign: boolean;
+  /**
+   * Arata campul de valoare estimata. Pornit in popup-ul de editare rapida, unde
+   * scopul e sa completezi detaliile lead-ului — inclusiv suma care pleaca drept
+   * semnal de valoare cand statusul devine "convertit". La "Lead nou" ramane
+   * ascuns, ca formularul de creare sa stea scurt.
+   */
+  showValue?: boolean;
   submitting: boolean;
   submitLabel: string;
   onSubmit: (values: LeadFormValues) => void;
@@ -85,6 +92,13 @@ export function LeadForm({ initial, members, canAssign, submitting, submitLabel,
           </select>
         </Field>
       </div>
+
+      {showValue && (
+        <Field label="Valoare estimata (RON)">
+          <input style={inp} inputMode="decimal" value={v.estimated_value} placeholder="ex. 2500"
+            onChange={(e) => setV((p) => ({ ...p, estimated_value: e.target.value.replace(',', '.') }))} />
+        </Field>
+      )}
 
       {canAssign && (
         <Field label="Alocat catre">

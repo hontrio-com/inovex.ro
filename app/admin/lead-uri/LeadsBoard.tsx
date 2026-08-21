@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { toast } from 'sonner';
-import { Target, Plus, Search, Loader2, LayoutGrid, List, X } from 'lucide-react';
+import { Target, Plus, Search, Loader2, LayoutGrid, List, X, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { CrmLead, Member, LeadStatus } from '@/types/crm';
 import { LeadForm, LeadFormValues } from './LeadForm';
@@ -15,7 +15,6 @@ const ctrl: React.CSSProperties = {
 };
 
 export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
-  const router = useRouter();
   const [view, setView] = useState<'kanban' | 'lista'>('kanban');
   const [leads, setLeads] = useState<CrmLead[]>([]);
   const [total, setTotal] = useState(0);
@@ -33,6 +32,9 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
   const [showNew, setShowNew] = useState(false);
   const [creating, setCreating] = useState(false);
   const [dragOver, setDragOver] = useState<LeadStatus | null>(null);
+  /** Lead-ul deschis in popup-ul de editare rapida (click pe card sau pe rand in lista). */
+  const [editing, setEditing] = useState<CrmLead | null>(null);
+  const [savingEdit, setSavingEdit] = useState(false);
 
   const memberName = useCallback((id: string | null) => {
     if (!id) return '—';
@@ -101,6 +103,30 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
     }
   }
 
+  /**
+   * Salveaza lead-ul din popup. Merge pe acelasi PATCH ca fisa completa, deci
+   * schimbarea de status de aici logheaza activitatea si trimite semnalele catre
+   * platformele de ads exact ca dragul in Kanban.
+   */
+  async function saveEdit(values: LeadFormValues) {
+    if (!editing) return;
+    setSavingEdit(true);
+    try {
+      const res = await fetch(`/api/admin/lead-uri/${editing.id}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? 'Eroare la salvare');
+      setLeads((ls) => ls.map((l) => (l.id === json.lead.id ? json.lead : l)));
+      toast.success('Modificari salvate');
+      setEditing(null);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Eroare la salvare');
+    } finally {
+      setSavingEdit(false);
+    }
+  }
+
   async function moveStatus(id: string, status: LeadStatus) {
     const lead = leads.find((l) => l.id === id);
     if (!lead || lead.status === status) return;
@@ -162,6 +188,18 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
         @media (min-width: 1024px) {
           .leads-page-fixed { height: 100vh; height: 100dvh; }
         }
+
+        /*
+          Pe desktop cele 6 coloane impart latimea disponibila, deci intra toate
+          pe ecran — fara scroll orizontal, ca dragul dintr-un status in altul sa
+          nu ceara derularea in lateral. Sub 1024px raman late si se deruleaza.
+        */
+        .leads-kanban { gap: 14px; overflow-x: auto; }
+        .leads-kanban > .leads-col { flex: 0 0 268px; }
+        @media (min-width: 1024px) {
+          .leads-kanban { gap: 10px; overflow-x: hidden; }
+          .leads-kanban > .leads-col { flex: 1 1 0; min-width: 0; }
+        }
       `}</style>
 
       {/* Header */}
@@ -209,21 +247,22 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
           <Loader2 size={18} className="animate-spin" /> Se incarca...
         </div>
       ) : view === 'kanban' ? (
-        <div style={{ display: 'flex', gap: 14, overflowX: 'auto', paddingBottom: 12, alignItems: 'stretch', flex: '1 1 auto', minHeight: 0 }}>
+        <div className="leads-kanban" style={{ display: 'flex', paddingBottom: 12, alignItems: 'stretch', flex: '1 1 auto', minHeight: 0 }}>
           {LEAD_COLUMNS.map((col) => {
             const colLeads = byStatus[col.key] ?? [];
             const sum = colLeads.reduce((acc, l) => acc + (l.estimated_value ?? 0), 0);
             return (
-              <div key={col.key}
+              <div key={col.key} className="leads-col"
                 onDragOver={(e) => { e.preventDefault(); setDragOver(col.key); }}
                 onDragLeave={() => setDragOver((d) => (d === col.key ? null : d))}
                 onDrop={(e) => { e.preventDefault(); setDragOver(null); const id = e.dataTransfer.getData('text/plain'); if (id) moveStatus(id, col.key); }}
-                style={{ flex: '0 0 268px', width: 268, display: 'flex', flexDirection: 'column', minHeight: 0, background: dragOver === col.key ? '#EFF6FF' : '#F8FAFC', border: `1px solid ${dragOver === col.key ? '#BFDBFE' : '#E2E8F0'}`, borderRadius: 12, padding: 10, transition: 'background 120ms' }}>
-                <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px 10px' }}>
-                  <span style={{ width: 8, height: 8, borderRadius: 999, background: col.color }} />
-                  <span style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '0.82rem', color: '#334155' }}>{col.label}</span>
-                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: '#94A3B8', background: '#fff', border: '1px solid #E2E8F0', borderRadius: 999, padding: '0 7px', lineHeight: '18px' }}>{colLeads.length}</span>
-                  {sum > 0 && <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-body)', fontSize: '0.72rem', color: '#64748B', fontWeight: 600 }}>{fmtMoney(sum, 'RON')}</span>}
+                style={{ display: 'flex', flexDirection: 'column', minHeight: 0, background: dragOver === col.key ? '#EFF6FF' : '#F8FAFC', border: `1px solid ${dragOver === col.key ? '#BFDBFE' : '#E2E8F0'}`, borderRadius: 12, padding: 10, transition: 'background 120ms' }}>
+                {/* Coloanele fiind acum inguste, eticheta se trunchiaza in loc sa impinga contorul afara. */}
+                <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6, padding: '4px 4px 10px' }}>
+                  <span style={{ flexShrink: 0, width: 8, height: 8, borderRadius: 999, background: col.color }} />
+                  <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '0.82rem', color: '#334155' }} title={col.label}>{col.label}</span>
+                  <span style={{ flexShrink: 0, fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: '#94A3B8', background: '#fff', border: '1px solid #E2E8F0', borderRadius: 999, padding: '0 7px', lineHeight: '18px' }}>{colLeads.length}</span>
+                  {sum > 0 && <span style={{ flexShrink: 0, marginLeft: 'auto', fontFamily: 'var(--font-body)', fontSize: '0.72rem', color: '#64748B', fontWeight: 600 }}>{fmtMoney(sum, 'RON')}</span>}
                 </div>
                 {/* Doar lista de carduri deruleaza — antetul coloanei ramane pe loc. */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: '1 1 auto', minHeight: 40, overflowY: 'auto', overscrollBehavior: 'contain', paddingRight: 2 }}>
@@ -232,10 +271,10 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
                     return (
                       <div key={l.id} draggable
                         onDragStart={(e) => { e.dataTransfer.setData('text/plain', l.id); e.dataTransfer.effectAllowed = 'move'; }}
-                        onClick={() => router.push(`/admin/lead-uri/${l.id}`)}
+                        onClick={() => setEditing(l)}
                         style={{ flexShrink: 0, background: '#fff', border: '1px solid #E2E8F0', borderRadius: 10, padding: '10px 12px', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
-                        <div style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.85rem', color: '#0F172A' }}>{l.company || l.name}</div>
-                        {l.company && l.name && <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: '#94A3B8' }}>{l.name}</div>}
+                        <div style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.85rem', color: '#0F172A', overflowWrap: 'anywhere' }}>{l.company || l.name}</div>
+                        {l.company && l.name && <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: '#94A3B8', overflowWrap: 'anywhere' }}>{l.name}</div>}
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 7 }}>
                           {pm && <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.68rem', fontWeight: 700, color: '#fff', background: pm.color, borderRadius: 5, padding: '1px 6px' }}>{pm.label}</span>}
                           {l.campaign && <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.7rem', color: '#64748B' }}>{l.campaign}</span>}
@@ -273,7 +312,7 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
                     const pm = l.platform ? PLATFORM_META[l.platform] : null;
                     const col = LEAD_COLUMNS.find((c) => c.key === l.status)!;
                     return (
-                      <tr key={l.id} style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer' }} onClick={() => router.push(`/admin/lead-uri/${l.id}`)}>
+                      <tr key={l.id} style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer' }} onClick={() => setEditing(l)}>
                         <td style={{ padding: '12px 16px' }}>
                           <div style={{ fontWeight: 600, fontSize: '0.85rem', color: '#0F172A' }}>{l.company || l.name}</div>
                           {l.company && l.name && <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>{l.name}</div>}
@@ -300,6 +339,41 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
           <Button variant="outline" size="sm" disabled={page <= 1 || loading} onClick={() => setPage((p) => p - 1)}>Inapoi</Button>
           <span>{page} / {totalPages}</span>
           <Button variant="outline" size="sm" disabled={page >= totalPages || loading} onClick={() => setPage((p) => p + 1)}>Inainte</Button>
+        </div>
+      )}
+
+      {/* Popup editare rapida — click pe un card / pe un rand din lista */}
+      {editing && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', zIndex: 100, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '40px 16px', overflowY: 'auto' }} onClick={() => !savingEdit && setEditing(null)}>
+          <div style={{ background: '#fff', borderRadius: 16, width: '100%', maxWidth: 700, padding: 28 }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 6 }}>
+              <div style={{ minWidth: 0 }}>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.1rem', color: '#0F172A', overflowWrap: 'anywhere' }}>
+                  {editing.company || editing.name || 'Lead'}
+                </h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginTop: 6 }}>
+                  {editing.platform && PLATFORM_META[editing.platform] && (
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.68rem', fontWeight: 700, color: '#fff', background: PLATFORM_META[editing.platform].color, borderRadius: 5, padding: '1px 6px' }}>
+                      {PLATFORM_META[editing.platform].label}
+                    </span>
+                  )}
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.72rem', fontWeight: 600, color: LEAD_COLUMNS.find((c) => c.key === editing.status)?.color }}>
+                    {STATUS_LABEL[editing.status]}
+                  </span>
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.72rem', color: '#94A3B8' }}>{fmtDate(editing.created_at)}</span>
+                </div>
+              </div>
+              <button onClick={() => !savingEdit && setEditing(null)} style={{ flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', padding: 4 }}><X size={20} /></button>
+            </div>
+
+            {/* Conversia in client, timeline-ul si stergerea raman pe fisa completa. */}
+            <Link href={`/admin/lead-uri/${editing.id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 18, fontFamily: 'var(--font-body)', fontSize: '0.8rem', color: '#2B8FCC', textDecoration: 'none' }}>
+              <ExternalLink size={14} /> Fisa completa (istoric, conversie in client)
+            </Link>
+
+            <LeadForm key={editing.id} initial={editing} members={members} canAssign={canAssign} showValue
+              submitting={savingEdit} submitLabel="Salveaza" onSubmit={saveEdit} onCancel={() => setEditing(null)} />
+          </div>
         </div>
       )}
 
