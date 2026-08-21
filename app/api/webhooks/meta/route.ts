@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { ingestLead } from '@/lib/crm/ads/ingest';
+import { mapFieldData, type MetaFieldData } from '@/lib/crm/ads/meta-fields';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -35,29 +36,6 @@ function validSignature(raw: string, header: string | null): boolean {
   } catch {
     return false;
   }
-}
-
-interface MetaFieldData { name?: string; values?: unknown[] }
-
-/** Mapeaza field_data (raspunsurile formularului) pe campurile lead-ului. */
-function mapFieldData(fieldData: MetaFieldData[]) {
-  let name: string | null = null, firstName = '', lastName = '';
-  let email: string | null = null, phone: string | null = null;
-  const extra: string[] = [];
-
-  for (const f of fieldData) {
-    const key = (f.name ?? '').toLowerCase();
-    const value = String(f.values?.[0] ?? '').trim();
-    if (!value) continue;
-    if (key === 'full_name' || key === 'name' || key === 'nume' || key === 'nume_complet') name = value;
-    else if (key === 'first_name' || key === 'prenume') firstName = value;
-    else if (key === 'last_name') lastName = value;
-    else if (key === 'email' || key === 'work_email') email = value;
-    else if (key === 'phone_number' || key === 'phone' || key === 'telefon') phone = value;
-    else extra.push(`${f.name}: ${value}`);
-  }
-  if (!name && (firstName || lastName)) name = `${firstName} ${lastName}`.trim();
-  return { name, email, phone, notes: extra.length ? extra.join('\n') : null };
 }
 
 async function fetchLeadDetails(leadgenId: string) {
