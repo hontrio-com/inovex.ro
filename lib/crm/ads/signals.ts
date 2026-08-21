@@ -129,6 +129,11 @@ async function sendMeta(lead: LeadRow, stage: SignalStage, occurredAt: string): 
   const event = {
     event_name: EVENT_NAME[stage],
     event_time: Math.floor(Date.parse(occurredAt) / 1000),
+    // Stabil pe lead+etapa, ca transactionId-ul de la Google: daca un request
+    // ajunge la Meta dar raspunsul se pierde, randul ramane 'failed' si cron-ul
+    // il reincearca — cu acelasi event_id, Meta dedubleaza in loc sa numere de
+    // doua ori. Se calculeaza din date persistate, deci e identic la reincercare.
+    event_id: `${lead.id}-${stage}`,
     action_source: 'system_generated',
     user_data,
     custom_data: {
@@ -234,6 +239,8 @@ async function sendTikTok(lead: LeadRow, stage: SignalStage, occurredAt: string)
     data: [{
       event: EVENT_NAME[stage],
       event_time: Math.floor(Date.parse(occurredAt) / 1000),
+      // Acelasi rol ca event_id la Meta / transactionId la Google: dedublare la reincercari.
+      event_id: `${lead.id}-${stage}`,
       user,
       ...(stage === 'convertit' && lead.estimated_value != null
         ? { properties: { currency: lead.currency || 'RON', value: lead.estimated_value } }
