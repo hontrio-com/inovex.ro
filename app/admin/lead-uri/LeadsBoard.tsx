@@ -7,6 +7,7 @@ import { Target, Plus, Search, Loader2, LayoutGrid, List, X, ExternalLink } from
 import { Button } from '@/components/ui/button';
 import type { CrmLead, Member, LeadStatus } from '@/types/crm';
 import { LeadForm, LeadFormValues } from './LeadForm';
+import { ActivityTimeline } from '../_components/ActivityTimeline';
 import { LEAD_COLUMNS, STATUS_LABEL, PLATFORM_META, fmtMoney, fmtDate } from './meta';
 
 const ctrl: React.CSSProperties = {
@@ -194,6 +195,12 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
           pe ecran — fara scroll orizontal, ca dragul dintr-un status in altul sa
           nu ceara derularea in lateral. Sub 1024px raman late si se deruleaza.
         */
+        /* Popup: detaliile si activitatea una langa alta cand e loc, una sub alta cand nu e. */
+        .lead-popup-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+        @media (min-width: 900px) {
+          .lead-popup-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 26px; }
+        }
+
         .leads-kanban { gap: 14px; overflow-x: auto; }
         .leads-kanban > .leads-col { flex: 0 0 268px; }
         @media (min-width: 1024px) {
@@ -345,7 +352,7 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
       {/* Popup editare rapida — click pe un card / pe un rand din lista */}
       {editing && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', zIndex: 100, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '40px 16px', overflowY: 'auto' }} onClick={() => !savingEdit && setEditing(null)}>
-          <div style={{ background: '#fff', borderRadius: 16, width: '100%', maxWidth: 700, padding: 28 }} onClick={(e) => e.stopPropagation()}>
+          <div style={{ background: '#fff', borderRadius: 16, width: '100%', maxWidth: 980, padding: 28 }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 6 }}>
               <div style={{ minWidth: 0 }}>
                 <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.1rem', color: '#0F172A', overflowWrap: 'anywhere' }}>
@@ -366,13 +373,21 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
               <button onClick={() => !savingEdit && setEditing(null)} style={{ flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', padding: 4 }}><X size={20} /></button>
             </div>
 
-            {/* Conversia in client, timeline-ul si stergerea raman pe fisa completa. */}
+            {/* Conversia in client si stergerea raman pe fisa completa. */}
             <Link href={`/admin/lead-uri/${editing.id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 18, fontFamily: 'var(--font-body)', fontSize: '0.8rem', color: '#2B8FCC', textDecoration: 'none' }}>
-              <ExternalLink size={14} /> Fisa completa (istoric, conversie in client)
+              <ExternalLink size={14} /> Fisa completa (conversie in client, stergere)
             </Link>
 
-            <LeadForm key={editing.id} initial={editing} members={members} canAssign={canAssign} showValue
-              submitting={savingEdit} submitLabel="Salveaza" onSubmit={saveEdit} onCancel={() => setEditing(null)} />
+            <div className="lead-popup-body">
+              <LeadForm key={editing.id} initial={editing} members={members} canAssign={canAssign} showValue
+                submitting={savingEdit} submitLabel="Salveaza" onSubmit={saveEdit} onCancel={() => setEditing(null)} />
+
+              <div style={{ minWidth: 0 }}>
+                <h3 style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '0.8rem', color: '#374151', marginBottom: 10 }}>Activitate</h3>
+                {/* Notele se salveaza pe loc, independent de butonul Salveaza al formularului. */}
+                <ActivityTimeline key={editing.id} baseUrl={`/api/admin/lead-uri/${editing.id}`} members={members} compact />
+              </div>
+            </div>
           </div>
         </div>
       )}

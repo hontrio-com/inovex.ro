@@ -26,7 +26,15 @@ function fmtDateTime(iso: string) {
  * Timeline de activitati reutilizabil (client sau lead).
  * baseUrl = ex. `/api/admin/clienti/<id>` sau `/api/admin/lead-uri/<id>`.
  */
-export function ActivityTimeline({ baseUrl, members }: { baseUrl: string; members: Member[] }) {
+export function ActivityTimeline({ baseUrl, members, compact }: {
+  baseUrl: string;
+  members: Member[];
+  /**
+   * Varianta pentru popup: fara chenarele groase de card si cu lista limitata in
+   * inaltime, care isi deruleaza propriul continut in loc sa lungeasca modalul.
+   */
+  compact?: boolean;
+}) {
   const [items, setItems] = useState<CrmActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [type, setType] = useState<ActivityType>('note');
@@ -68,9 +76,14 @@ export function ActivityTimeline({ baseUrl, members }: { baseUrl: string; member
 
   const inp: React.CSSProperties = { height: 38, border: '1px solid #E2E8F0', borderRadius: 8, padding: '0 10px', fontFamily: 'var(--font-body)', fontSize: '0.85rem', outline: 'none', background: '#fff' };
 
+  const box: React.CSSProperties = compact
+    ? { background: '#fff', border: '1px solid #E2E8F0', borderRadius: 10, padding: 12 }
+    : card;
+  const listScroll: React.CSSProperties = compact ? { maxHeight: 300, overflowY: 'auto', overscrollBehavior: 'contain' } : {};
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div style={card}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: compact ? 12 : 16 }}>
+      <div style={box}>
         <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
           <select value={type} onChange={(e) => setType(e.target.value as ActivityType)} style={{ ...inp, cursor: 'pointer' }}>
             <option value="note">Nota</option>
@@ -87,7 +100,7 @@ export function ActivityTimeline({ baseUrl, members }: { baseUrl: string; member
         </div>
       </div>
 
-      <div style={card}>
+      <div style={{ ...box, ...listScroll }}>
         {loading ? <div style={{ padding: 30, textAlign: 'center', color: '#94A3B8', fontFamily: 'var(--font-body)', fontSize: '0.85rem' }}>Se incarca...</div>
           : items.length === 0 ? <div style={{ padding: 30, textAlign: 'center', color: '#94A3B8', fontFamily: 'var(--font-body)', fontSize: '0.85rem' }}>Nicio activitate inca.</div>
           : (
