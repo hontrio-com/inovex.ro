@@ -143,9 +143,29 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
   const totalPages = Math.max(1, Math.ceil(total / 30));
 
   return (
-    <div style={{ padding: '28px 32px' }}>
+    <div className={view === 'kanban' ? 'leads-page leads-page-fixed' : 'leads-page'} style={{ padding: '28px 32px' }}>
+      {/*
+        In Kanban pagina se blocheaza pe inaltimea ecranului: coloanele ies toate
+        egale si isi deruleaza propriile carduri, in loc sa creasca pe verticala
+        si sa mute scroll-ul pe intreaga pagina (ceea ce facea imposibil dragul
+        unui card dintr-o coloana in alta). Lista ramane cu scroll normal.
+        Cei 56px de pe mobil sunt bara de sus din AdminShell (sticky, in flux).
+      */}
+      <style>{`
+        .leads-page-fixed {
+          display: flex;
+          flex-direction: column;
+          box-sizing: border-box;
+          height: calc(100vh - 56px);
+          height: calc(100dvh - 56px);
+        }
+        @media (min-width: 1024px) {
+          .leads-page-fixed { height: 100vh; height: 100dvh; }
+        }
+      `}</style>
+
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 18 }}>
+      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 18 }}>
         <div>
           <h1 style={{ display: 'flex', alignItems: 'center', gap: 10, fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.35rem', color: '#0F172A', marginBottom: 4 }}>
             <Target size={22} color="#2B8FCC" /> Lead-uri
@@ -156,7 +176,7 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
       </div>
 
       {/* Toolbar */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 16, alignItems: 'center' }}>
+      <div style={{ flexShrink: 0, display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 16, alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 220px', minWidth: 180 }}>
           <Search size={15} style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
           <input value={qInput} onChange={(e) => setQInput(e.target.value)} placeholder="Cauta nume, companie, campanie..." style={{ ...ctrl, width: '100%', paddingLeft: 34, boxSizing: 'border-box' }} />
@@ -185,11 +205,11 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
       </div>
 
       {loading ? (
-        <div style={{ padding: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, color: '#64748B' }}>
+        <div style={{ flex: '1 1 auto', padding: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, color: '#64748B' }}>
           <Loader2 size={18} className="animate-spin" /> Se incarca...
         </div>
       ) : view === 'kanban' ? (
-        <div style={{ display: 'flex', gap: 14, overflowX: 'auto', paddingBottom: 12, alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', gap: 14, overflowX: 'auto', paddingBottom: 12, alignItems: 'stretch', flex: '1 1 auto', minHeight: 0 }}>
           {LEAD_COLUMNS.map((col) => {
             const colLeads = byStatus[col.key] ?? [];
             const sum = colLeads.reduce((acc, l) => acc + (l.estimated_value ?? 0), 0);
@@ -198,21 +218,22 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
                 onDragOver={(e) => { e.preventDefault(); setDragOver(col.key); }}
                 onDragLeave={() => setDragOver((d) => (d === col.key ? null : d))}
                 onDrop={(e) => { e.preventDefault(); setDragOver(null); const id = e.dataTransfer.getData('text/plain'); if (id) moveStatus(id, col.key); }}
-                style={{ flex: '0 0 268px', width: 268, background: dragOver === col.key ? '#EFF6FF' : '#F8FAFC', border: `1px solid ${dragOver === col.key ? '#BFDBFE' : '#E2E8F0'}`, borderRadius: 12, padding: 10, transition: 'background 120ms' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px 10px' }}>
+                style={{ flex: '0 0 268px', width: 268, display: 'flex', flexDirection: 'column', minHeight: 0, background: dragOver === col.key ? '#EFF6FF' : '#F8FAFC', border: `1px solid ${dragOver === col.key ? '#BFDBFE' : '#E2E8F0'}`, borderRadius: 12, padding: 10, transition: 'background 120ms' }}>
+                <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px 10px' }}>
                   <span style={{ width: 8, height: 8, borderRadius: 999, background: col.color }} />
                   <span style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '0.82rem', color: '#334155' }}>{col.label}</span>
                   <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: '#94A3B8', background: '#fff', border: '1px solid #E2E8F0', borderRadius: 999, padding: '0 7px', lineHeight: '18px' }}>{colLeads.length}</span>
                   {sum > 0 && <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-body)', fontSize: '0.72rem', color: '#64748B', fontWeight: 600 }}>{fmtMoney(sum, 'RON')}</span>}
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minHeight: 40 }}>
+                {/* Doar lista de carduri deruleaza — antetul coloanei ramane pe loc. */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: '1 1 auto', minHeight: 40, overflowY: 'auto', overscrollBehavior: 'contain', paddingRight: 2 }}>
                   {colLeads.map((l) => {
                     const pm = l.platform ? PLATFORM_META[l.platform] : null;
                     return (
                       <div key={l.id} draggable
                         onDragStart={(e) => { e.dataTransfer.setData('text/plain', l.id); e.dataTransfer.effectAllowed = 'move'; }}
                         onClick={() => router.push(`/admin/lead-uri/${l.id}`)}
-                        style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: 10, padding: '10px 12px', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
+                        style={{ flexShrink: 0, background: '#fff', border: '1px solid #E2E8F0', borderRadius: 10, padding: '10px 12px', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
                         <div style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.85rem', color: '#0F172A' }}>{l.company || l.name}</div>
                         {l.company && l.name && <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: '#94A3B8' }}>{l.name}</div>}
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 7 }}>
