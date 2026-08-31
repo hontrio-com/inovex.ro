@@ -185,3 +185,17 @@ export const orgSettingsSchema = z.object({
   reminder_days:   z.preprocess((v) => (v === '' || v == null ? 3 : typeof v === 'string' ? Number(v) : v), z.number().int().min(1).max(90)),
   expiry_days:     z.preprocess((v) => (v === '' || v == null ? 14 : typeof v === 'string' ? Number(v) : v), z.number().int().min(1).max(365)),
 });
+
+/** Obiectiv de vanzari (bara de Goal din Lead-uri). */
+export const goalSchema = z
+  .object({
+    title:      z.string().trim().min(1, 'Titlul e obligatoriu').max(120),
+    target:     z.preprocess((v) => (typeof v === 'string' ? Number(v) : v),
+                  z.number().int().positive('Tinta trebuie sa fie un numar pozitiv').max(100000)),
+    start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data de start invalida'),
+    end_date:   z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data de final invalida'),
+  })
+  .refine((v) => v.end_date >= v.start_date, {
+    message: 'Data de final nu poate fi inaintea celei de start',
+    path: ['end_date'],
+  });

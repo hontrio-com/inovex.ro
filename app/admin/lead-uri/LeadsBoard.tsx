@@ -7,6 +7,7 @@ import { Target, Plus, Search, Loader2, LayoutGrid, List, X, ExternalLink } from
 import { Button } from '@/components/ui/button';
 import type { CrmLead, Member, LeadStatus } from '@/types/crm';
 import { LeadForm, LeadFormValues } from './LeadForm';
+import { GoalBar } from './GoalBar';
 import { ActivityTimeline } from '../_components/ActivityTimeline';
 import { LEAD_COLUMNS, STATUS_LABEL, PLATFORM_META, fmtMoney, fmtDate } from './meta';
 
@@ -36,6 +37,8 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
   /** Lead-ul deschis in popup-ul de editare rapida (click pe card sau pe rand in lista). */
   const [editing, setEditing] = useState<CrmLead | null>(null);
   const [savingEdit, setSavingEdit] = useState(false);
+  /** Creste la fiecare schimbare de status, ca bara de obiectiv sa se recalculeze. */
+  const [goalTick, setGoalTick] = useState(0);
 
   const memberName = useCallback((id: string | null) => {
     if (!id) return '—';
@@ -119,6 +122,7 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? 'Eroare la salvare');
       setLeads((ls) => ls.map((l) => (l.id === json.lead.id ? json.lead : l)));
+      if (json.lead.status !== editing.status) setGoalTick((t) => t + 1);
       toast.success('Modificari salvate');
       setEditing(null);
     } catch (e) {
@@ -154,6 +158,7 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
         method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status, lost_reason, estimated_value }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? 'Eroare');
+      setGoalTick((t) => t + 1);
     } catch (e) {
       setLeads((ls) => ls.map((l) => (l.id === id ? { ...l, status: prev } : l)));
       toast.error(e instanceof Error ? e.message : 'Eroare la schimbarea statusului');
@@ -219,6 +224,9 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
         </div>
         <Button leftIcon={<Plus size={15} />} onClick={() => setShowNew(true)}>Lead nou</Button>
       </div>
+
+      {/* Obiectiv — canAssign = owner/admin, aceiasi care pot edita obiectivul */}
+      <GoalBar canEdit={canAssign} refreshKey={goalTick} />
 
       {/* Toolbar */}
       <div style={{ flexShrink: 0, display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 16, alignItems: 'center' }}>
