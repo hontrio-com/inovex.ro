@@ -282,12 +282,13 @@ async function sendOpenAI(lead: LeadRow, stage: SignalStage, occurredAt: string)
     action_source: 'offline',
     ...(lead.oppref ? { oppref: lead.oppref } : {}),
     user,
+    // Fara `contents: []` — nu avem produse de listat la o conversie de servicii,
+    // iar un array gol e informatie zero pe care validatorul n-are motiv s-o accepte.
     data: {
       type: isOrder ? 'contents' : 'custom',
       ...(hasValue
         ? { amount: Math.round(lead.estimated_value! * 100), currency: (lead.currency || 'RON').toUpperCase() }
         : {}),
-      ...(isOrder ? { contents: [] } : {}),
     },
   };
 
