@@ -70,9 +70,10 @@ function targetPlatforms(lead: LeadRow): ('meta' | 'tiktok' | 'google' | 'openai
   if (lead.platform === 'meta' || lead.fbclid || lead.fbp) t.push('meta');
   if (lead.platform === 'tiktok' || lead.ttclid) t.push('tiktok');
   if (lead.platform === 'google' || lead.gclid) t.push('google');
-  // ChatGPT Ads nu are formulare proprii: lead-ul ajunge pe site, deci platform
-  // ramane 'website' si singurul indiciu de atributie sunt cookie-urile oaiq.
-  if (lead.obref || lead.oppref) t.push('openai');
+  // Sursa 'openai' se pune doar cand exista click ID (__oppref). Semnalele pleaca
+  // insa si pe simplul identificator de browser (__obref), la fel ca la Meta cu
+  // _fbp: ajuta potrivirea, iar atributia o decide platforma.
+  if (lead.platform === 'openai' || lead.obref || lead.oppref) t.push('openai');
   return t;
 }
 

@@ -67,7 +67,7 @@ export const leadSchema = z
     source:          optStr(120),
     platform:        z.preprocess(
                        (v) => (v === '' || v == null ? null : v),
-                       z.enum(['meta', 'google', 'tiktok', 'website', 'manual']).nullable(),
+                       z.enum(['meta', 'google', 'tiktok', 'openai', 'website', 'manual']).nullable(),
                      ),
     campaign:        optStr(200),
     estimated_value: z.preprocess(

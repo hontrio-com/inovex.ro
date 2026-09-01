@@ -239,6 +239,7 @@ export function LeadsBoard({ canAssign }: { canAssign: boolean }) {
           <option value="meta">Meta</option>
           <option value="google">Google</option>
           <option value="tiktok">TikTok</option>
+          <option value="openai">ChatGPT Ads</option>
           <option value="website">Website</option>
           <option value="manual">Manual</option>
         </select>

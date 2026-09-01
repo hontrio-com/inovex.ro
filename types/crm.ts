@@ -169,7 +169,7 @@ export interface Member {
 }
 
 export type LeadStatus = 'nou' | 'calificat' | 'convertit' | 'edinio' | 'necalificat' | 'pierdut';
-export type LeadPlatform = 'meta' | 'google' | 'tiktok' | 'website' | 'manual';
+export type LeadPlatform = 'meta' | 'google' | 'tiktok' | 'openai' | 'website' | 'manual';
 
 export interface CrmLead {
   id: string;

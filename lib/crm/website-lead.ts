@@ -52,6 +52,13 @@ export async function createWebsiteLead(input: WebsiteLeadInput): Promise<void> 
   const ttclid = c.get('ttclid')?.value ?? c.get('_ttclid')?.value ?? null;
   // Cookie-urile pixelului OpenAI Ads (oaiq). Fara ele, un lead venit din
   // ChatGPT Ads nu poate primi ulterior semnale de calitate din CRM.
+  //
+  // ATENTIE la diferenta dintre ele, confirmata in sursa SDK-ului
+  // (`{obref: g.browserRef, oppref: g.clickId}`):
+  //   __obref  = identificator de BROWSER, setat pentru ORICE vizitator (ca _fbp);
+  //   __oppref = click ID-ul reclamei, setat DOAR dupa un click pe un anunt (ca fbclid).
+  // De-aia sursa lead-ului se decide dupa __oppref: dupa __obref, absolut toate
+  // lead-urile de pe site ar aparea ca venite din ChatGPT Ads.
   const obref = c.get('__obref')?.value ?? null;
   const oppref = c.get('__oppref')?.value ?? null;
 
@@ -88,7 +95,7 @@ export async function createWebsiteLead(input: WebsiteLeadInput): Promise<void> 
         email: clean(input.email, 200)?.toLowerCase() ?? null,
         phone: clean(input.phone, 50),
         status: 'nou',
-        platform: 'website',
+        platform: oppref ? 'openai' : 'website',
         source: clean(input.source, 120),
         notes: clean(input.notes, 5000),
         estimated_value: input.estimatedValue ?? null,
