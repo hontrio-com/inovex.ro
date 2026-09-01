@@ -21,8 +21,8 @@ function applySecurityHeaders(response: NextResponse, pathname: string) {
 
   const csp = [
     "default-src 'self'",
-    // Scripts: GTM, GA4, Google Ads, Meta Pixel, YouTube, TikTok
-    `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ''} https://www.googletagmanager.com https://ssl.google-analytics.com https://www.google-analytics.com https://googleadservices.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://connect.facebook.net https://analytics.tiktok.com https://www.youtube.com https://s.ytimg.com`,
+    // Scripts: GTM, GA4, Google Ads, Meta Pixel, YouTube, TikTok, OpenAI Ads
+    `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ''} https://www.googletagmanager.com https://ssl.google-analytics.com https://www.google-analytics.com https://googleadservices.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://connect.facebook.net https://analytics.tiktok.com https://www.youtube.com https://s.ytimg.com https://bzrcdn.openai.com`,
     // Styles
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     // Fonts
@@ -33,8 +33,8 @@ function applySecurityHeaders(response: NextResponse, pathname: string) {
     "media-src 'self' https://www.youtube.com https://*.supabase.co",
     // Frames: GTM noscript, YouTube, DoubleClick
     "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://www.googletagmanager.com https://td.doubleclick.net",
-    // Fetch/XHR: all analytics endpoints + Supabase + Meta Conversions API
-    "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://www.googletagmanager.com https://*.googletagmanager.com https://googleadservices.com https://www.googleadservices.com https://www.google.com https://www.facebook.com https://*.facebook.com https://*.facebook.net https://analytics.tiktok.com https://log.tiktokv.com https://business-api.tiktok.com https://*.supabase.co wss://*.supabase.co https://*.run.app https://conversionsapigateway.com https://*.conversionsapigateway.com",
+    // Fetch/XHR: all analytics endpoints + Supabase + Meta Conversions API + OpenAI Ads
+    "connect-src 'self' https://bzr.openai.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://www.googletagmanager.com https://*.googletagmanager.com https://googleadservices.com https://www.googleadservices.com https://www.google.com https://www.facebook.com https://*.facebook.com https://*.facebook.net https://analytics.tiktok.com https://log.tiktokv.com https://business-api.tiktok.com https://*.supabase.co wss://*.supabase.co https://*.run.app https://conversionsapigateway.com https://*.conversionsapigateway.com",
     "worker-src 'self' blob:",
     "object-src 'none'",
     "base-uri 'self'",

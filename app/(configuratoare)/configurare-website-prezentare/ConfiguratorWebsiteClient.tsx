@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { trackConversions } from '@/lib/gtm';
 import { trackTikTok } from '@/lib/tiktok';
 import { trackEvent, generateEventId } from '@/lib/meta-pixel';
+import { measure as oaiqMeasure } from '@/lib/openai-pixel';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
   User,
@@ -369,6 +370,8 @@ export function ConfiguratorWebsiteClient() {
         trackConversions.configuratorWebsite();
         trackTikTok.configuratorWebsite();
         trackEvent('Lead', { content_name: 'configurator_website_prezentare' }, metaEventId);
+        // ChatGPT Ads: acelasi event id ca la Meta => perechea server-side se deduplica.
+        oaiqMeasure('lead_created', {}, metaEventId);
         setSubmitStatus('success');
       } else {
         setSubmitStatus('error');

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { requireRole } from '@/lib/auth';
-import { metaOutboundConfigured, tiktokOutboundConfigured, googleOutboundConfigured } from '@/lib/crm/ads/signals';
+import { metaOutboundConfigured, tiktokOutboundConfigured, googleOutboundConfigured, openaiOutboundConfigured } from '@/lib/crm/ads/signals';
 
 export const runtime = 'nodejs';
 
@@ -33,13 +33,18 @@ export async function GET() {
   const { data: signalRows } = await supabaseAdmin
     .from('crm_lead_signals').select('platform, status').limit(10000);
   const signals: Record<string, { sent: number; pending: number; failed: number; skipped: number }> = {};
-  PLATFORMS.forEach((p) => { signals[p] = { sent: 0, pending: 0, failed: 0, skipped: 0 }; });
+  [...PLATFORMS, 'openai'].forEach((p) => { signals[p] = { sent: 0, pending: 0, failed: 0, skipped: 0 }; });
   (signalRows ?? []).forEach((r) => {
     const s = signals[r.platform];
     if (s && r.status in s) s[r.status as keyof typeof s]++;
   });
 
   const leadMap = new Map(leadStats.map((l) => [l.platform, l]));
+
+  // Cate lead-uri poarta cookie-ul de atributie OpenAI — echivalentul contorului
+  // de lead-uri inbound pentru celelalte platforme.
+  const { count: attributedOpenAI } = await supabaseAdmin
+    .from('crm_leads').select('*', { count: 'exact', head: true }).not('obref', 'is', null);
 
   return NextResponse.json({
     meta: {
@@ -102,6 +107,20 @@ export async function GET() {
           'GOOGLE_ADS_CA_CONVERTED (id actiune conversie)': has('GOOGLE_ADS_CA_CONVERTED'),
         },
         signals: signals.google,
+      },
+    },
+    openai: {
+      // ChatGPT Ads nu are formulare proprii: lead-urile ajung pe site, deci nu
+      // exista webhook inbound. Atributia sta in cookie-ul __obref de pe lead.
+      inbound: null,
+      outbound: {
+        configured: openaiOutboundConfigured(),
+        env: {
+          NEXT_PUBLIC_OPENAI_PIXEL_ID: has('NEXT_PUBLIC_OPENAI_PIXEL_ID'),
+          OPENAI_ADS_API_KEY: has('OPENAI_ADS_API_KEY'),
+        },
+        signals: signals.openai,
+        attributedLeads: attributedOpenAI,
       },
     },
   });

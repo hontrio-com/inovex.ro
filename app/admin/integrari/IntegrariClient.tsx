@@ -11,9 +11,9 @@ import { Button } from '@/components/ui/button';
 interface LeadStats { count: number; lastAt: string | null }
 interface SignalStats { sent: number; pending: number; failed: number; skipped: number }
 interface Inbound { configured: boolean; env: Record<string, boolean>; webhookUrl: string; verifyToken?: string | null; webhookKey?: string | null; leads?: LeadStats }
-interface Outbound { configured: boolean; env: Record<string, boolean>; signals: SignalStats }
-interface PlatformState { inbound: Inbound; outbound: Outbound }
-interface StatusData { meta: PlatformState; tiktok: PlatformState; google: PlatformState }
+interface Outbound { configured: boolean; env: Record<string, boolean>; signals: SignalStats; attributedLeads?: number }
+interface PlatformState { inbound: Inbound | null; outbound: Outbound }
+interface StatusData { meta: PlatformState; tiktok: PlatformState; google: PlatformState; openai: PlatformState }
 
 const EVENTS = ['lead_qualified (Calificat)', 'lead_converted (Convertit, cu valoare)', 'lead_edinio (Catre Edinio)', 'lead_disqualified (Pierdut)'];
 
@@ -125,23 +125,24 @@ function PlatformCard({ name, color, state, steps, extraInbound }: {
   name: string; color: string; state: PlatformState; steps: string[]; extraInbound?: React.ReactNode;
 }) {
   const [showSteps, setShowSteps] = useState(false);
-  const leads = state.inbound.leads;
+  const leads = state.inbound?.leads;
   return (
     <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: 14, padding: 22, display: 'flex', flexDirection: 'column', gap: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         <span style={{ width: 12, height: 12, borderRadius: 4, background: color }} />
         <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.1rem', color: '#0F172A', marginRight: 'auto' }}>{name}</h2>
-        <StatusBadge ok={state.inbound.configured} labelOk="Primire activa" labelKo="Primire: chei lipsa" />
+        {state.inbound && <StatusBadge ok={state.inbound.configured} labelOk="Primire activa" labelKo="Primire: chei lipsa" />}
         <StatusBadge ok={state.outbound.configured} labelOk="Semnale active" labelKo="Semnale: chei lipsa" />
       </div>
 
-      {/* Inbound */}
+      {/* Inbound — lipseste la platformele fara formulare proprii (ChatGPT Ads) */}
+      {state.inbound && (
       <div>
         <div style={sectionLbl}><Inbox size={15} color={color} /> Primire lead-uri (webhook)</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <CopyBox value={state.inbound.webhookUrl} />
+          <CopyBox value={state.inbound!.webhookUrl} />
           {extraInbound}
-          <EnvChecklist env={state.inbound.env} />
+          <EnvChecklist env={state.inbound!.env} />
           <div style={{ ...subtle, display: 'flex', alignItems: 'center', gap: 6 }}>
             {leads && leads.count > 0
               ? <>Lead-uri primite: <strong style={{ color: '#0F172A' }}>{leads.count}</strong> · ultimul {fmtDateTime(leads.lastAt)}</>
@@ -149,6 +150,7 @@ function PlatformCard({ name, color, state, steps, extraInbound }: {
           </div>
         </div>
       </div>
+      )}
 
       {/* Outbound */}
       <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: 16 }}>
@@ -156,6 +158,11 @@ function PlatformCard({ name, color, state, steps, extraInbound }: {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <EnvChecklist env={state.outbound.env} />
           <SignalRow signals={state.outbound.signals} />
+          {state.outbound.attributedLeads != null && (
+            <div style={subtle}>
+              Lead-uri cu atributie ChatGPT Ads (cookie <code>__obref</code>): <strong style={{ color: "#0F172A" }}>{state.outbound.attributedLeads}</strong>
+            </div>
+          )}
         </div>
       </div>
 
@@ -220,10 +227,10 @@ export function IntegrariClient() {
             state={data.meta}
             extraInbound={(
               <>
-                {data.meta.inbound.verifyToken && (
+                {data.meta.inbound?.verifyToken && (
                   <div style={subtle}>
                     Verify token (il ceri la abonarea webhook-ului in aplicatia Meta):
-                    <div style={{ marginTop: 6 }}><CopyBox value={data.meta.inbound.verifyToken} /></div>
+                    <div style={{ marginTop: 6 }}><CopyBox value={data.meta.inbound?.verifyToken} /></div>
                   </div>
                 )}
                 <MetaPageConnect />
@@ -254,10 +261,10 @@ export function IntegrariClient() {
             name="Google Ads"
             color="#EA4335"
             state={data.google}
-            extraInbound={data.google.inbound.webhookKey ? (
+            extraInbound={data.google.inbound?.webhookKey ? (
               <div style={subtle}>
                 Cheia (se lipeste in Google Ads la configurarea webhook-ului):
-                <div style={{ marginTop: 6 }}><CopyBox value={data.google.inbound.webhookKey} /></div>
+                <div style={{ marginTop: 6 }}><CopyBox value={data.google.inbound?.webhookKey} /></div>
               </div>
             ) : null}
             steps={[
@@ -268,6 +275,21 @@ export function IntegrariClient() {
               'ID-ul contului de Google Ads (fara liniute) -> GOOGLE_ADS_CUSTOMER_ID (+ GOOGLE_ADS_LOGIN_CUSTOMER_ID daca ai cont manager MCC).',
               'In Google Ads creeaza actiuni de conversie de tip "Import" (Lead calificat / Client semnat) si pune ID-urile numerice in GOOGLE_ADS_CA_QUALIFIED / GOOGLE_ADS_CA_CONVERTED.',
               'Nota: Google nu are conversii negative — statusul Pierdut nu se trimite (doar Calificat/Convertit/Edinio).',
+            ]}
+          />
+
+          <PlatformCard
+            name="ChatGPT Ads (OpenAI)"
+            color="#10A37F"
+            state={data.openai}
+            steps={[
+              'ChatGPT Ads NU are formulare proprii de lead: reclama trimite omul pe site, deci nu exista webhook de primire. Atributia sta in cookie-urile __obref / __oppref puse de pixel, salvate pe lead la trimiterea formularului.',
+              'PIXEL: ID-ul din Ads Manager -> Conversions se pune in NEXT_PUBLIC_OPENAI_PIXEL_ID (variabila publica, apare in HTML — la fel ca pixelul Meta).',
+              'SEMNALE: cheia Conversions API din acelasi ecran se pune in OPENAI_ADS_API_KEY. E secreta — doar in Vercel, niciodata in cod sau in variabile NEXT_PUBLIC_.',
+              'Evenimentul lead_created pleaca din toate cele 7 formulare, dublat server-side prin Conversions API si deduplicat cu acelasi event id (OpenAI pastreaza primul care ajunge).',
+              'Din CRM pleaca: Convertit ca order_created (eveniment standard, cu valoarea contractului), iar Calificat / Necalificat / Catre Edinio / Pierdut ca evenimente custom cu aceleasi nume ca la Meta.',
+              'Valorile monetare se trimit in unitatea minora a monedei (2.500 RON => 250000), conform Conversions API.',
+              'Verificare: in Ads Manager -> Conversions -> Event Stream activezi ascultarea si trimiti un formular de test.',
             ]}
           />
         </div>

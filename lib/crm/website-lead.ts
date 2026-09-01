@@ -1,18 +1,19 @@
 import type { NextRequest } from 'next/server';
 import { after } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { sendMetaLeadCapi } from '@/lib/crm/ads/signals';
+import { sendMetaLeadCapi, sendOpenAILeadCapi } from '@/lib/crm/ads/signals';
 
 /**
  * Creeaza un lead in CRM dintr-un formular public al site-ului.
  *
  * - Best-effort: NU arunca niciodata — fluxul de email ramane neatins.
  * - Atributie ads: citeste cookie-urile puse de pixelii deja instalati pe site
- *   (_fbp/_fbc de la Meta Pixel, _gcl_aw de la Google tag, ttclid de la TikTok),
- *   astfel incat si lead-urile venite de pe site primesc semnale de calitate
- *   inapoi catre platforme cand devin Calificat/Convertit.
- * - Trimite si un eveniment Meta CAPI "Lead" (pereche server-side a Pixelului),
- *   deduplicat prin metaEventId — vezi lib/crm/ads/signals.ts#sendMetaLeadCapi.
+ *   (_fbp/_fbc de la Meta Pixel, _gcl_aw de la Google tag, ttclid de la TikTok,
+ *   __obref/__oppref de la pixelul OpenAI Ads), astfel incat si lead-urile venite
+ *   de pe site primesc semnale de calitate inapoi catre platforme cand devin
+ *   Calificat/Convertit.
+ * - Trimite si perechile server-side ale evenimentelor de browser: Meta CAPI
+ *   "Lead" si OpenAI "lead_created", ambele deduplicate prin acelasi event id.
  */
 export interface WebsiteLeadInput {
   req: NextRequest;
@@ -26,7 +27,11 @@ export interface WebsiteLeadInput {
   notes?: string | null;
   estimatedValue?: number | null;
   raw?: unknown;
-  /** ID generat client-side la fbq('track','Lead') — pt deduplicare CAPI/Pixel. */
+  /**
+   * ID generat client-side la trimiterea formularului. Acelasi id se foloseste
+   * pentru deduplicarea Pixel/CAPI la Meta SI la OpenAI Ads — un singur id per
+   * submit, doua perechi browser/server.
+   */
   metaEventId?: string | null;
 }
 
@@ -45,6 +50,10 @@ export async function createWebsiteLead(input: WebsiteLeadInput): Promise<void> 
   const gclAw = c.get('_gcl_aw')?.value ?? null;
   const gclid = gclAw ? gclAw.split('.').slice(2).join('.') || null : null;
   const ttclid = c.get('ttclid')?.value ?? c.get('_ttclid')?.value ?? null;
+  // Cookie-urile pixelului OpenAI Ads (oaiq). Fara ele, un lead venit din
+  // ChatGPT Ads nu poate primi ulterior semnale de calitate din CRM.
+  const obref = c.get('__obref')?.value ?? null;
+  const oppref = c.get('__oppref')?.value ?? null;
 
   // Eveniment Meta CAPI "Lead" — pereche server-side pt Pixel, deduplicat prin
   // metaEventId. Best-effort, programat dupa raspuns (nu blocheaza formularul).
@@ -53,6 +62,18 @@ export async function createWebsiteLead(input: WebsiteLeadInput): Promise<void> 
     email: input.email,
     phone: input.phone,
     fbp, fbclid,
+    clientIp: input.req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null,
+    userAgent: input.req.headers.get('user-agent'),
+    sourceUrl: input.req.headers.get('referer'),
+  }).catch(() => {}));
+
+  // Perechea server-side pentru `lead_created` trimis din browser de pixelul
+  // oaiq — acelasi event id, deci OpenAI pastreaza doar primul care ajunge.
+  after(() => sendOpenAILeadCapi({
+    eventId: input.metaEventId ?? null,
+    email: input.email,
+    phone: input.phone,
+    obref, oppref,
     clientIp: input.req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null,
     userAgent: input.req.headers.get('user-agent'),
     sourceUrl: input.req.headers.get('referer'),
@@ -71,7 +92,7 @@ export async function createWebsiteLead(input: WebsiteLeadInput): Promise<void> 
         source: clean(input.source, 120),
         notes: clean(input.notes, 5000),
         estimated_value: input.estimatedValue ?? null,
-        fbp, fbclid, gclid, ttclid,
+        fbp, fbclid, gclid, ttclid, obref, oppref,
         raw_payload: input.raw ?? null,
       })
       .select('id')

@@ -8,6 +8,7 @@ import { Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import { trackConversions } from '@/lib/gtm';
 import { trackTikTok } from '@/lib/tiktok';
 import { trackEvent, generateEventId } from '@/lib/meta-pixel';
+import { measure as oaiqMeasure } from '@/lib/openai-pixel';
 import {
   Form,
   FormControl,
@@ -72,6 +73,8 @@ export function ContactForm() {
       trackTikTok.formularContact();
       trackEvent('Contact');
       trackEvent('Lead', { content_name: 'contact', content_category: data.serviciu }, metaEventId);
+      // ChatGPT Ads: acelasi event id ca la Meta => perechea server-side se deduplica.
+      oaiqMeasure('lead_created', {}, metaEventId);
     } catch {
       setStatus('error');
     }

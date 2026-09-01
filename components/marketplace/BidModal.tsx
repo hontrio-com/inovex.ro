@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { trackConversions } from '@/lib/gtm';
 import { trackTikTok } from '@/lib/tiktok';
 import { trackEvent, generateEventId } from '@/lib/meta-pixel';
+import { measure as oaiqMeasure } from '@/lib/openai-pixel';
 import { Send, AlertCircle, CheckCircle2, Euro } from 'lucide-react';
 import {
   Dialog,
@@ -58,6 +59,8 @@ export function BidModal({ open, onClose, productSlug, productTitle, listedPrice
       trackConversions.formularOferta();
       trackTikTok.marketplace(productTitle);
       trackEvent('Lead', { content_name: 'marketplace_bid', content_category: productTitle }, metaEventId);
+      // ChatGPT Ads: acelasi event id ca la Meta => perechea server-side se deduplica.
+      oaiqMeasure('lead_created', {}, metaEventId);
       setStatus('success');
     } catch {
       setStatus('error');

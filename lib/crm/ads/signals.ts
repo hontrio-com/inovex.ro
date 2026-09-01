@@ -40,12 +40,15 @@ interface LeadRow {
   gclid: string | null;
   ttclid: string | null;
   fbp: string | null;
+  /** Cookie-urile de atributie ale pixelului OpenAI Ads (oaiq). */
+  obref: string | null;
+  oppref: string | null;
   estimated_value: number | null;
   currency: string | null;
   created_at: string;
 }
 
-const LEAD_FIELDS = 'id, platform, platform_lead_id, email, phone, fbclid, gclid, ttclid, fbp, estimated_value, currency, created_at';
+const LEAD_FIELDS = 'id, platform, platform_lead_id, email, phone, fbclid, gclid, ttclid, fbp, obref, oppref, estimated_value, currency, created_at';
 
 /* ── Hashing (cerut de toate platformele pentru date personale) ── */
 const sha256 = (v: string) => crypto.createHash('sha256').update(v).digest('hex');
@@ -62,11 +65,14 @@ export const hashPhone = (phone: string) => sha256(phoneDigits(phone));
 const hashPhoneE164 = (phone: string) => sha256(`+${phoneDigits(phone)}`);
 
 /* ── Ce platforme primesc semnale pentru un lead ── */
-function targetPlatforms(lead: LeadRow): ('meta' | 'tiktok' | 'google')[] {
-  const t: ('meta' | 'tiktok' | 'google')[] = [];
+function targetPlatforms(lead: LeadRow): ('meta' | 'tiktok' | 'google' | 'openai')[] {
+  const t: ('meta' | 'tiktok' | 'google' | 'openai')[] = [];
   if (lead.platform === 'meta' || lead.fbclid || lead.fbp) t.push('meta');
   if (lead.platform === 'tiktok' || lead.ttclid) t.push('tiktok');
   if (lead.platform === 'google' || lead.gclid) t.push('google');
+  // ChatGPT Ads nu are formulare proprii: lead-ul ajunge pe site, deci platform
+  // ramane 'website' si singurul indiciu de atributie sunt cookie-urile oaiq.
+  if (lead.obref || lead.oppref) t.push('openai');
   return t;
 }
 
@@ -76,6 +82,9 @@ export function metaOutboundConfigured() {
 }
 export function tiktokOutboundConfigured() {
   return Boolean(process.env.TIKTOK_ACCESS_TOKEN && (process.env.TIKTOK_EVENT_SOURCE_ID || process.env.TIKTOK_PIXEL_CODE));
+}
+export function openaiOutboundConfigured() {
+  return Boolean(process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID && process.env.OPENAI_ADS_API_KEY);
 }
 export function googleOutboundConfigured() {
   // Data Manager API (inlocuieste ConversionUploadService de la 2026-06-15) nu
@@ -205,6 +214,120 @@ export async function sendMetaLeadCapi(input: {
     });
   } catch {
     // best-effort — nu blocam fluxul de formular pentru un eveniment de tracking
+  }
+}
+
+/* ── OpenAI Ads (ChatGPT Ads) ── */
+
+const OPENAI_EVENTS_URL = 'https://bzr.openai.com/v1/events';
+const SITE_URL = 'https://inovex.ro';
+
+/**
+ * Conversions API refuza evenimentele mai vechi de 7 zile. Un semnal blocat in
+ * coada (retry zilnic, pana la 8 incercari) poate depasi limita, asa ca in cazul
+ * asta trimitem cu ora curenta in loc sa pierdem conversia definitiv.
+ */
+function openaiTimestamp(occurredAt: string): number {
+  const t = Date.parse(occurredAt);
+  const oldest = Date.now() - 6.5 * 24 * 60 * 60 * 1000;
+  return Math.max(Number.isFinite(t) ? t : Date.now(), oldest);
+}
+
+/**
+ * Datele de identificare acceptate de OpenAI. Normalizarea ceruta de ei
+ * (fara spatii/paranteze/liniute, fara `+` si fara zerouri initiale) e exact ce
+ * produce deja phoneDigits(), deci hashPhone se refoloseste ca atare.
+ */
+function openaiUser(lead: Pick<LeadRow, 'email' | 'phone' | 'obref'>): Record<string, unknown> | null {
+  const user: Record<string, unknown> = {};
+  if (lead.obref) user.obref = lead.obref;
+  if (lead.email) user.emails_sha256 = [hashEmail(lead.email)];
+  if (lead.phone) user.phone_numbers_sha256 = [hashPhone(lead.phone)];
+  return Object.keys(user).length > 0 ? user : null;
+}
+
+async function postOpenAIEvents(events: Record<string, unknown>[]): Promise<SendResult> {
+  const pixelId = process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID;
+  const key = process.env.OPENAI_ADS_API_KEY;
+  if (!pixelId || !key) return { ok: false, unconfigured: true };
+
+  const res = await fetch(`${OPENAI_EVENTS_URL}?pid=${encodeURIComponent(pixelId)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+    body: JSON.stringify({ integration_source: 'inovex-crm', events }),
+  });
+  const json = await res.json().catch(() => null);
+  if (!res.ok) return { ok: false, error: JSON.stringify(json ?? res.status).slice(0, 500) };
+  return { ok: true };
+}
+
+/**
+ * Semnal de calitate catre ChatGPT Ads. "Convertit" pleaca drept `order_created`
+ * (eveniment standard, cu valoare) — restul etapelor nu au corespondent standard,
+ * deci merg ca evenimente custom cu acelasi nume ca la celelalte platforme.
+ * Valorile monetare se trimit in unitatea minora a monedei (bani), conform API.
+ */
+async function sendOpenAI(lead: LeadRow, stage: SignalStage, occurredAt: string): Promise<SendResult> {
+  const user = openaiUser(lead);
+  if (!user) return { ok: false, skip: true, error: 'Fara identificatori OpenAI (obref/email/telefon)' };
+
+  const isOrder = stage === 'convertit';
+  const hasValue = isOrder && lead.estimated_value != null;
+  const event: Record<string, unknown> = {
+    id: `${lead.id}-${stage}`,
+    type: isOrder ? 'order_created' : 'custom',
+    ...(isOrder ? {} : { custom_event_name: EVENT_NAME[stage] }),
+    timestamp_ms: openaiTimestamp(occurredAt),
+    // Calificarea se intampla in CRM, nu in browser — de-aia offline, nu web.
+    action_source: 'offline',
+    ...(lead.oppref ? { oppref: lead.oppref } : {}),
+    user,
+    data: {
+      type: isOrder ? 'contents' : 'custom',
+      ...(hasValue
+        ? { amount: Math.round(lead.estimated_value! * 100), currency: (lead.currency || 'RON').toUpperCase() }
+        : {}),
+      ...(isOrder ? { contents: [] } : {}),
+    },
+  };
+
+  return postOpenAIEvents([event]);
+}
+
+/**
+ * Perechea server-side a evenimentului `lead_created` trimis din browser la
+ * completarea unui formular. Deduplicat prin acelasi event id (pixel `event_id`
+ * = API `id`). Best-effort, ca sendMetaLeadCapi.
+ */
+export async function sendOpenAILeadCapi(input: {
+  eventId: string | null;
+  email?: string | null;
+  phone?: string | null;
+  obref?: string | null;
+  oppref?: string | null;
+  clientIp?: string | null;
+  userAgent?: string | null;
+  sourceUrl?: string | null;
+}): Promise<void> {
+  if (!input.eventId) return; // fara id nu se poate deduplica — mai bine deloc
+  const user = openaiUser({ email: input.email ?? null, phone: input.phone ?? null, obref: input.obref ?? null });
+  if (!user) return;
+  if (input.clientIp) user.ip_address = input.clientIp;
+  if (input.userAgent) user.user_agent = input.userAgent;
+
+  try {
+    await postOpenAIEvents([{
+      id: input.eventId,
+      type: 'lead_created',
+      timestamp_ms: Date.now(),
+      action_source: 'web',
+      source_url: input.sourceUrl || SITE_URL,
+      ...(input.oppref ? { oppref: input.oppref } : {}),
+      user,
+      data: { type: 'customer_action' },
+    }]);
+  } catch {
+    // tracking best-effort — nu blocam fluxul formularului
   }
 }
 
@@ -353,6 +476,7 @@ async function processSignal(row: SignalRow, lead: LeadRow): Promise<void> {
     if (row.platform === 'meta') result = await sendMeta(lead, stage, row.created_at);
     else if (row.platform === 'tiktok') result = await sendTikTok(lead, stage, row.created_at);
     else if (row.platform === 'google') result = await sendGoogle(lead, stage, row.created_at);
+    else if (row.platform === 'openai') result = await sendOpenAI(lead, stage, row.created_at);
     else result = { ok: false, skip: true, error: 'Platforma necunoscuta' };
   } catch (e) {
     result = { ok: false, error: e instanceof Error ? e.message : 'Eroare necunoscuta' };

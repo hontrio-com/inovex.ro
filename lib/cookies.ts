@@ -7,6 +7,8 @@ export interface CookieConsent {
 }
 
 const CONSENT_KEY = 'cookie_consent';
+/** Emis pe `window` la salvarea preferintelor, ca pixelii sa reactioneze pe loc. */
+export const CONSENT_CHANGED_EVENT = 'cookie-consent-changed';
 const CONSENT_TTL = 365 * 24 * 60 * 60 * 1000; // 12 months
 const CURRENT_VERSION = '1.0';
 
@@ -37,6 +39,9 @@ export function setCookieConsent(prefs: { analytics: boolean; marketing: boolean
       version: CURRENT_VERSION,
     };
     localStorage.setItem(CONSENT_KEY, JSON.stringify(consent));
+    // Anunta pixelii care trebuie sa reactioneze imediat la decizie (ex. OpenAI
+    // Ads, care are un apel propriu de consent), fara sa astepte o navigare.
+    window.dispatchEvent(new CustomEvent(CONSENT_CHANGED_EVENT, { detail: consent }));
   } catch {
     // localStorage may be blocked
   }
