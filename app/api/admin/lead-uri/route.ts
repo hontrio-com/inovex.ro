@@ -37,11 +37,17 @@ export async function GET(req: NextRequest) {
   const to = sp.get('to');
   if (to) query = query.lte('created_at', `${to}T23:59:59`);
 
-  // Cautare (nume, companie, email, campanie) — sanitizat pt PostgREST or().
+  // Cautare (nume, companie, email, campanie, telefon) — sanitizat pt PostgREST or().
   const raw = (sp.get('q') ?? '').trim().slice(0, 100);
-  const q = raw.replace(/[,()%*\\"]/g, ' ').trim();
-  if (q) {
-    query = query.or(`name.ilike.%${q}%,company.ilike.%${q}%,email.ilike.%${q}%,campaign.ilike.%${q}%`);
+  const digits = raw.replace(/\D/g, '');
+  // Telefoanele vin in formate mixte (+40720..., 0720..., cu spatii): comparam ultimele 9 cifre.
+  if (/^[+0-9][0-9\s().-]*$/.test(raw) && digits.length >= 6) {
+    query = query.ilike('phone', `%${digits.slice(-9)}%`);
+  } else {
+    const q = raw.replace(/[,()%*\\"]/g, ' ').trim();
+    if (q) {
+      query = query.or(`name.ilike.%${q}%,company.ilike.%${q}%,email.ilike.%${q}%,campaign.ilike.%${q}%,phone.ilike.%${q}%`);
+    }
   }
 
   query = query.order('created_at', { ascending: false });
