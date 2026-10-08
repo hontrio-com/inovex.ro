@@ -18,6 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/servicii/aplicatii-mobile`,       lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE}/servicii/cms-crm-erp`,            lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE}/servicii/automatizari-ai`,        lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE}/servicii/video-motion-design`,    lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE}/portofoliu`,                      lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE}/despre-noi`,                      lastModified: now, changeFrequency: 'yearly',  priority: 0.7 },
     { url: `${BASE}/contact`,                         lastModified: now, changeFrequency: 'yearly',  priority: 0.7 },

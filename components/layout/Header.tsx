@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Phone, Menu, X, ShoppingCart, Globe, Code2, Database, Smartphone, Zap, ChevronDown, FileSearch,
+  Phone, Menu, X, ShoppingCart, Globe, Code2, Database, Smartphone, Zap, ChevronDown, FileSearch, Clapperboard,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -51,6 +51,12 @@ const SERVICII_COL2 = [
     icon: Zap,
     titlu: 'Automatizari AI',
     descriere: 'Reducem costurile și munca manuală prin automatizări inteligente',
+  },
+  {
+    href: '/servicii/video-motion-design',
+    icon: Clapperboard,
+    titlu: 'Video Motion Design',
+    descriere: 'Clipuri promo, trailere și reclame animate, la preț fix',
   },
   {
     href: 'https://www.novin.ro',

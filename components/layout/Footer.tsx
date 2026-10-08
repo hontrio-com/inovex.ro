@@ -15,6 +15,7 @@ const SERVICII = [
   { href: '/servicii/cms-crm-erp',           label: 'CMS / CRM / ERP'        },
   { href: '/servicii/aplicatii-mobile',      label: 'Aplicatii Mobile'        },
   { href: '/servicii/automatizari-ai',       label: 'Automatizari AI'         },
+  { href: '/servicii/video-motion-design',   label: 'Video Motion Design'     },
 ];
 
 const COMPANIE = [

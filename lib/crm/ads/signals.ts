@@ -175,7 +175,7 @@ async function sendMeta(lead: LeadRow, stage: SignalStage, occurredAt: string): 
  * imediat, best-effort (nu arunca), apelat din after() la trimiterea
  * formularului, nu la schimbarea statusului unui lead.
  */
-export async function sendMetaLeadCapi(input: {
+interface MetaWebsiteEventInput {
   eventId: string | null;
   email?: string | null;
   phone?: string | null;
@@ -184,7 +184,24 @@ export async function sendMetaLeadCapi(input: {
   clientIp?: string | null;
   userAgent?: string | null;
   sourceUrl?: string | null;
-}): Promise<void> {
+}
+
+export function sendMetaLeadCapi(input: MetaWebsiteEventInput): Promise<void> {
+  return sendMetaWebsiteEvent('Lead', input);
+}
+
+/**
+ * Perechea server-side pentru evenimentul de browser "Purchase" (comanda platita
+ * online). Deduplicat prin eventId — id-ul sesiunii Stripe, acelasi pe care il
+ * trimite Pixelul de pe pagina de multumire.
+ */
+export function sendMetaPurchaseCapi(input: MetaWebsiteEventInput & { value: number; currency: string; contentName: string }): Promise<void> {
+  return sendMetaWebsiteEvent('Purchase', input, {
+    value: input.value, currency: input.currency, content_name: input.contentName,
+  });
+}
+
+async function sendMetaWebsiteEvent(eventName: string, input: MetaWebsiteEventInput, customData?: Record<string, unknown>): Promise<void> {
   const dataset = process.env.META_DATASET_ID;
   const token = process.env.META_CAPI_TOKEN || process.env.META_PAGE_TOKEN;
   if (!dataset || !token) return;
@@ -199,10 +216,11 @@ export async function sendMetaLeadCapi(input: {
   if (Object.keys(user_data).length === 0) return; // fara identificatori — nimic de trimis
 
   const event: Record<string, unknown> = {
-    event_name: 'Lead',
+    event_name: eventName,
     event_time: Math.floor(Date.now() / 1000),
     action_source: 'website',
     user_data,
+    ...(customData ? { custom_data: customData } : {}),
     ...(input.sourceUrl ? { event_source_url: input.sourceUrl } : {}),
     ...(input.eventId ? { event_id: input.eventId } : {}),
   };

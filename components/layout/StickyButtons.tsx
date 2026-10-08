@@ -1,15 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { trackConversions } from '@/lib/gtm';
+import { MOTION_PATH } from '@/lib/motion-design';
 
 const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '40750456096';
 const WA_MESSAGE = encodeURIComponent('Bună ziua, am o întrebare despre serviciile Inovex.');
 
 export function StickyButtons() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -19,6 +22,9 @@ export function StickyButtons() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Pagina Video Motion Design are propria bara lipita jos, cu "COMANDA ACUM".
+  if (pathname === MOTION_PATH) return null;
 
   return (
     <AnimatePresence>
