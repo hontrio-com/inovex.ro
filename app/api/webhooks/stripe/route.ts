@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type Stripe from 'stripe';
 import { getStripe } from '@/lib/stripe';
-import { supabaseAdmin } from '@/lib/supabase';
 import { sendEmail } from '@/lib/email/send';
 import { internSubject, internHtml, clientSubject, clientHtml } from '@/lib/email/templates/motion-design';
 import { sendMetaPurchaseCapi } from '@/lib/crm/ads/signals';
@@ -16,6 +15,9 @@ export const maxDuration = 30;
  *   URL:        https://inovex.ro/api/webhooks/stripe
  *   Evenimente: checkout.session.completed, checkout.session.async_payment_succeeded
  *   Secret:     STRIPE_WEBHOOK_SECRET (whsec_...)
+ *
+ * Comanda nu se salveaza in CRM: tot ce trebuie (contact, brief, materiale)
+ * vine in metadata sesiunii si pleaca pe email.
  */
 export async function POST(req: NextRequest) {
   const stripe = getStripe();
@@ -41,98 +43,50 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true });
   }
 
+  // Idempotenta: Stripe retrimite evenimentul daca nu primeste 2xx la timp.
+  // Marcam plata ca notificata pe PaymentIntent, inainte de a trimite ceva.
+  const paymentIntentId = typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id;
+  if (paymentIntentId) {
+    try {
+      const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      if (intent.metadata.motion_notified) return NextResponse.json({ received: true, duplicate: true });
+      await stripe.paymentIntents.update(paymentIntentId, { metadata: { motion_notified: '1' } });
+    } catch (err) {
+      // Emailurile pleaca oricum — o comanda platita nu are voie sa se piarda.
+      console.error('[stripe webhook] marcaj idempotenta:', err instanceof Error ? err.message : err);
+    }
+  }
+
   const customer = session.customer_details;
   const videos = Number(meta.videoclipuri);
   const pachet = videos > 0 ? motionLabel(videos) : 'necunoscut';
   const total = (session.amount_total ?? 0) / 100;
-  const cui = customer?.tax_ids?.[0]?.value ?? null;
-  const companie = customer?.business_name ?? null;
 
-  const paidLine = `PLATIT ONLINE: ${pachet} - ${formatLei(total)}.${cui ? ` CUI: ${cui}.` : ''}`;
+  let brief = '';
+  for (let i = 0; meta[`brief_${i}`] !== undefined; i++) brief += meta[`brief_${i}`];
 
-  // Lead-ul exista deja, creat la trimiterea brief-ului (metadata.lead_id).
-  // platform_lead_id = id-ul sesiunii face webhook-ul idempotent: Stripe
-  // retrimite evenimentul daca nu primeste 2xx la timp.
-  let lead: { id: string; name: string | null; phone: string | null; notes: string | null; fbp?: string | null; fbclid?: string | null } | null = null;
-  if (meta.lead_id) {
-    const { data: existing } = await supabaseAdmin
-      .from('crm_leads')
-      .select('id, name, phone, notes, fbp, fbclid, platform_lead_id')
-      .eq('id', meta.lead_id)
-      .maybeSingle();
-    if (existing?.platform_lead_id) return NextResponse.json({ received: true, duplicate: true });
-    if (existing) {
-      const { data: updated } = await supabaseAdmin
-        .from('crm_leads')
-        .update({
-          platform_lead_id: session.id,
-          estimated_value: total,
-          company: companie ?? undefined,
-          notes: `${paidLine}
-
-${(existing.notes ?? '').replace(' (PLATA IN ASTEPTARE)', '')}`,
-        })
-        .eq('id', existing.id)
-        .is('platform_lead_id', null)
-        .select('id');
-      if (!updated?.length) return NextResponse.json({ received: true, duplicate: true });
-      lead = existing;
-    }
-  }
-
-  // Fara lead (inserarea de la brief a esuat sau lead-ul a fost sters): il cream acum.
-  if (!lead) {
-    const { data: created, error } = await supabaseAdmin
-      .from('crm_leads')
-      .insert({
-        name: customer?.name ?? null,
-        company: companie,
-        email: customer?.email?.toLowerCase() ?? null,
-        phone: customer?.phone ?? null,
-        status: 'nou',
-        platform: 'website',
-        platform_lead_id: session.id,
-        source: 'Comanda Motion Design',
-        notes: `${paidLine} Brief-ul nu a fost gasit - de contactat clientul.`,
-        estimated_value: total,
-        raw_payload: session,
-      })
-      .select('id, name, phone, notes')
-      .single();
-    if (error?.code === '23505') return NextResponse.json({ received: true, duplicate: true });
-    // Emailurile pleaca oricum — o comanda platita nu are voie sa se piarda.
-    if (error) console.error('[stripe webhook] insert lead:', error.message);
-    else lead = created;
-  }
-
-  if (lead) {
-    await supabaseAdmin.from('crm_activities').insert({
-      type: 'system',
-      title: `Comanda platita prin Stripe: Motion Design - ${pachet} (${formatLei(total)})`,
-      lead_id: lead.id,
-    });
-  }
+  const emailData = {
+    nume: meta.nume || customer?.name || 'client',
+    email: customer?.email ?? session.customer_email ?? '',
+    telefon: meta.telefon || customer?.phone,
+    companie: customer?.business_name ?? null,
+    cui: customer?.tax_ids?.[0]?.value ?? null,
+    pachet,
+    total: formatLei(total),
+    brief: brief || null,
+    sessionId: session.id,
+  };
 
   // Meta "Purchase" server-side; perechea de browser pleaca de pe pagina de multumire.
   await sendMetaPurchaseCapi({
     eventId: session.id,
     value: total, currency: 'RON', contentName: 'motion-design',
-    email: customer?.email, phone: lead?.phone ?? customer?.phone,
-    fbp: lead?.fbp, fbclid: lead?.fbclid,
+    email: emailData.email, phone: emailData.telefon,
+    fbp: meta.fbp, fbclid: meta.fbclid,
     sourceUrl: `${req.nextUrl.origin}${MOTION_PATH}/multumim`,
   });
 
-  const emailData = {
-    nume: lead?.name ?? customer?.name ?? 'client',
-    email: customer?.email ?? '',
-    telefon: lead?.phone ?? customer?.phone,
-    companie, cui, pachet,
-    total: formatLei(total),
-    brief: lead?.notes?.replace(' (PLATA IN ASTEPTARE)', ''),
-    sessionId: session.id,
-  };
   const to = process.env.SMTP_TO ?? 'contact@inovex.ro';
-
   const [internResult, clientResult] = await Promise.all([
     sendEmail({ to, subject: internSubject(emailData), html: internHtml(emailData), replyTo: emailData.email || undefined }),
     emailData.email
@@ -141,6 +95,15 @@ ${(existing.notes ?? '').replace(' (PLATA IN ASTEPTARE)', '')}`,
   ]);
   if (!internResult.success) console.error('[Email intern Motion Design esuat]', internResult.error);
   if (!clientResult.success) console.error('[Email client Motion Design esuat]', clientResult.error);
+
+  // Fara CRM, emailul intern e singura evidenta a comenzii: daca nu a plecat,
+  // raspundem cu eroare ca Stripe sa retrimita evenimentul.
+  if (!internResult.success) {
+    if (paymentIntentId) {
+      await stripe.paymentIntents.update(paymentIntentId, { metadata: { motion_notified: '' } }).catch(() => {});
+    }
+    return NextResponse.json({ error: 'Emailul comenzii nu a putut fi trimis' }, { status: 500 });
+  }
 
   return NextResponse.json({ received: true });
 }

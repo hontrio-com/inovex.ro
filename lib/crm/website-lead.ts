@@ -40,8 +40,7 @@ const clean = (v: string | null | undefined, max: number) => {
   return s || null;
 };
 
-/** Intoarce id-ul lead-ului creat, sau null daca inserarea a esuat. */
-export async function createWebsiteLead(input: WebsiteLeadInput): Promise<string | null> {
+export async function createWebsiteLead(input: WebsiteLeadInput): Promise<void> {
   const c = input.req.cookies;
   const fbp = c.get('_fbp')?.value ?? null;
   // _fbc are formatul fb.1.<timestamp>.<fbclid> — extragem fbclid-ul.
@@ -107,7 +106,7 @@ export async function createWebsiteLead(input: WebsiteLeadInput): Promise<string
       .single();
     if (error) {
       console.error('[website-lead] insert:', error.message);
-      return null;
+      return;
     }
 
     await supabaseAdmin.from('crm_activities').insert({
@@ -115,9 +114,7 @@ export async function createWebsiteLead(input: WebsiteLeadInput): Promise<string
       title: `Lead primit de pe website: ${input.source}`,
       lead_id: data.id,
     });
-    return data.id;
   } catch (e) {
     console.error('[website-lead]', e instanceof Error ? e.message : e);
-    return null;
   }
 }

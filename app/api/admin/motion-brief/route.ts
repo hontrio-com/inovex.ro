@@ -8,7 +8,7 @@ const BUCKET = 'crm-files';
 /**
  * GET /api/admin/motion-brief?f=<orderId>/<fisier>
  * Deschide un material atasat la o comanda Motion Design. Link-urile din
- * notele lead-ului trimit aici: bucket-ul e privat, deci generam pe loc un
+ * emailul comenzii trimit aici: bucket-ul e privat, deci generam pe loc un
  * URL semnat de scurta durata, doar pentru utilizatori autentificati.
  */
 export async function GET(req: NextRequest) {
