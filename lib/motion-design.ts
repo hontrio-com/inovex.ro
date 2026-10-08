@@ -74,16 +74,20 @@ export const MOTION_ALLOWED_EXT = [
 ];
 
 export interface MotionPortfolioItem {
+  /** Clientul pentru care a fost facut videoclipul. */
+  client: string;
   title: string;
-  category: string;
-  /** Fisier .mp4 din /public; varianta .webm cu acelasi nume se incarca automat. */
+  /** Fisier .mp4 vertical (9:16) din /public. */
   src: string;
+  /** Cadru afisat pana porneste videoclipul. */
+  poster: string;
 }
 
+const EXEMPLE_DIR = '/imagini/servicii/motion';
+
 export const MOTION_PORTFOLIO: MotionPortfolioItem[] = [
-  { title: 'Magazine Online',        category: 'Promo serviciu', src: '/imagini/servicii/magazin-online.mp4' },
-  { title: 'Website de Prezentare',  category: 'Promo serviciu', src: '/imagini/servicii/website-prezentare.mp4' },
-  { title: 'Aplicatii Web & SaaS',   category: 'Promo produs',   src: '/imagini/servicii/aplicatie-web.mp4' },
-  { title: 'Aplicatii Mobile',       category: 'Promo aplicatie', src: '/imagini/servicii/aplicatii-mobile.mp4' },
-  { title: 'CMS, CRM & ERP',         category: 'Explainer',      src: '/imagini/servicii/crm-cms-erp.mp4' },
+  { client: 'FUMOAR',         title: 'Reclama video',          src: `${EXEMPLE_DIR}/fumoar.mp4`,              poster: `${EXEMPLE_DIR}/fumoar.jpg` },
+  { client: 'Neurotechvoice', title: 'Video de prezentare',    src: `${EXEMPLE_DIR}/neurotechvoice.mp4`,      poster: `${EXEMPLE_DIR}/neurotechvoice.jpg` },
+  { client: 'Edinio.com',     title: '2015 vs 2026',           src: `${EXEMPLE_DIR}/edinio-2015-vs-2026.mp4`, poster: `${EXEMPLE_DIR}/edinio-2015-vs-2026.jpg` },
+  { client: 'Edinio.com',     title: 'Bonul',                  src: `${EXEMPLE_DIR}/edinio-bonul.mp4`,        poster: `${EXEMPLE_DIR}/edinio-bonul.jpg` },
 ];

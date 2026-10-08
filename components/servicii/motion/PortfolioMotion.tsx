@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/badge';
-import ServiceVideo from '@/components/sections/ServiceVideo';
+import ExempluVideo from './ExempluVideo';
 import { MOTION_PORTFOLIO } from '@/lib/motion-design';
 
 export default function PortfolioMotion() {
@@ -26,23 +26,21 @@ export default function PortfolioMotion() {
             <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>facute de noi</span>
           </h2>
           <p className="text-[#4A5568] text-[0.9375rem] leading-relaxed">
-            Asa arata un videoclip animat facut de echipa Inovex. Al tau va fi construit pe brandul si oferta ta.
+            Videoclipuri facute de echipa Inovex pentru clientii nostri. Al tau va fi construit pe brandul si oferta ta. Apasa pe difuzor pentru sunet.
           </p>
         </div>
 
         {/* Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto">
           {MOTION_PORTFOLIO.map((item) => (
             <figure
               key={item.src}
               className="bg-white rounded-2xl border border-[#E8ECF0] overflow-hidden hover:border-[#C8E6F8] hover:shadow-md transition-all duration-300"
             >
-              <div style={{ aspectRatio: '16/10', background: '#F4F6F8' }}>
-                <ServiceVideo src={item.src} />
-              </div>
-              <figcaption className="px-5 py-4">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-[#2B8FCC] mb-1">{item.category}</p>
-                <p style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1rem', color: '#0D1117' }}>{item.title}</p>
+              <ExempluVideo src={item.src} poster={item.poster} title={`${item.client} - ${item.title}`} />
+              <figcaption className="px-4 py-3.5">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-[#2B8FCC] mb-0.5">{item.title}</p>
+                <p style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '0.9375rem', color: '#0D1117' }}>{item.client}</p>
               </figcaption>
             </figure>
           ))}
