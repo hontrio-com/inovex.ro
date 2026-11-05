@@ -4,11 +4,11 @@ import { useEffect } from 'react';
 import { CONSENT_CHANGED_EVENT, isMarketingAllowed } from '@/lib/cookies';
 import { LINKEDIN_PARTNER_ID } from '@/lib/linkedin';
 
-/* LinkedIn Insight Tag: scriptul din Campaign Manager, incarcat doar cu acordul pentru marketing — la
-   deschiderea paginii, daca vizitatorul a acceptat deja, sau imediat ce accepta in banner, fara reincarcare.
-   Paginile vazute fara reincarcare le numara singur (insight.min.js urmareste History API: pushState,
-   popstate). Fara pixelul <noscript> din scriptul original: ar trimite vizita fara acord. Daca vizitatorul
-   isi retrage acordul, „Setări cookies” reincarca pagina, iar tagul nu se mai incarca. */
+/* LinkedIn Insight Tag: scriptul din Campaign Manager, incarcat cand marketingul e permis (isMarketingAllowed
+   din lib/cookies.ts: din 2026-11-05, cu PIXELI_FARA_ACORD, mereu, la deschiderea paginii; fara el, abia dupa
+   „Accepta” in banner, si atunci imediat, fara reincarcare). Paginile vazute fara reincarcare le numara singur
+   (insight.min.js urmareste History API: pushState, popstate). Fara pixelul <noscript> din scriptul original
+   (doar pentru vizitatorii fara JavaScript). */
 
 function incarca() {
   const w = window;

@@ -4,9 +4,16 @@ import Script from 'next/script'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 import { measure, setConsent } from '@/lib/openai-pixel'
-import { isMarketingAllowed, CONSENT_CHANGED_EVENT } from '@/lib/cookies'
+import { isMarketingAllowed, CONSENT_CHANGED_EVENT, PIXELI_FARA_ACORD } from '@/lib/cookies'
 
 const PIXEL_ID = process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID
+
+// Refuzul consimtamantului la incarcare, cand vizitatorul nu a acceptat marketingul; lipseste cand pixelii
+// pornesc fara acord (PIXELI_FARA_ACORD din lib/cookies.ts, decizia proprietarului din 2026-11-05).
+const REFUZ_FARA_ACORD = PIXELI_FARA_ACORD
+  ? ''
+  : `try{var c=JSON.parse(localStorage.getItem("cookie_consent")||"null");
+if(!c||c.marketing!==true){oaiq("consent",false);}}catch(e){}`
 
 /**
  * Pixelul OpenAI Ads (ChatGPT Ads).
@@ -58,8 +65,7 @@ export function OpenAIPixel() {
 (function(w,d,s,u){if(w.oaiq)return;var q=function(){q.q.push(arguments)};q.q=[];w.oaiq=q;
 var j=d.createElement(s);j.async=1;j.src=u;var f=d.getElementsByTagName(s)[0];
 f.parentNode.insertBefore(j,f)})(window,document,"script","https://bzrcdn.openai.com/sdk/oaiq.min.js");
-try{var c=JSON.parse(localStorage.getItem("cookie_consent")||"null");
-if(!c||c.marketing!==true){oaiq("consent",false);}}catch(e){}
+${REFUZ_FARA_ACORD}
 oaiq("init",{pixelId:"${PIXEL_ID}"});
 oaiq("measure","page_viewed",{type:"contents"});
         `,

@@ -1,8 +1,8 @@
 import { isMarketingAllowed } from '@/lib/cookies';
 
-/* LinkedIn Insight Tag (adaugat pe 2026-11-05, pentru reclamele LinkedIn Ads). Tagul se incarca doar dupa
-   acordul pentru cookie-urile de marketing (components/analytics/LinkedInInsight.tsx), iar conversiile pleaca
-   din trackConversions (lib/gtm.ts), tot doar cu acord. */
+/* LinkedIn Insight Tag (adaugat pe 2026-11-05, pentru reclamele LinkedIn Ads). Tagul
+   (components/analytics/LinkedInInsight.tsx) si conversiile, care pleaca din trackConversions (lib/gtm.ts),
+   merg cand marketingul e permis: isMarketingAllowed din lib/cookies.ts (mereu, cat timp PIXELI_FARA_ACORD). */
 
 type Lintrk = ((actiune: string, date?: Record<string, unknown>) => void) & { q?: unknown[] };
 

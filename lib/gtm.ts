@@ -10,7 +10,7 @@ function pushEvent(event: string): void {
 }
 
 // fiecare conversie merge in GTM (Google Ads) si, din 2026-11-05, la LinkedIn Ads (doar cand conversia are ID
-// in lib/linkedin.ts); ambele doar cu acordul pentru marketing
+// in lib/linkedin.ts); ambele cand marketingul e permis (isMarketingAllowed; mereu, cat timp PIXELI_FARA_ACORD)
 export const trackConversions = {
   formularOferta:      (): void => { if (isMarketingAllowed()) pushEvent('conversion_oferta'); trackLinkedIn('oferta'); },
   formularContact:     (): void => { if (isMarketingAllowed()) pushEvent('conversion_contact'); trackLinkedIn('contact'); },

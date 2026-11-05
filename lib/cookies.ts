@@ -60,10 +60,18 @@ export function rejectAll(): void {
   setCookieConsent({ analytics: false, marketing: false });
 }
 
+/**
+ * Decizia proprietarului (2026-11-05): pixelii (Google Tag Manager, Meta, TikTok, OpenAI, LinkedIn) si
+ * conversiile pornesc fara sa astepte acordul din bannerul de cookie-uri; riscul (GDPR / ePrivacy) si-l
+ * asuma el. Bannerul ramane si isi salveaza alegerea, dar pixelii nu o mai asteapta. Cu `false`, totul
+ * revine la acord: OpenAI si LinkedIn, plus conversiile GTM, TikTok si LinkedIn, asteapta iar „Accepta”.
+ */
+export const PIXELI_FARA_ACORD = true;
+
 export function isAnalyticsAllowed(): boolean {
-  return getCookieConsent()?.analytics === true;
+  return PIXELI_FARA_ACORD || getCookieConsent()?.analytics === true;
 }
 
 export function isMarketingAllowed(): boolean {
-  return getCookieConsent()?.marketing === true;
+  return PIXELI_FARA_ACORD || getCookieConsent()?.marketing === true;
 }
