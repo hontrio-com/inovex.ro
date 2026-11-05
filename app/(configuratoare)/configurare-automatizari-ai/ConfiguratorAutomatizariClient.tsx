@@ -193,7 +193,7 @@ export function ConfiguratorAutomatizariClient() {
       });
       if (res.ok) {
         localStorage.removeItem(LS_KEY);
-        trackConversions.configuratorAutomatizari();
+        trackConversions.configuratorAutomatizari(metaEventId);
         trackTikTok.configuratorAutomatizari();
         trackEvent('Lead', { content_name: 'configurator_automatizari_ai' }, metaEventId);
         // ChatGPT Ads: acelasi event id ca la Meta => perechea server-side se deduplica.

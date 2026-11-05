@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { requireRole } from '@/lib/auth';
 import { metaOutboundConfigured, tiktokOutboundConfigured, googleOutboundConfigured, openaiOutboundConfigured } from '@/lib/crm/ads/signals';
+import { linkedinOutboundConfigured } from '@/lib/crm/ads/linkedin';
 
 export const runtime = 'nodejs';
 
@@ -33,7 +34,7 @@ export async function GET() {
   const { data: signalRows } = await supabaseAdmin
     .from('crm_lead_signals').select('platform, status').limit(10000);
   const signals: Record<string, { sent: number; pending: number; failed: number; skipped: number }> = {};
-  [...PLATFORMS, 'openai'].forEach((p) => { signals[p] = { sent: 0, pending: 0, failed: 0, skipped: 0 }; });
+  [...PLATFORMS, 'openai', 'linkedin'].forEach((p) => { signals[p] = { sent: 0, pending: 0, failed: 0, skipped: 0 }; });
   (signalRows ?? []).forEach((r) => {
     const s = signals[r.platform];
     if (s && r.status in s) s[r.status as keyof typeof s]++;
@@ -43,8 +44,11 @@ export async function GET() {
 
   // Cate lead-uri poarta cookie-ul de atributie OpenAI — echivalentul contorului
   // de lead-uri inbound pentru celelalte platforme.
-  const { count: attributedOpenAI } = await supabaseAdmin
-    .from('crm_leads').select('*', { count: 'exact', head: true }).not('obref', 'is', null);
+  // La LinkedIn, lead-urile venite dintr-o reclama (click ID-ul li_fat_id).
+  const [{ count: attributedOpenAI }, { count: attributedLinkedIn }] = await Promise.all([
+    supabaseAdmin.from('crm_leads').select('*', { count: 'exact', head: true }).not('obref', 'is', null),
+    supabaseAdmin.from('crm_leads').select('*', { count: 'exact', head: true }).not('li_fat_id', 'is', null),
+  ]);
 
   return NextResponse.json({
     meta: {
@@ -121,6 +125,17 @@ export async function GET() {
         },
         signals: signals.openai,
         attributedLeads: attributedOpenAI,
+      },
+    },
+    linkedin: {
+      // Lead-urile din reclamele LinkedIn ajung pe site (formularele LinkedIn Lead Gen nu sunt conectate),
+      // deci fara webhook inbound. Semnalele pleaca prin Conversions API (lib/crm/ads/linkedin.ts).
+      inbound: null,
+      outbound: {
+        configured: linkedinOutboundConfigured(),
+        env: { LINKEDIN_CAPI_TOKEN: has('LINKEDIN_CAPI_TOKEN') },
+        signals: signals.linkedin,
+        attributedLeads: attributedLinkedIn,
       },
     },
   });

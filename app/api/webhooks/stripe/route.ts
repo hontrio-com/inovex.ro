@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import type Stripe from 'stripe';
 import { getStripe } from '@/lib/stripe';
 import { sendEmail } from '@/lib/email/send';
 import { internSubject, internHtml, clientSubject, clientHtml } from '@/lib/email/templates/motion-design';
 import { sendMetaPurchaseCapi } from '@/lib/crm/ads/signals';
+import { LINKEDIN_CONVERSII, sendLinkedInEvent } from '@/lib/crm/ads/linkedin';
 import { motionLabel, formatLei, MOTION_PATH } from '@/lib/motion-design';
 
 export const runtime = 'nodejs';
@@ -104,6 +105,21 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json({ error: 'Emailul comenzii nu a putut fi trimis' }, { status: 500 });
   }
+
+  // LinkedIn „Server – Comandă Motion Design”: doar de pe server (fara pereche in browser), cu valoarea
+  // reala. Abia aici, dupa ce comanda e confirmata: la un raspuns 500, Stripe retrimite evenimentul, iar
+  // LinkedIn nu deduplica doua trimiteri de pe server. Best-effort, dupa raspuns.
+  after(() => sendLinkedInEvent({
+    conversionId: LINKEDIN_CONVERSII.comandaMotion,
+    eventId: session.id,
+    email: emailData.email,
+    liFatId: meta.li_fat_id,
+    name: meta.nume || customer?.name,
+    company: emailData.companie,
+    value: { amount: total, currency: 'RON' },
+  }).then((r) => {
+    if (!r.ok && !r.unconfigured && !r.skip) console.error('[stripe webhook] LinkedIn CAPI:', r.error);
+  }).catch(() => {}));
 
   return NextResponse.json({ received: true });
 }

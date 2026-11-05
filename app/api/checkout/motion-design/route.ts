@@ -107,6 +107,9 @@ export async function POST(req: NextRequest) {
   const fbclid = fbc ? fbc.split('.').slice(3).join('.') || null : null;
   if (fbp) metadata.fbp = fbp.slice(0, META_VALUE_MAX);
   if (fbclid) metadata.fbclid = fbclid.slice(0, META_VALUE_MAX);
+  // Atributie LinkedIn pentru „Server – Comandă Motion Design” (click ID-ul reclamei, vezi proxy.ts).
+  const liFatId = c.get('li_fat_id')?.value;
+  if (liFatId) metadata.li_fat_id = liFatId.slice(0, META_VALUE_MAX);
 
   try {
     const session = await stripe.checkout.sessions.create({

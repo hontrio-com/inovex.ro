@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { supabaseAdmin } from '@/lib/supabase';
+import { LINKEDIN_CONVERSII, linkedinOutboundConfigured, sendLinkedInEvent } from '@/lib/crm/ads/linkedin';
 
 /**
  * Semnale de calitate catre platformele de ads — bucla de feedback care invata
@@ -13,7 +14,7 @@ import { supabaseAdmin } from '@/lib/supabase';
  *                  inchidere — profilul era totusi potrivit, semnal separat de
  *                  cel de mai sus ca sa nu strice targetarea pe cei care chiar
  *                  se califica)
- * Google nu are conversii negative -> necalificat si pierdut se sar (skip).
+ * Google si LinkedIn nu au conversii negative -> necalificat si pierdut se sar (skip).
  *
  * Fluxul: recordSignals() insereaza randuri 'pending' (rapid, in request), iar
  * flushLeadSignals() trimite efectiv (apelat cu after() dupa raspuns + cron retry).
@@ -34,6 +35,8 @@ interface LeadRow {
   id: string;
   platform: string | null;
   platform_lead_id: string | null;
+  name: string | null;
+  company: string | null;
   email: string | null;
   phone: string | null;
   fbclid: string | null;
@@ -43,12 +46,14 @@ interface LeadRow {
   /** Cookie-urile de atributie ale pixelului OpenAI Ads (oaiq). */
   obref: string | null;
   oppref: string | null;
+  /** Click ID-ul reclamei LinkedIn (cookie-ul primar li_fat_id). */
+  li_fat_id: string | null;
   estimated_value: number | null;
   currency: string | null;
   created_at: string;
 }
 
-const LEAD_FIELDS = 'id, platform, platform_lead_id, email, phone, fbclid, gclid, ttclid, fbp, obref, oppref, estimated_value, currency, created_at';
+const LEAD_FIELDS = 'id, platform, platform_lead_id, name, company, email, phone, fbclid, gclid, ttclid, fbp, obref, oppref, li_fat_id, estimated_value, currency, created_at';
 
 /* ── Hashing (cerut de toate platformele pentru date personale) ── */
 const sha256 = (v: string) => crypto.createHash('sha256').update(v).digest('hex');
@@ -65,8 +70,10 @@ export const hashPhone = (phone: string) => sha256(phoneDigits(phone));
 const hashPhoneE164 = (phone: string) => sha256(`+${phoneDigits(phone)}`);
 
 /* ── Ce platforme primesc semnale pentru un lead ── */
-function targetPlatforms(lead: LeadRow): ('meta' | 'tiktok' | 'google' | 'openai')[] {
-  const t: ('meta' | 'tiktok' | 'google' | 'openai')[] = [];
+type SignalPlatform = 'meta' | 'tiktok' | 'google' | 'openai' | 'linkedin';
+
+function targetPlatforms(lead: LeadRow): SignalPlatform[] {
+  const t: SignalPlatform[] = [];
   if (lead.platform === 'meta' || lead.fbclid || lead.fbp) t.push('meta');
   if (lead.platform === 'tiktok' || lead.ttclid) t.push('tiktok');
   if (lead.platform === 'google' || lead.gclid) t.push('google');
@@ -74,6 +81,12 @@ function targetPlatforms(lead: LeadRow): ('meta' | 'tiktok' | 'google' | 'openai
   // insa si pe simplul identificator de browser (__obref), la fel ca la Meta cu
   // _fbp: ajuta potrivirea, iar atributia o decide platforma.
   if (lead.platform === 'openai' || lead.obref || lead.oppref) t.push('openai');
+  // LinkedIn n-are un identificator de browser pe care sa-l putem citi (cookie-urile lui sunt pe
+  // linkedin.com), dar potriveste membrii dupa email. De-aia: orice lead cu click ID (li_fat_id) si
+  // lead-urile cu email venite din formularele site-ului — pentru ele pleaca deja „Lead” la LinkedIn
+  // (website-lead.ts), deci calificarea si castigarea lor completeaza acelasi parcurs.
+  const dinSite = lead.platform === 'website' || lead.platform === 'openai' || lead.platform === 'linkedin';
+  if (lead.li_fat_id || (dinSite && lead.email)) t.push('linkedin');
   return t;
 }
 
@@ -486,6 +499,36 @@ async function sendGoogle(lead: LeadRow, stage: SignalStage, occurredAt: string)
   return { ok: true };
 }
 
+/**
+ * Semnal de calitate catre LinkedIn Ads (Conversions API, lib/crm/ads/linkedin.ts): fiecare etapa are
+ * regula ei de conversie („Server – … (CRM)”). Fara conversii negative, ca la Google.
+ */
+const LINKEDIN_ETAPE: Partial<Record<SignalStage, number>> = {
+  calificat: LINKEDIN_CONVERSII.calificat,
+  convertit: LINKEDIN_CONVERSII.convertit,
+  edinio: LINKEDIN_CONVERSII.edinio,
+};
+
+async function sendLinkedIn(lead: LeadRow, stage: SignalStage, occurredAt: string): Promise<SendResult> {
+  if (!linkedinOutboundConfigured()) return { ok: false, unconfigured: true };
+  const conversionId = LINKEDIN_ETAPE[stage];
+  if (!conversionId) return { ok: false, skip: true, error: 'LinkedIn nu are conversii negative' };
+  return sendLinkedInEvent({
+    conversionId,
+    // stabil pe lead+etapa, ca la celelalte platforme
+    eventId: `${lead.id}-${stage}`,
+    happenedAt: Date.parse(occurredAt),
+    email: lead.email,
+    liFatId: lead.li_fat_id,
+    name: lead.name,
+    company: lead.company,
+    value:
+      stage === 'convertit' && lead.estimated_value != null
+        ? { amount: Number(lead.estimated_value), currency: lead.currency || 'RON' }
+        : null,
+  });
+}
+
 /* ── Procesarea randurilor pending ── */
 interface SignalRow { id: string; lead_id: string; platform: string; stage: string; attempts: number; created_at: string }
 
@@ -497,6 +540,7 @@ async function processSignal(row: SignalRow, lead: LeadRow): Promise<void> {
     else if (row.platform === 'tiktok') result = await sendTikTok(lead, stage, row.created_at);
     else if (row.platform === 'google') result = await sendGoogle(lead, stage, row.created_at);
     else if (row.platform === 'openai') result = await sendOpenAI(lead, stage, row.created_at);
+    else if (row.platform === 'linkedin') result = await sendLinkedIn(lead, stage, row.created_at);
     else result = { ok: false, skip: true, error: 'Platforma necunoscuta' };
   } catch (e) {
     result = { ok: false, error: e instanceof Error ? e.message : 'Eroare necunoscuta' };

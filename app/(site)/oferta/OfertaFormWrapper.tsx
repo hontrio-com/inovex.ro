@@ -87,7 +87,7 @@ function OfertaFormInner() {
       });
       if (res.ok) {
         setSubmitStatus('success');
-        trackConversions.formularOferta();
+        trackConversions.formularOferta(metaEventId);
         trackTikTok.formularOferta();
         trackEvent('SubmitApplication');
         trackEvent('Lead', { content_name: 'oferta', content_category: values.serviciu }, metaEventId);

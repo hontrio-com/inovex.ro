@@ -13,7 +13,7 @@ interface SignalStats { sent: number; pending: number; failed: number; skipped: 
 interface Inbound { configured: boolean; env: Record<string, boolean>; webhookUrl: string; verifyToken?: string | null; webhookKey?: string | null; leads?: LeadStats }
 interface Outbound { configured: boolean; env: Record<string, boolean>; signals: SignalStats; attributedLeads?: number }
 interface PlatformState { inbound: Inbound | null; outbound: Outbound }
-interface StatusData { meta: PlatformState; tiktok: PlatformState; google: PlatformState; openai: PlatformState }
+interface StatusData { meta: PlatformState; tiktok: PlatformState; google: PlatformState; openai: PlatformState; linkedin: PlatformState }
 
 const EVENTS = ['lead_qualified (Calificat)', 'lead_converted (Convertit, cu valoare)', 'lead_edinio (Catre Edinio)', 'lead_disqualified (Pierdut)'];
 
@@ -121,8 +121,10 @@ function MetaPageConnect() {
   );
 }
 
-function PlatformCard({ name, color, state, steps, extraInbound }: {
+function PlatformCard({ name, color, state, steps, extraInbound, attributedLabel }: {
   name: string; color: string; state: PlatformState; steps: string[]; extraInbound?: React.ReactNode;
+  /** textul dinaintea numarului de lead-uri atribuite (outbound.attributedLeads) */
+  attributedLabel?: React.ReactNode;
 }) {
   const [showSteps, setShowSteps] = useState(false);
   const leads = state.inbound?.leads;
@@ -158,9 +160,9 @@ function PlatformCard({ name, color, state, steps, extraInbound }: {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <EnvChecklist env={state.outbound.env} />
           <SignalRow signals={state.outbound.signals} />
-          {state.outbound.attributedLeads != null && (
+          {state.outbound.attributedLeads != null && attributedLabel && (
             <div style={subtle}>
-              Lead-uri cu atributie ChatGPT Ads (cookie <code>__obref</code>): <strong style={{ color: "#0F172A" }}>{state.outbound.attributedLeads}</strong>
+              {attributedLabel}: <strong style={{ color: "#0F172A" }}>{state.outbound.attributedLeads}</strong>
             </div>
           )}
         </div>
@@ -213,7 +215,7 @@ export function IntegrariClient() {
       </div>
 
       <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 12, padding: '12px 16px', marginBottom: 20, fontFamily: 'var(--font-body)', fontSize: '0.8rem', color: '#1E40AF', lineHeight: 1.6 }}>
-        Evenimentele trimise (le mapezi in Events Manager la Meta/TikTok, respectiv actiuni de conversie la Google):{' '}
+        Evenimentele trimise (le mapezi in Events Manager la Meta/TikTok, respectiv actiuni de conversie la Google; la LinkedIn au regulile lor „Server – … (CRM)”):{' '}
         {EVENTS.map((e, i) => <code key={i} style={{ background: '#fff', border: '1px solid #BFDBFE', borderRadius: 5, padding: '1px 6px', margin: '0 3px', fontSize: '0.72rem' }}>{e}</code>)}
       </div>
 
@@ -282,6 +284,7 @@ export function IntegrariClient() {
             name="ChatGPT Ads (OpenAI)"
             color="#10A37F"
             state={data.openai}
+            attributedLabel={<>Lead-uri cu atributie ChatGPT Ads (cookie <code>__obref</code>)</>}
             steps={[
               'ChatGPT Ads NU are formulare proprii de lead: reclama trimite omul pe site, deci nu exista webhook de primire. Atributia sta in cookie-urile __obref / __oppref puse de pixel, salvate pe lead la trimiterea formularului.',
               'PIXEL: ID-ul din Ads Manager -> Conversions se pune in NEXT_PUBLIC_OPENAI_PIXEL_ID (variabila publica, apare in HTML — la fel ca pixelul Meta).',
@@ -292,6 +295,25 @@ export function IntegrariClient() {
               'Verificare: in Ads Manager -> Conversions -> Event Stream activezi ascultarea si trimiti un formular de test.',
             ]}
           />
+
+          {data.linkedin && (
+          <PlatformCard
+            name="LinkedIn Ads"
+            color="#0A66C2"
+            state={data.linkedin}
+            attributedLabel={<>Lead-uri venite din reclame LinkedIn (cookie <code>li_fat_id</code>)</>}
+            steps={[
+              'INSIGHT TAG (partener 10045906) pe toate paginile. Conversiile din browser „Site – Formular ofertă / Formular contact / Configurator / Click telefon / Click WhatsApp” pleaca la fiecare actiune; cele de formular au event_id.',
+              'CONVERSIONS API: tokenul „Direct API” din Campaign Manager (Conversion tracking -> Data sources) -> LINKEDIN_CAPI_TOKEN. E secret — doar in Vercel, niciodata in cod sau in variabile NEXT_PUBLIC_.',
+              'Fiecare formular trimite si „Server – Lead de pe site”, cu acelasi event_id ca tagul: LinkedIn pastreaza evenimentul din tag si il numara pe cel de pe server doar cand tagul e blocat (ad blocker).',
+              'Din CRM: Calificat -> „Server – Lead calificat (CRM)”, Convertit -> „Server – Client câștigat (CRM)” cu valoarea, Catre Edinio -> „Server – Lead trimis la Edinio (CRM)”. Necalificat si Pierdut nu se trimit (LinkedIn nu are conversii negative).',
+              'Comenzile Motion Design platite prin Stripe pleaca drept „Server – Comandă Motion Design”, cu valoarea reala.',
+              'Potrivirea: email (SHA-256), click ID-ul li_fat_id (cookie primar, pus de Insight Tag si de site din link-ul reclamei), nume + firma. Lead-urile cu li_fat_id apar in CRM cu sursa LinkedIn.',
+              'In Campaign Manager, la fiecare campanie bifezi conversiile urmarite: o campanie numara doar conversiile asociate cu ea.',
+              'Verificare: Campaign Manager -> Analyze -> Conversion tracking arata pe fiecare conversie ultimele evenimente primite (cu cateva ore intarziere).',
+            ]}
+          />
+          )}
         </div>
       )}
     </div>

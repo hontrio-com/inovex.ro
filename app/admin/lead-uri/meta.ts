@@ -18,6 +18,7 @@ export const PLATFORM_META: Record<string, { label: string; color: string }> = {
   google:  { label: 'Google',  color: '#EA4335' },
   tiktok:  { label: 'TikTok',  color: '#111827' },
   openai:  { label: 'ChatGPT Ads', color: '#10A37F' },
+  linkedin: { label: 'LinkedIn', color: '#0A66C2' },
   website: { label: 'Website', color: '#2B8FCC' },
   manual:  { label: 'Manual',  color: '#64748B' },
 };

@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server';
 import { after } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { sendMetaLeadCapi, sendOpenAILeadCapi } from '@/lib/crm/ads/signals';
+import { LINKEDIN_CONVERSII, sendLinkedInEvent } from '@/lib/crm/ads/linkedin';
 
 /**
  * Creeaza un lead in CRM dintr-un formular public al site-ului.
@@ -13,7 +14,8 @@ import { sendMetaLeadCapi, sendOpenAILeadCapi } from '@/lib/crm/ads/signals';
  *   de pe site primesc semnale de calitate inapoi catre platforme cand devin
  *   Calificat/Convertit.
  * - Trimite si perechile server-side ale evenimentelor de browser: Meta CAPI
- *   "Lead" si OpenAI "lead_created", ambele deduplicate prin acelasi event id.
+ *   "Lead", OpenAI "lead_created" si LinkedIn „Server – Lead de pe site”, toate
+ *   deduplicate prin acelasi event id.
  */
 export interface WebsiteLeadInput {
   req: NextRequest;
@@ -29,8 +31,8 @@ export interface WebsiteLeadInput {
   raw?: unknown;
   /**
    * ID generat client-side la trimiterea formularului. Acelasi id se foloseste
-   * pentru deduplicarea Pixel/CAPI la Meta SI la OpenAI Ads — un singur id per
-   * submit, doua perechi browser/server.
+   * pentru deduplicarea browser/server la Meta, OpenAI Ads si LinkedIn — un
+   * singur id per submit, cate o pereche browser/server pe fiecare platforma.
    */
   metaEventId?: string | null;
 }
@@ -61,6 +63,11 @@ export async function createWebsiteLead(input: WebsiteLeadInput): Promise<void> 
   // lead-urile de pe site ar aparea ca venite din ChatGPT Ads.
   const obref = c.get('__obref')?.value ?? null;
   const oppref = c.get('__oppref')?.value ?? null;
+  // LinkedIn Ads: click ID-ul reclamei, cookie primar pus de Insight Tag („Enhanced
+  // conversion tracking”) sau de proxy.ts din ?li_fat_id=. Ca __oppref, exista doar
+  // dupa un click pe o reclama, deci decide si sursa lead-ului.
+  const liFatId = c.get('li_fat_id')?.value?.slice(0, 200) || null;
+  const clientIp = input.req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null;
 
   // Eveniment Meta CAPI "Lead" — pereche server-side pt Pixel, deduplicat prin
   // metaEventId. Best-effort, programat dupa raspuns (nu blocheaza formularul).
@@ -69,7 +76,7 @@ export async function createWebsiteLead(input: WebsiteLeadInput): Promise<void> 
     email: input.email,
     phone: input.phone,
     fbp, fbclid,
-    clientIp: input.req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null,
+    clientIp,
     userAgent: input.req.headers.get('user-agent'),
     sourceUrl: input.req.headers.get('referer'),
   }).catch(() => {}));
@@ -81,10 +88,27 @@ export async function createWebsiteLead(input: WebsiteLeadInput): Promise<void> 
     email: input.email,
     phone: input.phone,
     obref, oppref,
-    clientIp: input.req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null,
+    clientIp,
     userAgent: input.req.headers.get('user-agent'),
     sourceUrl: input.req.headers.get('referer'),
   }).catch(() => {}));
+
+  // Perechea server-side pentru conversia „Site – …” din Insight Tag (lib/linkedin.ts): acelasi
+  // event id, deci LinkedIn o numara doar cand tagul n-a ajuns (ad blocker). Fara event id (cerere
+  // care nu vine din formularele site-ului) nu se trimite: n-ar avea cu ce se deduplica.
+  if (input.metaEventId) {
+    after(() => sendLinkedInEvent({
+      conversionId: LINKEDIN_CONVERSII.lead,
+      eventId: input.metaEventId,
+      email: input.email,
+      liFatId,
+      ip: clientIp,
+      name: input.name,
+      company: input.company,
+    }).then((r) => {
+      if (!r.ok && !r.unconfigured && !r.skip) console.error('[website-lead] LinkedIn CAPI:', r.error);
+    }).catch(() => {}));
+  }
 
   try {
     const { data, error } = await supabaseAdmin
@@ -95,11 +119,12 @@ export async function createWebsiteLead(input: WebsiteLeadInput): Promise<void> 
         email: clean(input.email, 200)?.toLowerCase() ?? null,
         phone: clean(input.phone, 50),
         status: 'nou',
-        platform: oppref ? 'openai' : 'website',
+        platform: oppref ? 'openai' : liFatId ? 'linkedin' : 'website',
         source: clean(input.source, 120),
         notes: clean(input.notes, 5000),
         estimated_value: input.estimatedValue ?? null,
         fbp, fbclid, gclid, ttclid, obref, oppref,
+        li_fat_id: liFatId,
         raw_payload: input.raw ?? null,
       })
       .select('id')

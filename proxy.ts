@@ -79,6 +79,19 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  /* ── LinkedIn Ads: click ID-ul din link-ul reclamei (?li_fat_id=…) ramane 30 de zile intr-un cookie primar,
+     ca lead-ul de pe site sa-l poata trimite prin Conversions API (lib/crm/website-lead.ts). Insight Tag pune
+     acelasi cookie, dar nu si cand e blocat de un ad blocker — exact cazul pentru care exista trimiterea de pe server. */
+  const liFatId = request.nextUrl.searchParams.get('li_fat_id');
+  if (liFatId && /^[A-Za-z0-9-]{8,100}$/.test(liFatId) && !isAdminPage && !pathname.startsWith('/api')) {
+    response.cookies.set('li_fat_id', liFatId, {
+      maxAge: 30 * 24 * 60 * 60,
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    });
+  }
+
   return applySecurityHeaders(response, pathname);
 }
 

@@ -56,7 +56,7 @@ export function BidModal({ open, onClose, productSlug, productTitle, listedPrice
         body:    JSON.stringify(payload),
       });
       if (!res.ok) throw new Error('server');
-      trackConversions.formularOferta();
+      trackConversions.formularOferta(metaEventId);
       trackTikTok.marketplace(productTitle);
       trackEvent('Lead', { content_name: 'marketplace_bid', content_category: productTitle }, metaEventId);
       // ChatGPT Ads: acelasi event id ca la Meta => perechea server-side se deduplica.

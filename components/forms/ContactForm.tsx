@@ -68,7 +68,7 @@ export function ContactForm() {
       if (!res.ok) throw new Error();
       setStatus('success');
       form.reset();
-      trackConversions.formularContact();
+      trackConversions.formularContact(metaEventId);
       trackTikTok.formularContact();
       trackEvent('Contact');
       trackEvent('Lead', { content_name: 'contact', content_category: data.serviciu }, metaEventId);

@@ -163,7 +163,7 @@ export function ConfiguratorAplicatieWebClient() {
       });
       if (res.ok) {
         localStorage.removeItem(LS_KEY);
-        trackConversions.configuratorAplicatieWeb();
+        trackConversions.configuratorAplicatieWeb(metaEventId);
         trackTikTok.configuratorAplicatieWeb();
         trackEvent('Lead', { content_name: 'configurator_aplicatie_web' }, metaEventId);
         // ChatGPT Ads: acelasi event id ca la Meta => perechea server-side se deduplica.

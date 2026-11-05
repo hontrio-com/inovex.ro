@@ -147,7 +147,7 @@ export function ConfiguratorMagazinClient() {
       });
       if (res.ok) {
         localStorage.removeItem(LS_KEY);
-        trackConversions.configuratorMagazin();
+        trackConversions.configuratorMagazin(metaEventId);
         trackTikTok.configuratorMagazin();
         trackEvent('Lead', { content_name: 'configurator_magazin_online' }, metaEventId);
         // ChatGPT Ads: acelasi event id ca la Meta => perechea server-side se deduplica.

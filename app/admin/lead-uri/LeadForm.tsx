@@ -78,6 +78,7 @@ export function LeadForm({ initial, members, canAssign, showValue, submitting, s
             <option value="google">Google</option>
             <option value="tiktok">TikTok</option>
             <option value="openai">ChatGPT Ads</option>
+            <option value="linkedin">LinkedIn</option>
             <option value="website">Website</option>
             <option value="manual">Manual</option>
           </select>
