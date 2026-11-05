@@ -36,7 +36,7 @@ export default function PlatformComparison() {
             className="mb-4"
           >
             iOS, Android sau{' '}
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>ambele simultan?</span>
+            <span style={{ color: '#2B8FCC' }}>ambele simultan?</span>
           </h2>
           <p className="text-[#4A5568] text-[0.9375rem] leading-relaxed">
             Te ghidam catre alegerea care potriveste cel mai bine obiectivele si bugetul tau.

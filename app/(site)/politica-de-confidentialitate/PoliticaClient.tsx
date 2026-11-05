@@ -56,7 +56,7 @@ function SectionHeading({
     <h2
       data-section={id}
       style={{
-        fontFamily: 'var(--font-serif)',
+        fontFamily: 'var(--font-display)',
         fontWeight: 600,
         fontSize: '1.5rem',
         color: '#0D1117',
@@ -296,7 +296,7 @@ export default function PoliticaClient() {
         {/* H1 */}
         <h1
           style={{
-            fontFamily: 'var(--font-serif)',
+            fontFamily: 'var(--font-display)',
             fontWeight: 600,
             fontSize: 'clamp(2rem,3.5vw,3rem)',
             color: '#0D1117',
@@ -1184,7 +1184,7 @@ export default function PoliticaClient() {
               >
                 <p
                   style={{
-                    fontFamily: 'var(--font-serif)',
+                    fontFamily: 'var(--font-display)',
                     fontWeight: 600,
                     fontSize: '1rem',
                     color: '#0D1117',

@@ -34,7 +34,7 @@ export default function CTAMobile() {
           className="mb-5"
         >
           Aplicatia ta mobila, publicata in{' '}
-          <span style={{ fontStyle: 'italic' }}>60 de zile</span>
+          <span>60 de zile</span>
         </h2>
 
         <p

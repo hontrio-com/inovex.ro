@@ -1,21 +1,18 @@
 import type { Metadata } from 'next';
 import { Hero } from '@/components/sections/Hero';
 import { TechMarquee } from '@/components/sections/TechMarquee';
-import { Services } from '@/components/sections/Services';
-import { Portfolio } from '@/components/sections/Portfolio';
-import RomaniaMapBanner from '@/components/sections/RomaniaMapBanner';
-import { Testimonials } from '@/components/sections/Testimonials';
-import { FAQ } from '@/components/sections/FAQ';
-import { CTA } from '@/components/sections/CTA';
+import { Servicii } from '@/components/sections/servicii/Servicii';
+import { Portofoliu } from '@/components/sections/portofoliu/Portofoliu';
+import { Prezenta } from '@/components/sections/prezenta/Prezenta';
+import { Recenzii } from '@/components/sections/recenzii/Recenzii';
+import { Intrebari } from '@/components/sections/intrebari/Intrebari';
+import { Final } from '@/components/sections/final/Final';
 import {
   OrganizationJsonLd,
   LocalBusinessJsonLd,
   WebsiteJsonLd,
 } from '@/components/seo/JsonLd';
-import {
-  getServices, getPortfolioItems,
-  getTestimonials, getFaqItems,
-} from '@/lib/site-data';
+import { getFaqItems } from '@/lib/site-data';
 
 export const metadata: Metadata = {
   title: 'Inovex - Agentie Web Premium - Magazine Online, Website-uri, Aplicatii',
@@ -48,12 +45,7 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [services, proiecte, testimonials, faqItems] = await Promise.all([
-    getServices(),
-    getPortfolioItems(),
-    getTestimonials(),
-    getFaqItems(),
-  ]);
+  const faqItems = await getFaqItems();
 
   return (
     <>
@@ -62,12 +54,12 @@ export default async function HomePage() {
       <WebsiteJsonLd />
       <Hero />
       <TechMarquee />
-      <Services data={services.length ? services : undefined} />
-      <Portfolio proiecte={proiecte.length ? proiecte : undefined} />
-      <RomaniaMapBanner />
-      <Testimonials items={testimonials.length ? testimonials : undefined} />
-      <FAQ items={faqItems.length ? faqItems : undefined} />
-      <CTA />
+      <Servicii />
+      <Portofoliu />
+      <Prezenta />
+      <Recenzii />
+      <Intrebari items={faqItems} />
+      <Final />
     </>
   );
 }

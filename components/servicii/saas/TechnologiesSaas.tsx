@@ -40,7 +40,7 @@ export default function TechnologiesSaas() {
             className="mb-4"
           >
             Construit pentru{' '}
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>
+            <span style={{ color: '#2B8FCC' }}>
               durabilitate
             </span>
           </h2>

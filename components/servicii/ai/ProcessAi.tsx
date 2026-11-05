@@ -69,7 +69,7 @@ export default function ProcessAi() {
             }}
           >
             De la audit la automatizare functionala{' '}
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>in 4 saptamani</span>
+            <span style={{ color: '#2B8FCC' }}>in 4 saptamani</span>
           </h2>
           <p style={{ color: '#4A5568', fontSize: '0.9375rem', lineHeight: 1.7 }}>
             Fiecare implementare urmeaza acelasi proces structurat, de la prima discutie pana la automatizarea activa in productie.

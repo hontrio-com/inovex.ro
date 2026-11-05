@@ -1,0 +1,242 @@
+/* Meniul „Servicii”, „Bara prelungita” (dupa crescent.app, kalstore, coda.io): panoul e lipit
+   sub bara antetului, cat ea de lat, si continua in jos aceeasi suprafata alba. Antetul ii da
+   latimea (tot ecranul sus, latimea barei desprinse dupa derulare) si, cat e deschis, scoate
+   umbra barei si ii face drepte colturile de jos. */
+
+.panou {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(11, 15, 20, 0.08);
+  /* Sus panoul e cat chenarul hero-ului de lat si se inchide jos cu colturile chenarului;
+     fara contur, il desparte de pagina estomparea din spate. */
+  border-width: 0;
+  border-radius: 0 0 var(--rama-raza, 20px) var(--rama-raza, 20px);
+  background: #fff;
+  box-shadow: 0 24px 56px -24px rgba(11, 15, 20, 0.28);
+  pointer-events: auto;
+  /* Bara „creste” in jos. clip-path ar taia si umbra, asa ca ea vine abia dupa ce panoul a
+     ajuns jos; continutul apare putin dupa pornire. */
+  animation:
+    prelungire 260ms cubic-bezier(0.32, 0.72, 0, 1),
+    umbra 180ms ease-out 260ms backwards;
+  /* acelasi ritm ca bara, daca se desprinde sau se lipeste la loc cu meniul deschis */
+  transition: border-radius var(--desprindere, 0.5s cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+/* bara desprinsa: conturul ei continua pe laturi, colturile de jos se rotunjesc */
+.panou[data-plutitor='true'] {
+  border-width: 0 1px 1px;
+  border-radius: 0 0 20px 20px;
+}
+
+/* Continutul sta pe verticala literelor logo-ului: sus pe containerul paginii (1280px cu 32px
+   padding), pe bara desprinsa la 1px contur + 20px. Latimea maxima ramane 1280px si pe bara
+   desprinsa: acolo panoul are oricum cel mult 1256px, iar asa continutul nu sare cand bara se
+   desprinde cu meniul deschis. */
+.inner {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+  animation: aratare 200ms ease-out 60ms backwards;
+  transition: padding var(--desprindere, 0.5s cubic-bezier(0.32, 0.72, 0, 1));
+}
+
+.panou[data-plutitor='true'] .inner {
+  padding: 0 20px;
+}
+
+/* linia subtire de sus desparte bara de meniu si e doar cat continutul de lata */
+.grila {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.1fr);
+  column-gap: 40px;
+  align-items: start;
+  padding: 26px 0 28px;
+  border-top: 1px solid #eef0f2;
+}
+
+/* ─── Coloanele cu servicii ─── */
+
+.eticheta {
+  margin: 0 0 8px;
+  color: #8a919c;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* fundalul de hover iese cu 12px in afara coloanei, textul ramane pe marginea ei */
+.item {
+  display: block;
+  margin: 0 -12px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.item:focus-visible {
+  background: #f5f6f7;
+}
+
+.itemTitlu {
+  display: block;
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 16.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.itemDesc {
+  display: block;
+  margin-top: 2px;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* ─── Proiectul din dreapta ─── */
+
+.proiect {
+  display: block;
+  border-radius: 14px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.imagine {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10.5;
+  overflow: hidden;
+  /* fara ea, Safari taie colturile rotunde abia dupa ce se termina marirea pozei */
+  isolation: isolate;
+  border: 1px solid rgba(11, 15, 20, 0.06);
+  border-radius: 14px;
+  background: #f4f5f7;
+}
+
+.foto {
+  object-fit: cover;
+  object-position: top;
+  transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* „Vezi portofoliul” sta pe linia de baza a titlului proiectului */
+.proiectRand {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.proiectText {
+  min-width: 0;
+}
+
+.proiectTitlu {
+  display: block;
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.proiectTip {
+  display: block;
+  margin-top: 2px;
+  color: #8a919c;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.vezi {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  color: #0b0f14;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sageata {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s ease;
+}
+
+@keyframes prelungire {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes umbra {
+  from {
+    box-shadow: 0 24px 56px -24px rgba(11, 15, 20, 0);
+  }
+  to {
+    box-shadow: 0 24px 56px -24px rgba(11, 15, 20, 0.28);
+  }
+}
+
+@keyframes aratare {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Starile de hover doar unde exista mouse: pe ecranele tactile ar ramane aprinse. */
+@media (hover: hover) {
+  .item:hover {
+    background: #f5f6f7;
+  }
+}
+
+/* marirea pozei si sageata care se misca raman doar pentru cine nu a cerut mai putina miscare */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .proiect:hover .foto {
+    transform: scale(1.03);
+  }
+
+  .proiect:hover .sageata {
+    transform: translateX(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panou,
+  .inner {
+    animation: none;
+  }
+
+  .panou,
+  .inner,
+  .item,
+  .foto,
+  .sageata {
+    transition: none;
+  }
+}

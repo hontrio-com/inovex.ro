@@ -90,7 +90,7 @@ export default function DemoMobile() {
             className="mb-4"
           >
             Exploreaza{' '}
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>5 tipuri de aplicatii</span>
+            <span style={{ color: '#2B8FCC' }}>5 tipuri de aplicatii</span>
             {' '}in actiune
           </h2>
           <p className="text-[#4A5568] text-[0.9375rem] leading-relaxed mb-5">
@@ -174,7 +174,6 @@ export default function DemoMobile() {
               <h3
                 style={{
                   fontFamily: 'var(--font-display)',
-                  fontStyle: 'italic',
                   fontWeight: 600,
                   fontSize: '1.125rem',
                   color: '#0D1117',

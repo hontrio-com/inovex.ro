@@ -24,8 +24,7 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --font-sans: var(--font-body);
-  --font-serif: "Fraunces", Georgia, serif;
-  --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-display: "Manrope", system-ui, sans-serif;
   --font-body: "Inter", system-ui, sans-serif;
 }
 
@@ -72,6 +71,18 @@
   --input: #e5e7eb;
   --ring: #2b8fcc;
   --radius: 0.5rem;
+
+  /* Chenarul hero-ului (designul nou): distanta de la marginile ecranului si raza colturilor.
+     Antetul, sus pe pagina, foloseste aceleasi valori ca sa para partea de sus a chenarului. */
+  --rama: 8px;
+  --rama-raza: 16px;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --rama: 12px;
+    --rama-raza: 20px;
+  }
 }
 
 /* ─── Base ────────────────────────────────── */
@@ -82,7 +93,9 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
-  overflow-x: hidden;
+  /* clip, nu hidden: cu hidden, body devine container de derulare si elementele sticky (filtrele din
+     marketplace, textul de la intrebari) nu mai raman pe ecran */
+  overflow-x: clip;
 }
 
 body {
@@ -91,20 +104,25 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "kern", "liga", "calt";
   background: #fff;
-  font-family: Inter, system-ui, sans-serif;
-  overflow-x: hidden;
+  font-family: var(--font-body), system-ui, sans-serif;
+  overflow-x: clip;
 }
 
 h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.025em;
-  font-family: Plus Jakarta Sans, system-ui, sans-serif;
+  font-family: var(--font-display), system-ui, sans-serif;
   font-weight: 700;
+}
+
+/* Fara italic pe site (decizia proprietarului): nici <em>, <i>, <cite> nu se inclina. */
+em, i, cite, dfn, var, address {
+  font-style: normal;
 }
 
 /* ─── Typography utilities ────────────────── */
 .text-display {
   letter-spacing: -0.035em;
-  font-family: Plus Jakarta Sans, system-ui, sans-serif;
+  font-family: var(--font-display), system-ui, sans-serif;
   font-size: clamp(3rem, 5.5vw, 5rem);
   font-weight: 800;
   line-height: 1.05;
@@ -112,7 +130,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .text-h1 {
   letter-spacing: -0.03em;
-  font-family: Plus Jakarta Sans, system-ui, sans-serif;
+  font-family: var(--font-display), system-ui, sans-serif;
   font-size: clamp(2.2rem, 3.5vw, 3.5rem);
   font-weight: 800;
   line-height: 1.1;
@@ -120,7 +138,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .text-h2 {
   letter-spacing: -0.025em;
-  font-family: Plus Jakarta Sans, system-ui, sans-serif;
+  font-family: var(--font-display), system-ui, sans-serif;
   font-size: clamp(1.6rem, 2.5vw, 2.25rem);
   font-weight: 700;
   line-height: 1.2;
@@ -128,7 +146,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .text-h3 {
   letter-spacing: -0.02em;
-  font-family: Plus Jakarta Sans, system-ui, sans-serif;
+  font-family: var(--font-display), system-ui, sans-serif;
   font-size: clamp(1.1rem, 1.5vw, 1.375rem);
   font-weight: 700;
 }
@@ -305,7 +323,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── Article prose typography ────────────── */
 .article-prose h2 {
-  font-family: var(--font-display), "Plus Jakarta Sans", system-ui, sans-serif;
+  font-family: var(--font-display), system-ui, sans-serif;
   color: #0d1117;
   letter-spacing: -0.018em;
   margin-top: 2rem;
@@ -316,7 +334,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .article-prose h3 {
-  font-family: var(--font-display), "Plus Jakarta Sans", system-ui, sans-serif;
+  font-family: var(--font-display), system-ui, sans-serif;
   color: #0d1117;
   margin-top: 1.5rem;
   margin-bottom: 0.5rem;
@@ -350,7 +368,6 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 0 8px 8px 0;
   margin: 1.5rem 0;
   padding: 12px 16px;
-  font-style: italic;
 }
 
 .article-prose code {
@@ -358,7 +375,8 @@ h1, h2, h3, h4, h5, h6 {
   background: #f1f5f9;
   border-radius: 4px;
   padding: 2px 6px;
-  font-family: "Courier New", Courier, monospace;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
   font-size: 0.875em;
 }
 
@@ -424,3 +442,4 @@ h1, h2, h3, h4, h5, h6 {
   border-top: 1px solid #e8ecf0;
   margin: 2rem 0;
 }
+

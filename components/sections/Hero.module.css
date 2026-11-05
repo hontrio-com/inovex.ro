@@ -1,0 +1,346 @@
+/* Hero in chenar, pe alb. Distanta pana la marginile ecranului (--rama) si raza colturilor
+   (--rama-raza) vin din globals.css si sunt aceleasi pe care le foloseste antetul sus pe pagina,
+   ca bara lui sa para partea de sus a chenarului. Pe fundalul alb, chenarul se vede dupa conturul
+   lui si dupa o rama subtire de sticla din jur. */
+
+.hero {
+  /* grosimea ramei de sticla, luata din golul pana la marginea ecranului */
+  --sticla: 4px;
+  position: relative;
+  padding: var(--rama);
+  background: #fff;
+}
+
+/* Rama de sticla: o banda translucida in jurul chenarului, putin mai deschisa sus, cu muchia
+   exterioara fina si o umbra scurta, abia vizibila, dedesubt. */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--rama) - var(--sticla));
+  border: 1px solid rgba(11, 15, 20, 0.07);
+  border-radius: calc(var(--rama-raza) + var(--sticla));
+  background: linear-gradient(rgba(11, 15, 20, 0.02), rgba(11, 15, 20, 0.045));
+  box-shadow: 0 10px 20px -16px rgba(11, 15, 20, 0.16);
+  pointer-events: none;
+}
+
+/* Pe telefon si tableta chenarul e cat continutul; de la 1024px umple ecranul (minus marginile),
+   cu textul la mijloc. Conturul e o umbra, in afara chenarului, ca bara antetului (lipita peste
+   partea lui de sus) sa nu-l acopere. */
+.chenar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--rama-raza);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(11, 15, 20, 0.08),
+    0 1px 3px rgba(11, 15, 20, 0.05);
+}
+
+/* Sub bara antetului (60px pe telefon, 76px pe desktop), care sta peste chenar. */
+.continut {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: calc(60px + 44px) 16px 44px;
+  text-align: center;
+}
+
+/* Marimea e aleasa ca pastila cu cel mai lung serviciu („website-uri de prezentare”) sa incapa
+   pe rand: pe telefon si tableta pastila sta pe randul ei, de la 1024px langa „Construim”. Pe
+   telefon cuvantul acela se micsoreaza putin (CuvantRotativ.module.css), de aici 10.5em in loc
+   de 12em. */
+.titlu {
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: min(40px, calc((100vw - 48px) / 10.5));
+  font-weight: 700;
+  line-height: 1.1;
+  /* si pastila o foloseste, ca sa-si centreze cuvintele */
+  --litere: -0.045em;
+  letter-spacing: var(--litere);
+}
+
+.ascuns {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.vizibil {
+  display: block;
+}
+
+.rand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.14em;
+}
+
+.continuare {
+  display: block;
+  margin-top: 0.12em;
+  text-wrap: balance;
+}
+
+/* „website-uri” nu se rupe la cratima */
+.nowrap {
+  white-space: nowrap;
+}
+
+.lead {
+  max-width: 36em;
+  margin-top: 20px;
+  color: #5b6270;
+  font-size: 16px;
+  line-height: 1.6;
+  text-wrap: balance;
+}
+
+.actiuni {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.primar,
+.secundar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.primar {
+  background: #0b0f14;
+  color: #fff;
+}
+
+.primar svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.2s ease;
+}
+
+.secundar {
+  background: #f0f1f3;
+  color: #0b0f14;
+}
+
+/* ─── Recomandari, sub butoane: pozele clientilor, 5 stele pe Google si textul ─── */
+
+.dovada {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 30px;
+  text-align: left;
+}
+
+/* Patratele cu colturi rotunjite, nesuprapuse, ca niciun logo sa nu fie acoperit de vecinul lui;
+   conturul fin le arata pe fundalul alb. Sub 56px (52 pe telefon) numele lungi nu se mai citesc pe
+   ecranele obisnuite. */
+.avatare {
+  display: flex;
+  flex: none;
+  gap: 6px;
+}
+
+.avatare li {
+  width: 52px;
+  height: 52px;
+  overflow: hidden;
+  border: 1px solid #e3e5e8;
+  border-radius: 25%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(11, 15, 20, 0.06);
+}
+
+.avatare img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.dovadaText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stele {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  color: #fbbc04;
+}
+
+.stele svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.stele .google {
+  width: 15px;
+  height: 15px;
+  margin-left: 8px;
+}
+
+.recomandat {
+  color: #5b6270;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.recomandat strong {
+  color: #0b0f14;
+  font-weight: 600;
+}
+
+@media (hover: hover) {
+  .primar:hover {
+    background: #2a3039;
+  }
+
+  .secundar:hover {
+    background: #e6e8eb;
+  }
+
+  .primar:hover svg {
+    transform: translateX(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primar svg {
+    transition: none;
+  }
+}
+
+/* ─── Marimi ─── */
+
+/* telefon: butoanele umplu randul; cand nu incap alaturi, fiecare ia tot randul */
+@media (max-width: 639.98px) {
+  .actiuni {
+    align-self: stretch;
+  }
+
+  .primar,
+  .secundar {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  /* pozele pe randul lor, dedesubt stelele si textul, totul centrat */
+  .dovada {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .dovadaText {
+    align-items: center;
+  }
+
+  .recomandat {
+    text-wrap: balance;
+  }
+}
+
+@media (min-width: 640px) {
+  .continut {
+    padding: calc(60px + 64px) 20px 64px;
+  }
+
+  .titlu {
+    font-size: min(52px, calc((100vw - 56px) / 12.2));
+  }
+
+  .lead {
+    font-size: 17px;
+  }
+
+  .avatare {
+    gap: 8px;
+  }
+
+  .avatare li {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    --sticla: 6px;
+  }
+
+  .chenar {
+    min-height: calc(100svh - 2 * var(--rama));
+  }
+
+  .continut {
+    padding: calc(76px + 40px) 20px 48px;
+  }
+
+  /* doua randuri: „Construim [pastila]” si continuarea */
+  .titlu {
+    font-size: 54px;
+  }
+
+  .rand {
+    display: block;
+    white-space: nowrap;
+  }
+
+  /* pastila coboara deja putin sub rand */
+  .continuare {
+    margin-top: 0;
+  }
+
+  .lead {
+    max-width: 40em;
+    margin-top: 24px;
+    font-size: 18px;
+  }
+
+  .actiuni {
+    margin-top: 32px;
+  }
+
+  .dovada {
+    margin-top: 32px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .titlu {
+    font-size: 64px;
+  }
+}
+
+@media (min-width: 1680px) {
+  .titlu {
+    font-size: 72px;
+  }
+}

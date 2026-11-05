@@ -1,0 +1,962 @@
+/* Pagina Video Motion Design, in stilul primei pagini: titluri negre centrate, iconite in casute gri,
+   linii fine, butoane negru + gri; optiunile alese primesc contur negru, ca in configuratoare. */
+
+/* ─── Butoane ─── */
+
+.primar,
+.secundar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.primar {
+  background: #0b0f14;
+  color: #fff;
+}
+
+.secundar {
+  background: #f0f1f3;
+  color: #0b0f14;
+}
+
+.primar svg,
+.secundar svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.2s ease;
+}
+
+/* ─── Hero ─── */
+
+.hero {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: calc(var(--rama) + 60px + 32px) 20px 40px;
+  text-align: center;
+}
+
+.cale {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 28px;
+  color: #8b919c;
+  font-size: 13.5px;
+}
+
+.cale a {
+  color: #5b6270;
+  transition: color 0.15s ease;
+}
+
+.cale [aria-current] {
+  color: #0b0f14;
+  font-weight: 500;
+}
+
+.heroTitlu {
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: clamp(32px, 8vw, 40px);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.heroLead {
+  max-width: 36em;
+  margin: 18px auto 0;
+  color: #5b6270;
+  font-size: 16px;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.heroActiuni {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 30px;
+}
+
+/* doua randuri de pastile gri care curg in sensuri opuse */
+.banda {
+  max-width: 760px;
+  margin: 40px auto 0;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+
+.bandaRand {
+  display: flex;
+  width: max-content;
+  animation: curge 32s linear infinite;
+}
+
+.bandaRand + .bandaRand {
+  margin-top: 8px;
+}
+
+.bandaRand[data-invers] {
+  animation-direction: reverse;
+}
+
+.bandaRand ul {
+  display: flex;
+  gap: 8px;
+  padding-right: 8px;
+}
+
+.bandaRand li {
+  padding: 6px 14px;
+  border-radius: 99px;
+  background: #f4f5f7;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.05);
+  color: #3d4450;
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@keyframes curge {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ─── Sectiuni ─── */
+
+.sectiune {
+  max-width: calc(1256px + 2 * var(--rama));
+  margin: 0 auto;
+  padding: 56px var(--rama) 8px;
+  scroll-margin-top: 72px;
+}
+
+/* ultima sectiune a paginii, inainte de intrebari: aer dedesubt */
+.ultima {
+  padding-bottom: 64px;
+}
+
+.titlu {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 16px;
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: clamp(28px, 7vw, 36px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 36em;
+  margin: 14px auto 0;
+  padding: 0 16px;
+  color: #5b6270;
+  font-size: 16px;
+  line-height: 1.6;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #f4f5f7;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.06);
+  color: #0b0f14;
+}
+
+.icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ─── Beneficii: un chenar cu linii fine intre ele ─── */
+
+.beneficii {
+  display: grid;
+  gap: 1px;
+  margin-top: 32px;
+  overflow: hidden;
+  border-radius: var(--rama-raza);
+  background: #eceef1;
+  box-shadow: 0 0 0 1px rgba(11, 15, 20, 0.08);
+}
+
+.beneficii li {
+  display: flex;
+  flex-direction: column;
+  padding: 26px 22px;
+  background: #fff;
+}
+
+.beneficiuTitlu {
+  margin-top: 18px;
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+}
+
+.beneficiuText {
+  margin-top: 8px;
+  color: #5b6270;
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+/* ─── Exemple video ─── */
+
+.exemple {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  max-width: 1040px;
+  margin: 32px auto 0;
+}
+
+.exemplu {
+  padding: 8px 8px 14px;
+  border-radius: var(--rama-raza);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(11, 15, 20, 0.08),
+    0 1px 3px rgba(11, 15, 20, 0.05);
+}
+
+.exemplu > div {
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.exemplu figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 6px 0;
+}
+
+.exempluClient {
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.exempluTip {
+  color: #8b919c;
+  font-size: 13px;
+}
+
+/* ─── Comanda ─── */
+
+.comanda {
+  display: grid;
+  max-width: 1120px;
+  margin: 32px auto 0;
+  overflow: hidden;
+  border-radius: var(--rama-raza);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(11, 15, 20, 0.08),
+    0 1px 3px rgba(11, 15, 20, 0.05);
+}
+
+.configurator {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  min-width: 0;
+  padding: 26px 18px 30px;
+}
+
+.pasTitlu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.pasNr {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: #0b0f14;
+  color: #fff;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.pachete {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pachet {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #e3e6ea;
+  color: #0b0f14;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.pachet[data-ales='true'] {
+  background: #f7f8f9;
+  box-shadow: inset 0 0 0 2px #0b0f14;
+}
+
+/* „Mai multe”: chenarul e pe tot blocul, cu contorul inclus */
+.maiMulte {
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px #e3e6ea;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.maiMulte .pachet {
+  background: none;
+  box-shadow: none;
+}
+
+.maiMulte[data-ales='true'] {
+  background: #f7f8f9;
+  box-shadow: inset 0 0 0 2px #0b0f14;
+}
+
+.radio {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px #c9ced5;
+}
+
+.radio[data-activ='true'] {
+  box-shadow: inset 0 0 0 2px #0b0f14;
+}
+
+.radio[data-activ='true']::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #0b0f14;
+}
+
+.pachetText {
+  flex: 1;
+  min-width: 0;
+}
+
+.pachetRand {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.pachetNume {
+  font-size: 15.5px;
+  font-weight: 600;
+}
+
+.popular {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #0b0f14;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.reducere {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #e3f4ea;
+  color: #11683c;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.pachetDetalii {
+  display: block;
+  margin-top: 3px;
+  color: #5b6270;
+  font-size: 13px;
+}
+
+.economie {
+  color: #11683c;
+  font-weight: 600;
+}
+
+.pachetPret {
+  font-size: 15.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.contor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  border-top: 1px solid #e3e6ea;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.contorButoane {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.contorButoane button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #d5d9de;
+  color: #0b0f14;
+  cursor: pointer;
+}
+
+.contorButoane button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.contorButoane svg {
+  width: 15px;
+  height: 15px;
+}
+
+.contorValoare {
+  width: 36px;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* zona de incarcare a fisierelor */
+.incarcare {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 24px 16px;
+  border: 1.5px dashed #c9ced5;
+  border-radius: 14px;
+  background: #f7f8f9;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.incarcare[data-trage='true'] {
+  border-color: #0b0f14;
+  background: #eef0f2;
+}
+
+.incarcare:focus-within {
+  outline: 2px solid #2b8fcc;
+  outline-offset: 2px;
+}
+
+.incarcareIcon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 4px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.06);
+  color: #0b0f14;
+}
+
+.incarcareIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.incarcareText {
+  color: #3d4450;
+  font-size: 14.5px;
+}
+
+.incarcareText strong {
+  color: #0b0f14;
+  text-decoration: underline;
+  text-decoration-color: rgba(11, 15, 20, 0.3);
+  text-underline-offset: 3px;
+}
+
+.incarcareNota {
+  color: #8b919c;
+  font-size: 12.5px;
+}
+
+.fisiere {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.fisiere li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 8px 12px;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px #e3e6ea;
+}
+
+.fisiere li > svg {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  color: #8b919c;
+}
+
+.fisierNume {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: #0b0f14;
+  font-size: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.fisierMarime {
+  color: #8b919c;
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+.fisiere button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: #8b919c;
+  cursor: pointer;
+}
+
+.fisiere button svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* sumarul si plata, pe gri deschis */
+.sumar {
+  padding: 26px 18px 30px;
+  border-top: 1px solid #eceef1;
+  background: #f7f8f9;
+}
+
+.sumarTitlu {
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.inclus {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 14px 0 32px;
+}
+
+.inclus li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #0b0f14;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.inclus svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  stroke-width: 2.5;
+}
+
+.contact {
+  margin-bottom: 28px;
+}
+
+/* campurile de contact sunt albe pe sumarul gri */
+.alb {
+  background-color: #fff !important;
+}
+
+.total {
+  padding-top: 22px;
+  border-top: 1px solid #e3e6ea;
+}
+
+.totalRand {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.totalEticheta {
+  color: #3d4450;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.totalEticheta span {
+  display: block;
+  color: #8b919c;
+  font-size: 12.5px;
+  font-weight: 400;
+}
+
+.totalPret {
+  text-align: right;
+}
+
+.totalVechi {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-bottom: 4px;
+  color: #8b919c;
+  font-size: 13px;
+}
+
+.totalValoare {
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.plateste {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 52px;
+  border: 0;
+  border-radius: 12px;
+  background: #0b0f14;
+  color: #fff;
+  font: inherit;
+  font-size: 15.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.plateste svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.2s ease;
+}
+
+.plateste:disabled {
+  background: #4a5160;
+  cursor: progress;
+}
+
+.eroarePlata {
+  margin-top: 12px;
+  color: #c62828;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.securizat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+  color: #5b6270;
+  font-size: 13px;
+}
+
+.securizat svg {
+  width: 13px;
+  height: 13px;
+}
+
+.nota,
+.notaMica {
+  margin-top: 6px;
+  color: #8b919c;
+  font-size: 12.5px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.notaMica a {
+  color: #3d4450;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ─── Bara lipita de jos ─── */
+
+.lipit {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 9000;
+  padding: 0 var(--rama) calc(var(--rama) + env(safe-area-inset-bottom));
+  pointer-events: none;
+}
+
+.lipitInterior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1256px;
+  margin: 0 auto;
+  padding: 10px 10px 10px 20px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow:
+    0 0 0 1px rgba(11, 15, 20, 0.08),
+    0 12px 32px -12px rgba(11, 15, 20, 0.25);
+  backdrop-filter: blur(14px);
+  pointer-events: auto;
+}
+
+.lipitText {
+  color: #5b6270;
+  font-size: 14.5px;
+}
+
+.lipitText strong {
+  color: #0b0f14;
+  font-weight: 600;
+}
+
+@media (hover: hover) {
+  .primar:hover,
+  .plateste:not(:disabled):hover {
+    background: #2a3039;
+  }
+
+  .secundar:hover {
+    background: #e6e8eb;
+  }
+
+  .primar:hover svg,
+  .plateste:not(:disabled):hover svg {
+    transform: translateX(2px);
+  }
+
+  .pachet:not([data-ales='true']):hover,
+  .maiMulte:not([data-ales='true']):hover {
+    box-shadow: inset 0 0 0 1px #c9ced5;
+  }
+
+  .maiMulte .pachet:hover {
+    box-shadow: none;
+  }
+
+  .incarcare:hover {
+    border-color: #8b919c;
+  }
+
+  .fisiere button:hover {
+    color: #c62828;
+  }
+
+  .cale a:hover {
+    color: #0b0f14;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bandaRand {
+    animation: none;
+  }
+
+  .primar svg,
+  .plateste svg {
+    transition: none;
+  }
+}
+
+/* pe telefon, bara de jos are doar butonul, pe toata latimea */
+@media (max-width: 639.98px) {
+  .lipitText {
+    display: none;
+  }
+
+  .lipitInterior {
+    padding: 8px;
+  }
+
+  .lipitInterior .primar {
+    flex: 1;
+  }
+}
+
+/* ─── Marimi ─── */
+
+@media (min-width: 640px) {
+  .heroTitlu {
+    font-size: 48px;
+  }
+
+  .heroLead {
+    font-size: 17px;
+  }
+
+  .sectiune {
+    padding-top: 72px;
+  }
+
+  .titlu {
+    font-size: 40px;
+  }
+
+  .lead {
+    font-size: 17px;
+  }
+
+  .beneficii {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .configurator,
+  .sumar {
+    padding: 36px;
+  }
+
+  .exemple {
+    gap: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    padding-top: calc(var(--rama) + 60px + 56px);
+    padding-bottom: 32px;
+  }
+
+  .heroTitlu {
+    font-size: 56px;
+  }
+
+  .sectiune {
+    padding-top: 88px;
+  }
+
+  .ultima {
+    padding-bottom: 104px;
+  }
+
+  .titlu {
+    font-size: 44px;
+  }
+
+  .beneficii {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .beneficii li {
+    padding: 32px 28px;
+  }
+
+  .exemple {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .comanda {
+    grid-template-columns: 1.3fr 1fr;
+  }
+
+  .configurator {
+    padding: 44px;
+  }
+
+  .sumar {
+    padding: 44px 40px;
+    border-top: 0;
+    border-left: 1px solid #eceef1;
+  }
+}

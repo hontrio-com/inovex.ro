@@ -107,7 +107,7 @@ export default async function InvataGratuitPage() {
               className="mb-4"
             >
               Invata tot ce ai nevoie{' '}
-              <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>gratuit</span>
+              <span style={{ color: '#2B8FCC' }}>gratuit</span>
             </h1>
 
             <p

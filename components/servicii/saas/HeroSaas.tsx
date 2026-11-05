@@ -95,7 +95,7 @@ export default function HeroSaas() {
               className="mb-5"
             >
               Construim aplicatia ta web, de la idee la{' '}
-              <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>
+              <span style={{ color: '#2B8FCC' }}>
                 utilizatori reali
               </span>
             </h1>

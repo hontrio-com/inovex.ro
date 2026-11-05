@@ -77,7 +77,7 @@ export default function HeroCrm() {
               className="mb-5"
             >
               Software de management la cheie, construit{' '}
-              <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>exact pe procesele tale</span>
+              <span style={{ color: '#2B8FCC' }}>exact pe procesele tale</span>
             </h1>
 
             <p

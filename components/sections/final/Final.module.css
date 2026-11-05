@@ -1,0 +1,220 @@
+/* Chemarea de la final: un card pe metal inchis (grafit), cu dungi de lumina in diagonala si
+   granulatie, ales de proprietar (2026-10-29) ca finalul paginii sa iasa in evidenta pe alb. Textul
+   e alb, butonul principal alb, iar telefonul pe sticla fumurie. */
+
+.final {
+  padding: 8px var(--rama) 64px;
+  background: #fff;
+}
+
+.chenar {
+  position: relative;
+}
+
+/* cardul, pe grafit: dungi de lumina in diagonala, ca metalul periat, plus doua reflexii moi */
+.card {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  padding: 56px 22px 52px;
+  border-radius: var(--rama-raza);
+  background:
+    radial-gradient(55% 75% at 20% 0%, rgba(255, 255, 255, 0.22), transparent 60%),
+    radial-gradient(45% 60% at 90% 100%, rgba(255, 255, 255, 0.12), transparent 60%),
+    linear-gradient(115deg, #121418 0%, #3b4049 18%, #16191d 34%, #4c535e 50%, #1a1d22 66%, #353a42 82%, #0f1114 100%);
+  background-color: #1a1d22;
+  box-shadow:
+    0 0 0 1px rgba(11, 15, 20, 0.08),
+    0 1px 3px rgba(11, 15, 20, 0.05),
+    0 18px 36px -28px rgba(11, 15, 20, 0.22);
+  text-align: center;
+}
+
+/* granulatia, mai fina si mai deasa decat la servicii, ca metalul sa para real */
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* eticheta de deasupra titlului, o pastila de sticla fumurie */
+.eticheta {
+  padding: 6px 14px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  color: #d6dae0;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.titlu {
+  max-width: 900px;
+  margin-top: 22px;
+  color: #fff;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: clamp(30px, 7.4vw, 40px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 34em;
+  margin-top: 16px;
+  color: #b9bfc8;
+  font-size: 16px;
+  line-height: 1.6;
+  text-wrap: balance;
+}
+
+/* butoanele: alb plin si sticla fumurie (pe grafit, negrul butoanelor s-ar pierde) */
+.actiuni {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.primar,
+.secundar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.primar {
+  background: #fff;
+  color: #0b0f14;
+}
+
+.primar svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.2s ease;
+}
+
+.secundar {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+}
+
+.secundar svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mesaj {
+  margin-top: 18px;
+  color: #b9bfc8;
+  font-size: 14.5px;
+}
+
+.mesaj a {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.4);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+@media (hover: hover) {
+  .primar:hover {
+    background: #e6e8eb;
+  }
+
+  .secundar:hover {
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .primar:hover svg {
+    transform: translateX(2px);
+  }
+
+  .mesaj a:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primar svg {
+    transition: none;
+  }
+}
+
+/* pe telefoanele inguste, butoanele unul sub altul, pe toata latimea */
+@media (max-width: 479.98px) {
+  .actiuni {
+    flex-direction: column;
+    align-self: stretch;
+  }
+}
+
+/* ─── Marimi ─── */
+
+@media (min-width: 640px) {
+  .card {
+    padding: 72px 40px 64px;
+  }
+
+  .titlu {
+    font-size: 44px;
+  }
+
+  .lead {
+    font-size: 17px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .final {
+    padding: 12px var(--rama) 104px;
+  }
+
+
+  .card {
+    padding: 104px 56px 96px;
+    box-shadow:
+      0 0 0 1px rgba(11, 15, 20, 0.08),
+      0 1px 3px rgba(11, 15, 20, 0.05);
+  }
+
+  .titlu {
+    font-size: 52px;
+  }
+
+  .lead {
+    font-size: 18px;
+  }
+
+  .actiuni {
+    margin-top: 40px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .titlu {
+    font-size: 60px;
+  }
+}

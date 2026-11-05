@@ -1,14 +1,25 @@
 import type { Metadata } from 'next';
 import { BreadcrumbJsonLd } from '@/components/seo/JsonLd';
-import { PortfolioGrid } from '@/components/portofoliu/PortfolioGrid';
-import { Badge } from '@/components/ui/badge';
-import { Briefcase, ChevronRight, Info } from 'lucide-react';
+import Link from 'next/link';
+import { Final } from '@/components/sections/final/Final';
+import { FisaProiect } from '@/components/sections/portofoliu/FisaProiect';
+import fisa from '@/components/sections/portofoliu/FisaProiect.module.css';
+import { ListaProiecte } from '@/components/sections/portofoliu/ListaProiecte';
+import styles from '@/components/sections/portofoliu/Portofoliu.module.css';
 import { PORTFOLIO_PROJECTS } from '@/lib/portfolio-data';
+
+/* Pagina de portofoliu, in stilul primei pagini (2026-10-29): titlu negru centrat si toate proiectele,
+   fiecare cu fisa lui (FisaProiect, modelul A ales de proprietar pe 2026-11-05: captura care coboara la
+   trecerea mouse-ului, tipul, domeniul, ce include, integrarile si limbile), apoi sectiunea finala de pe
+   prima pagina. */
+
+// latimea la care se deseneaza captura (vezi .grila si .card in FisaProiect.module.css)
+const LATIME = '(min-width: 1024px) calc(28vw - 40px), (min-width: 640px) calc(42vw - 34px), calc(84vw - 34px)';
 
 export const metadata: Metadata = {
   title: 'Portofoliu - 200+ Proiecte Web Livrate',
   description:
-    'Descopera proiectele realizate de echipa Inovex: magazine online, website-uri de prezentare, platforme SaaS si aplicatii web pentru clienti din toata Romania. 200+ proiecte livrate cu succes.',
+    'Descoperă proiectele realizate de echipa Inovex: magazine online, website-uri de prezentare, platforme SaaS și aplicații web pentru clienți din toată România. 200+ proiecte livrate cu succes.',
   keywords: ['portofoliu web', 'proiecte magazine online', 'website realizat Romania', 'exemple website'],
   alternates: { canonical: 'https://inovex.ro/portofoliu' },
   openGraph: {
@@ -43,7 +54,7 @@ export default function PortofoliuPage(): React.ReactElement {
             '@context': 'https://schema.org',
             '@type': 'ItemList',
             name: 'Portofoliu Inovex',
-            numberOfItems: 25,
+            numberOfItems: PORTFOLIO_PROJECTS.length,
             itemListElement: PORTFOLIO_PROJECTS.slice(0, 10).map((p, i) => ({
               '@type': 'ListItem',
               position: i + 1,
@@ -54,63 +65,34 @@ export default function PortofoliuPage(): React.ReactElement {
         }}
       />
 
-      {/* HERO */}
-      <section className="bg-white border-b border-[#E8ECF0] pt-[120px] pb-16 max-md:pt-20 max-md:pb-12">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Breadcrumb */}
-          <nav aria-label="breadcrumb" className="flex items-center gap-1 text-sm mb-8">
-            <a href="/" className="text-[#4A5568] hover:text-[#0D1117] transition-colors">
-              Acasa
-            </a>
-            <ChevronRight size={14} className="text-[#8A94A6]" />
-            <span className="text-[#0D1117] font-semibold">Portofoliu</span>
+      <section className={`${styles.portofoliu} ${styles.pagina}`} aria-labelledby="portofoliu-titlu">
+        <div className={styles.cap}>
+          <nav aria-label="Navigare secundară" className={styles.cale}>
+            <Link href="/">Acasă</Link>
+            <span aria-hidden>/</span>
+            <span aria-current="page">Portofoliu</span>
           </nav>
-
-          <div className="max-w-[640px]">
-            <Badge variant="outline" className="mb-5 inline-flex items-center gap-1.5">
-              <Briefcase size={13} />
-              Portofoliu
-            </Badge>
-            <h1
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontWeight: 600,
-                fontSize: 'clamp(2.1rem, 3.6vw, 3.2rem)',
-                lineHeight: 1.08,
-                letterSpacing: '-0.022em',
-                color: '#0D1117',
-              }}
-              className="mb-4"
-            >
-              Peste 200 de proiecte{' '}
-              <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>realizate cu succes</span>
-            </h1>
-            <p
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '1.0625rem',
-                lineHeight: 1.75,
-                color: '#4A5568',
-              }}
-              className="mb-6"
-            >
-              Am ajutat companii din România și din afara țării să își dezvolte prezența online și să transforme vizitatorii în clienți, prin platforme gândite strategic pentru creștere.
-            </p>
-            {/* Disclaimer */}
-            <div className="inline-flex items-start gap-2.5 bg-[#EAF5FF] border border-[#C8E6F8] rounded-lg px-4 py-3 max-w-[520px]">
-              <Info size={15} className="text-[#2B8FCC] shrink-0 mt-0.5" />
-              <p className="text-[13px] text-[#2B8FCC] leading-relaxed">
-                Mai jos sunt prezentate <strong>cateva proiecte reprezentative</strong> din diferite
-                domenii. Portofoliul complet include peste 200 de lucrari; contacteaza-ne pentru a
-                vedea exemple relevante pentru industria ta.
-              </p>
-            </div>
-          </div>
+          <h1 id="portofoliu-titlu" className={styles.titlu}>
+            Peste 200 de proiecte realizate cu succes
+          </h1>
+          <p className={styles.lead}>
+            Am ajutat companii din România și din afara țării să își dezvolte prezența online și să transforme
+            vizitatorii în clienți, prin platforme gândite strategic pentru creștere.
+          </p>
+          <p className={styles.nota}>
+            Mai jos sunt câteva proiecte reprezentative din domenii diferite. Pentru exemple din industria ta,{' '}
+            <Link href="/contact">scrie-ne</Link>.
+          </p>
         </div>
+
+        <ListaProiecte className={fisa.grila}>
+          {PORTFOLIO_PROJECTS.map((p, k) => (
+            <FisaProiect key={p.id} p={p} sizes={LATIME} priority={k < 3} />
+          ))}
+        </ListaProiecte>
       </section>
 
-      {/* GRID with filters */}
-      <PortfolioGrid />
+      <Final />
     </>
   );
 }

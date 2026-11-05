@@ -44,7 +44,7 @@ export default function PentruCineAi() {
             }}
           >
             Automatizarile AI functioneaza{' '}
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>daca...</span>
+            <span style={{ color: '#2B8FCC' }}>daca...</span>
           </h2>
           <p style={{ color: '#4A5568', fontSize: '0.9375rem', lineHeight: 1.7 }}>
             Nu fiecare afacere are nevoie de AI azi. Iti spunem sincer cand are sens si cand inca nu.

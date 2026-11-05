@@ -1,0 +1,101 @@
+/* Ce au in comun animatiile din casutele de servicii: scena, resetarile ei si bara ferestrei de
+   browser. Restul interfetei fiecarei animatii e in modulul ei (AnimatieMagazin, AnimatiePrezentare,
+   AnimatieAplicatii, AnimatieCrm). */
+
+.animatie {
+  position: absolute;
+  inset: 0;
+}
+
+/* Scena de 1920x1080, scalata si asezata din cod. Fara fundal: in spate se vede fundalul casutei.
+   Fonturile ca in originale: Inter pentru titluri, Manrope pentru rest. */
+.scena {
+  --display: var(--font-body), system-ui, sans-serif;
+  --sans: var(--font-display), system-ui, sans-serif;
+  --ground: #fff;
+  --main: #2b95d4;
+  --second: #202125;
+  --accent: #e9f4fb;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: 0 0;
+  color: var(--second);
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* originalele nu aveau resetarile site-ului: casete fara padding inclus, imagini fara limita de
+   latime, iconite asezate pe rand cu textul */
+.scena :global(*) {
+  box-sizing: content-box;
+}
+
+.scena :global(img) {
+  max-width: none;
+}
+
+.scena :global(svg) {
+  display: inline;
+  vertical-align: baseline;
+}
+
+.scena :global(.inx-scene) {
+  position: absolute;
+  inset: 0;
+}
+
+.scena :global(.cam) {
+  position: absolute;
+  inset: 0;
+  transform-origin: 960px 540px;
+}
+
+.scena :global(.pc) {
+  position: absolute;
+  box-sizing: border-box;
+}
+
+.scena :global(.bar) {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 54px;
+  padding: 0 22px;
+  background: color-mix(in srgb, var(--ground) 95%, var(--second));
+}
+
+.scena :global(.dot) {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ground) 80%, var(--second));
+}
+
+.scena :global(.url) {
+  box-sizing: border-box;
+  width: 420px;
+  height: 32px;
+  margin-left: 24px;
+  padding: 0 18px;
+  border-radius: 16px;
+  background: var(--ground);
+  color: color-mix(in srgb, var(--second) 75%, var(--ground));
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 32px;
+}

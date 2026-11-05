@@ -24,7 +24,7 @@ export default function CTACrm() {
           className="mb-5"
         >
           Construim sistemul care{' '}
-          <span style={{ fontStyle: 'italic', color: '#4AADE8' }}>organizeaza tot</span>
+          <span style={{ color: '#4AADE8' }}>organizeaza tot</span>
           {' '}in afacerea ta
         </h2>
 

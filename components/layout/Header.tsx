@@ -1,337 +1,261 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { trackConversions } from '@/lib/gtm';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Phone, Menu, X, ShoppingCart, Globe, Code2, Database, Smartphone, Zap, ChevronDown, FileSearch, Clapperboard,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { ChevronDown, Menu, Phone, X } from 'lucide-react';
+import { trackConversions } from '@/lib/gtm';
+import { DEZVOLTARE_WEB, SOLUTII_COMPLETE, TELEFON } from './meniu-servicii/date';
+import { MeniuServicii } from './meniu-servicii/MeniuServicii';
+import styles from './Header.module.css';
 
-const SERVICII_COL1 = [
-  {
-    href: '/servicii/magazine-online',
-    icon: ShoppingCart,
-    titlu: 'Magazine Online',
-    descriere: 'WooCommerce, Shopify, soluții custom care vând',
-  },
-  {
-    href: '/servicii/website-de-prezentare',
-    icon: Globe,
-    titlu: 'Website de Prezentare',
-    descriere: 'Design modern, încărcare rapidă, construit pentru conversii',
-  },
-  {
-    href: '/servicii/aplicatii-web-saas',
-    icon: Code2,
-    titlu: 'Aplicații Web & SaaS',
-    descriere: 'Platforme scalabile, dezvoltate pentru creștere reală',
-  },
+// Meniul mare de servicii (meniu-servicii/MeniuServicii) e ascuns pentru moment, la cererea
+// proprietarului (2026-10-29): „Servicii” duce la sectiunea de servicii de pe prima pagina. Cu `true`
+// revine meniul mare pe desktop si lista pliabila pe telefon.
+const MENIU_SERVICII = false;
+const SERVICII_ANCORA = '/#servicii';
+
+// „Învață gratuit” e scos din meniu pentru moment (2026-10-29); pagina ramane.
+const PAGINI: { href: string; label: string; nou?: boolean }[] = [
+  { href: '/servicii/video-motion-design', label: 'Motion Design', nou: true },
+  { href: '/portofoliu', label: 'Portofoliu' },
+  { href: '/marketplace', label: 'Marketplace' },
+  { href: '/contact', label: 'Contact' },
 ];
 
-const SERVICII_COL2 = [
-  {
-    href: '/servicii/cms-crm-erp',
-    icon: Database,
-    titlu: 'CMS, CRM & ERP',
-    descriere: 'Sisteme personalizate pentru automatizare și control total',
-  },
-  {
-    href: '/servicii/aplicatii-mobile',
-    icon: Smartphone,
-    titlu: 'Aplicații Mobile',
-    descriere: 'iOS și Android, experiență fluidă și performanță ridicată',
-  },
-  {
-    href: '/servicii/automatizari-ai',
-    icon: Zap,
-    titlu: 'Automatizari AI',
-    descriere: 'Reducem costurile și munca manuală prin automatizări inteligente',
-  },
-  {
-    href: '/servicii/video-motion-design',
-    icon: Clapperboard,
-    titlu: 'Video Motion Design',
-    descriere: 'Clipuri promo, trailere și reclame animate, la preț fix',
-  },
-  {
-    href: 'https://www.novin.ro',
-    icon: FileSearch,
-    titlu: 'Audit Website Gratuit',
-    descriere: 'Analiza gratuita a site-ului tau: viteza, SEO, securitate',
-  },
-];
+// eticheta „Nou” de langa un link din meniu
+function Nou() {
+  return <span className={styles.nou}>Nou</span>;
+}
+
+const esteActiv = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);
+
+// Antetul se desprinde de marginea de sus de indata ce pagina s-a derulat putin. Citit din
+// fereastra si la incarcare, deci si o pagina redeschisa la jumatate porneste cu bara desprinsa.
+const abonareDerulare = (anunta: () => void) => {
+  window.addEventListener('scroll', anunta, { passive: true });
+  return () => window.removeEventListener('scroll', anunta);
+};
+const esteDerulat = () => window.scrollY > 16;
+const peServer = () => false;
 
 export function Header() {
-  const [scrolled, setScrolled]     = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [serviciiOpen, setServiciiOpen] = useState(false);
-  const pathname   = usePathname();
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const closeTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pathname = usePathname();
+  const derulat = useSyncExternalStore(abonareDerulare, esteDerulat, peServer);
+  // Meniurile tin minte pagina pe care au fost deschise: dupa o navigare se inchid singure.
+  const [serviciiPe, setServiciiPe] = useState<string | null>(null);
+  const [meniuPe, setMeniuPe] = useState<string | null>(null);
+  const serviciiOpen = serviciiPe === pathname;
+  const meniuOpen = meniuPe === pathname;
+  // cu meniul de pe telefon deschis bara e desprinsa si sus, ca sa stea deasupra cardului cu meniul
+  const plutitor = derulat || meniuOpen;
+  const serviciiRef = useRef<HTMLDivElement>(null);
+  const meniuButonRef = useRef<HTMLButtonElement>(null);
+  const inchidereServicii = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Escape inchide meniurile; un clic in afara inchide lista de servicii.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    if (!serviciiOpen && !meniuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (meniuOpen) meniuButonRef.current?.focus();
+      setServiciiPe(null);
+      setMeniuPe(null);
+    };
+    const onPointer = (e: PointerEvent) => {
+      if (serviciiRef.current && !serviciiRef.current.contains(e.target as Node)) setServiciiPe(null);
+    };
+    window.addEventListener('keydown', onKey);
+    if (serviciiOpen) document.addEventListener('pointerdown', onPointer);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.removeEventListener('pointerdown', onPointer);
+    };
+  }, [serviciiOpen, meniuOpen]);
 
+  // Cat e deschis meniul de pe telefon, pagina de dedesubt nu se deruleaza.
   useEffect(() => {
-    setMobileOpen(false);
-    setServiciiOpen(false);
-  }, [pathname]);
+    if (!meniuOpen) return;
+    const html = document.documentElement;
+    html.style.overflow = 'hidden';
+    return () => {
+      html.style.overflow = '';
+    };
+  }, [meniuOpen]);
 
-  /* Hover helpers with small close-delay so cursor can reach dropdown */
-  const openDropdown  = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-    setServiciiOpen(true);
+  const deschideServicii = () => {
+    if (inchidereServicii.current) clearTimeout(inchidereServicii.current);
+    setServiciiPe(pathname);
   };
-  const closeDropdown = () => {
-    closeTimer.current = setTimeout(() => setServiciiOpen(false), 120);
+  const inchideServicii = () => {
+    inchidereServicii.current = setTimeout(() => setServiciiPe(null), 120);
   };
 
   return (
     <>
-      <header
-        className={cn(
-          'fixed top-0 left-0 right-0 z-50 transition-all duration-200',
-          scrolled ? 'bg-white/90 backdrop-blur-md border-b border-gray-200/70 shadow-sm' : 'bg-white'
-        )}
-      >
-        <div className="max-w-7xl mx-auto px-5 lg:px-8">
-          <div className="flex items-center justify-between h-[62px] lg:h-[66px]">
+      {/* fundalul intunecat din spatele meniului de pe telefon; un clic pe el inchide meniul */}
+      {meniuOpen && <div className={styles.fundal} onClick={() => setMeniuPe(null)} aria-hidden />}
+      {/* sub meniul de servicii pagina se estompeaza putin */}
+      {serviciiOpen && <div className={styles.fundalServicii} aria-hidden />}
 
-            {/* Logo */}
-            <Link href="/" className="flex-shrink-0" aria-label="Inovex">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/imagini/logo_negru.png"
-                alt="Inovex"
-                style={{ height: 40, width: 'auto', display: 'block' }}
-              />
-            </Link>
+      <header className={styles.antet} data-plutitor={plutitor} data-meniu={meniuOpen} data-servicii={serviciiOpen}>
+        <div className={styles.bara}>
+          <Link href="/" aria-label="Inovex, prima pagină" className={styles.logo}>
+            {/* logo decupat pe litere, la 3x: mic (5 KB), se incarca direct, fara optimizatorul de imagini */}
+            <Image src="/imagini/logo-inovex-antet.png" alt="Inovex" width={95} height={22} unoptimized loading="eager" />
+          </Link>
 
-            {/* Nav desktop */}
-            <nav className="hidden lg:flex items-center gap-0.5" aria-label="Navigare principală">
-
-              {/* Servicii cu dropdown la hover */}
-              <div
-                className="relative"
-                ref={dropdownRef}
-                onMouseEnter={openDropdown}
-                onMouseLeave={closeDropdown}
-              >
-                <button
-                  className={cn(
-                    'flex items-center gap-1 px-3.5 py-2 rounded-lg text-[14px] font-medium transition-colors',
-                    pathname.startsWith('/servicii')
-                      ? 'text-gray-900 bg-gray-100'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                  )}
-                  aria-expanded={serviciiOpen}
-                >
-                  Servicii
-                  <ChevronDown
-                    size={14}
-                    className={cn('text-gray-400 transition-transform duration-200', serviciiOpen && 'rotate-180')}
-                  />
-                </button>
-
-                <AnimatePresence>
-                  {serviciiOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -6, scale: 0.98 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -6, scale: 0.98 }}
-                      transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                      className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[540px] bg-white rounded-2xl border border-gray-200/80 overflow-hidden"
-                      style={{ boxShadow: '0 4px 6px -1px rgba(0,0,0,0.04), 0 20px 60px -10px rgba(0,0,0,0.12), 0 0 0 1px rgba(43,143,204,0.06)' }}
-                    >
-                      <div className="grid grid-cols-2">
-                        <div className="p-3 border-r border-gray-100">
-                          <p className="px-3 py-2 text-[11px] font-semibold uppercase tracking-widest text-gray-400">
-                            Dezvoltare Web
-                          </p>
-                          {SERVICII_COL1.map((s) => (
-                            <DropdownItem key={s.href} {...s} />
-                          ))}
-                        </div>
-                        <div className="p-3">
-                          <p className="px-3 py-2 text-[11px] font-semibold uppercase tracking-widest text-gray-400">
-                            Soluții Complete
-                          </p>
-                          {SERVICII_COL2.map((s) => (
-                            <DropdownItem key={s.href} {...s} />
-                          ))}
-                        </div>
-                      </div>
-                      <div className="border-t border-gray-100 px-5 py-3 bg-gray-50 flex items-center justify-between">
-                        <span className="text-[12px] text-gray-500">Sună-ne acum pentru o ofertă personalizată</span>
-                        <Link href="/servicii" className="text-[12px] text-blue-600 font-semibold hover:text-blue-700">
-                          Vezi toate
-                        </Link>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Linkuri simple */}
-              {[
-                { href: '/portofoliu',     label: 'Portofoliu'     },
-                { href: '/marketplace',    label: 'Marketplace'    },
-                { href: '/contact',        label: 'Contact'        },
-                { href: '/invata-gratuit', label: 'Invata Gratuit' },
-              ].map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    'px-3.5 py-2 rounded-lg text-[14px] font-medium transition-colors',
-                    pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href + '/'))
-                      ? 'text-gray-900 bg-gray-100'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                  )}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-
-            {/* Dreapta desktop */}
-            <div className="hidden lg:flex items-center gap-2">
-              <a
-                href="tel:+40750456096"
-                onClick={() => trackConversions.telefon()}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[14px] font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
-              >
-                <Phone size={14} className="text-gray-400" />
-                0750 456 096
-              </a>
-              <Button href="/oferta" size="sm" className="btn-shimmer border-0 shadow-sm">
-                Solicită Oferta
-              </Button>
-            </div>
-
-            {/* Hamburger mobile */}
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden p-2 -mr-1 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors"
-              aria-label={mobileOpen ? 'Inchide meniu' : 'Deschide meniu'}
+          <nav aria-label="Navigare principală" className={styles.nav}>
+            {!MENIU_SERVICII && (
+              <Link href={SERVICII_ANCORA} className={styles.navLink}>
+                Servicii
+              </Link>
+            )}
+            {MENIU_SERVICII && (
+            <div
+              ref={serviciiRef}
+              className={styles.servicii}
+              onMouseEnter={deschideServicii}
+              onMouseLeave={inchideServicii}
+              onBlur={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setServiciiPe(null);
+              }}
             >
-              <AnimatePresence mode="wait" initial={false}>
-                {mobileOpen ? (
-                  <motion.span key="x" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.1 }}>
-                    <X size={20} />
-                  </motion.span>
-                ) : (
-                  <motion.span key="menu" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.1 }}>
-                    <Menu size={20} />
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              <button
+                type="button"
+                aria-expanded={serviciiOpen}
+                aria-controls="meniu-servicii"
+                // de la tastatura (detail 0) butonul deschide si inchide; cu mouse-ul lista e deja deschisa la hover
+                onClick={(e) => (e.detail === 0 && serviciiOpen ? setServiciiPe(null) : deschideServicii())}
+                className={styles.navLink}
+                data-activ={pathname.startsWith('/servicii')}
+              >
+                Servicii
+                <ChevronDown aria-hidden className={styles.chevron} />
+              </button>
+              {serviciiOpen && (
+                <div id="meniu-servicii" className={styles.panouPoz}>
+                  <MeniuServicii onNavigate={() => setServiciiPe(null)} plutitor={plutitor} />
+                </div>
+              )}
+            </div>
+            )}
+
+            {PAGINI.map((pagina) => {
+              const activ = esteActiv(pathname, pagina.href);
+              return (
+                <Link
+                  key={pagina.href}
+                  href={pagina.href}
+                  aria-current={activ ? 'page' : undefined}
+                  className={styles.navLink}
+                  data-activ={activ}
+                >
+                  {pagina.label}
+                  {pagina.nou && <Nou />}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className={styles.actiuni}>
+            <a href={TELEFON.href} onClick={() => trackConversions.telefon()} className={styles.telefon}>
+              <Phone aria-hidden />
+              {TELEFON.text}
+            </a>
+            <Link href="/oferta" className={styles.cta}>
+              Solicită ofertă
+            </Link>
+            <button
+              ref={meniuButonRef}
+              type="button"
+              onClick={() => setMeniuPe(meniuOpen ? null : pathname)}
+              aria-expanded={meniuOpen}
+              aria-controls="meniu-mobil"
+              aria-label={meniuOpen ? 'Închide meniul' : 'Deschide meniul'}
+              className={styles.meniuBtn}
+            >
+              {meniuOpen ? <X aria-hidden /> : <Menu aria-hidden />}
             </button>
           </div>
         </div>
+
+        {meniuOpen && <MeniuMobil pathname={pathname} onNavigate={() => setMeniuPe(null)} />}
       </header>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="fixed inset-0 bg-black/20 z-40 lg:hidden"
-              onClick={() => setMobileOpen(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="fixed top-[62px] left-0 right-0 z-50 lg:hidden bg-white border-b border-gray-200 shadow-lg max-h-[80vh] overflow-y-auto"
-            >
-              <nav className="max-w-7xl mx-auto px-5 py-4 space-y-0.5">
-                <div className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-gray-400">Servicii</div>
-                {[...SERVICII_COL1, ...SERVICII_COL2].map((s) => (
-                  <Link
-                    key={s.href}
-                    href={s.href}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-                  >
-                    <span className="w-6 h-6 rounded-md bg-gray-100 flex items-center justify-center flex-shrink-0">
-                      <s.icon size={13} className="text-gray-500" />
-                    </span>
-                    {s.titlu}
-                  </Link>
-                ))}
-
-                <div className="pt-2 border-t border-gray-100 space-y-0.5">
-                  {[
-                    { href: '/portofoliu',     label: 'Portofoliu'     },
-                    { href: '/marketplace',    label: 'Marketplace'    },
-                    { href: '/contact',        label: 'Contact'        },
-                    { href: '/invata-gratuit', label: 'Invata Gratuit' },
-                  ].map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-
-                <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
-                  <a href="tel:+40750456096" className="flex items-center gap-2 text-sm font-medium text-gray-600">
-                    <Phone size={15} className="text-gray-400" />
-                    0750 456 096
-                  </a>
-                  <Button href="/oferta" size="sm" className="btn-shimmer border-0 shadow-sm">
-                    Solicită Oferta
-                  </Button>
-                </div>
-              </nav>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
     </>
   );
 }
 
-function DropdownItem({
-  href, icon: Icon, titlu, descriere, badge,
-}: {
-  href: string;
-  icon: React.ElementType;
-  titlu: string;
-  descriere: string;
-  badge?: string;
-}) {
+function MeniuMobil({ pathname, onNavigate }: { pathname: string; onNavigate: () => void }) {
+  // pe o pagina de serviciu lista de servicii porneste deschisa
+  const [serviciiDeschise, setServiciiDeschise] = useState(pathname.startsWith('/servicii'));
+
   return (
-    <Link
-      href={href}
-      className="flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors group"
-    >
-      <span className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-lg border border-gray-200 bg-white flex items-center justify-center group-hover:border-blue-200 group-hover:bg-blue-50 transition-colors">
-        <Icon size={15} className="text-gray-500 group-hover:text-blue-600 transition-colors" />
-      </span>
-      <span>
-        <span className="flex items-center gap-2 text-[13.5px] font-semibold text-gray-900">
-          {titlu}
-          {badge && (
-            <Badge className="text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded-md">
-              {badge}
-            </Badge>
-          )}
-        </span>
-        <span className="block text-[12px] text-gray-500 mt-0.5">{descriere}</span>
-      </span>
-    </Link>
+    <div id="meniu-mobil" className={styles.mobil}>
+      <nav aria-label="Navigare principală">
+        {!MENIU_SERVICII && (
+          <Link href={SERVICII_ANCORA} onClick={onNavigate} className={styles.mobilRand}>
+            Servicii
+          </Link>
+        )}
+        {MENIU_SERVICII && (
+        <button
+          type="button"
+          onClick={() => setServiciiDeschise(!serviciiDeschise)}
+          aria-expanded={serviciiDeschise}
+          aria-controls="mobil-servicii"
+          className={styles.mobilRand}
+        >
+          Servicii
+          <ChevronDown aria-hidden className={styles.chevron} />
+        </button>
+        )}
+        {MENIU_SERVICII && serviciiDeschise && (
+          <ul id="mobil-servicii" className={styles.mobilServicii}>
+            {[...DEZVOLTARE_WEB, ...SOLUTII_COMPLETE].map((s) => (
+              <li key={s.href}>
+                <Link
+                  href={s.href}
+                  onClick={onNavigate}
+                  aria-current={pathname === s.href ? 'page' : undefined}
+                  className={styles.mobilServiciu}
+                >
+                  {s.titlu}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <ul>
+          {PAGINI.map((pagina) => (
+            <li key={pagina.href}>
+              <Link
+                href={pagina.href}
+                onClick={onNavigate}
+                aria-current={esteActiv(pathname, pagina.href) ? 'page' : undefined}
+                className={styles.mobilRand}
+              >
+                <span className={styles.mobilEticheta}>
+                  {pagina.label}
+                  {pagina.nou && <Nou />}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <div className={styles.mobilActiuni}>
+        <Link href="/oferta" onClick={onNavigate} className={styles.mobilCta}>
+          Solicită ofertă
+        </Link>
+        <a href={TELEFON.href} onClick={() => trackConversions.telefon()} className={styles.mobilTelefon}>
+          <Phone aria-hidden />
+          Sună: {TELEFON.text}
+        </a>
+      </div>
+    </div>
   );
 }

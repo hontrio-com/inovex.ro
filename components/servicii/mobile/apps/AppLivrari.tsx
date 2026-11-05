@@ -144,7 +144,7 @@ const DeliveryDetailsScreen: React.FC<{ onNavigate: (i: number) => void }> = ({ 
       {/* Confirmation code */}
       <div style={{ background: '#F0FDF4', border: '1.5px solid #BBF7D0', borderRadius: 10, padding: '10px', marginTop: 12, marginBottom: 14, textAlign: 'center' }}>
         <div style={{ fontSize: 10, color: '#8A94A6', marginBottom: 4 }}>Cod confirmare</div>
-        <div style={{ fontSize: 24, fontWeight: 800, color: '#10B981', fontFamily: 'monospace' }}>4821</div>
+        <div style={{ fontSize: 24, fontWeight: 800, color: '#10B981', fontFamily: 'var(--font-body)', fontVariantNumeric: 'tabular-nums' }}>4821</div>
       </div>
 
       <div style={{ display: 'flex', gap: 8 }}>

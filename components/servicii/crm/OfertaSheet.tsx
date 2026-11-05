@@ -88,7 +88,7 @@ export default function OfertaSheet({ oferta, open, onClose }: OfertaSheetProps)
             <div>
               <p
                 className="text-[13px] font-bold text-[#2B8FCC] mb-1 tracking-wide"
-                style={{ fontFamily: 'monospace' }}
+                style={{ fontFamily: 'var(--font-body)', fontVariantNumeric: 'tabular-nums' }}
               >
                 {oferta.nr}
               </p>

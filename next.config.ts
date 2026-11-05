@@ -20,6 +20,50 @@ const nextConfig: NextConfig = {
   },
 
   async headers() {
+    // Cache-ul lung doar in productie. In `next dev` fisierele isi pastreaza numele cand li se
+    // schimba continutul, iar un cache „immutable” ar lasa browserul cu versiunea veche (de ex. CSS).
+    const cacheLung =
+      process.env.NODE_ENV === 'production'
+        ? [
+            {
+              source: '/imagini/:path*',
+              headers: [
+                {
+                  key: 'Cache-Control',
+                  value: 'public, max-age=31536000, immutable',
+                },
+              ],
+            },
+            {
+              source: '/images/:path*',
+              headers: [
+                {
+                  key: 'Cache-Control',
+                  value: 'public, max-age=31536000, immutable',
+                },
+              ],
+            },
+            {
+              source: '/_next/static/:path*',
+              headers: [
+                {
+                  key: 'Cache-Control',
+                  value: 'public, max-age=31536000, immutable',
+                },
+              ],
+            },
+            {
+              source: '/_next/image/:path*',
+              headers: [
+                {
+                  key: 'Cache-Control',
+                  value: 'public, max-age=86400, stale-while-revalidate=604800',
+                },
+              ],
+            },
+          ]
+        : [];
+
     return [
       {
         source: '/:path*',
@@ -30,42 +74,7 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      {
-        source: '/imagini/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/images/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/_next/static/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/_next/image/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=86400, stale-while-revalidate=604800',
-          },
-        ],
-      },
+      ...cacheLung,
     ];
   },
 

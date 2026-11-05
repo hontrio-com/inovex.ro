@@ -1,14 +1,19 @@
 import type { Metadata } from 'next';
-import { CheckCircle, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { AlertCircle, ArrowRight, CheckCircle2 } from 'lucide-react';
 import MotionPixelEvent from '@/components/servicii/motion/MotionPixelEvent';
 import { getStripe } from '@/lib/stripe';
 import { motionLabel, formatLei, MOTION_PATH } from '@/lib/motion-design';
+import styles from './multumim.module.css';
 
 export const metadata: Metadata = {
-  title: 'Comanda confirmata - Video Motion Design',
+  title: 'Comandă confirmată - Video Motion Design',
   robots: { index: false, follow: false },
 };
+
+/* Pagina de dupa plata (Stripe), in stilul redesign-ului (2026-10-29): un chenar alb centrat, cu iconita
+   in casuta gri, titlul, comanda si totalul pe randuri despartite de linii fine si butoanele negru + gri.
+   Verificarea platii si evenimentul Purchase sunt cele dinainte. */
 
 async function getPaidOrder(sessionId: string | undefined) {
   const stripe = getStripe();
@@ -32,18 +37,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
   const order = await getPaidOrder(session_id);
 
   return (
-    <section className="bg-white pt-[160px] pb-[120px] max-md:pt-28 max-md:pb-20">
-      <div className="max-w-xl mx-auto px-4 sm:px-6 text-center">
-        <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6 ${order ? 'bg-[#F0FDF4]' : 'bg-[#FEF3C7]'}`}>
-          {order ? <CheckCircle size={28} className="text-[#059669]" /> : <AlertCircle size={28} className="text-[#D97706]" />}
-        </div>
+    <section className={styles.pagina}>
+      <div className={styles.card}>
+        <span className={styles.icon} data-stare={order ? 'platit' : 'neconfirmat'}>
+          {order ? <CheckCircle2 aria-hidden /> : <AlertCircle aria-hidden />}
+        </span>
 
-        <h1
-          style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(1.8rem,3vw,2.5rem)', lineHeight: 1.12, letterSpacing: '-0.022em', color: '#0D1117' }}
-          className="mb-4"
-        >
-          {order ? 'Plata a fost confirmata. Multumim!' : 'Nu am putut confirma plata'}
-        </h1>
+        <h1 className={styles.titlu}>{order ? 'Plata a fost confirmată. Mulțumim!' : 'Nu am putut confirma plata'}</h1>
 
         {order ? (
           <>
@@ -53,32 +53,58 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
               eventId={order.sessionId}
               onceKey={order.sessionId}
             />
-            <p className="text-[#4A5568] text-[1.0625rem] leading-relaxed mb-8">
-              Am primit brief-ul si materialele tale si ne apucam de videoclip. Daca avem nevoie de lamuriri, te contactam in maximum 24 de ore.
-              {order.email && <> Confirmarea a fost trimisa la <strong className="text-[#0D1117]">{order.email}</strong>.</>}
+            <p className={styles.text}>
+              Am primit brief-ul și materialele tale și ne apucăm de videoclip. Dacă avem nevoie de lămuriri, te
+              contactăm în maximum 24 de ore.
+              {order.email && (
+                <>
+                  {' '}
+                  Confirmarea a fost trimisă la <strong>{order.email}</strong>.
+                </>
+              )}
             </p>
-            <dl className="rounded-2xl border border-[#E8ECF0] bg-[#F8FAFB] text-left divide-y divide-[#E8ECF0] mb-8">
+
+            <dl className={styles.detalii}>
               {order.pachet && (
-                <div className="flex justify-between gap-4 px-5 py-3.5">
-                  <dt className="text-[14px] text-[#4A5568]">Comanda</dt>
-                  <dd className="text-[14px] font-semibold text-[#0D1117]">{order.pachet}</dd>
+                <div>
+                  <dt>Comanda</dt>
+                  <dd>{order.pachet}</dd>
                 </div>
               )}
-              <div className="flex justify-between gap-4 px-5 py-3.5">
-                <dt className="text-[14px] text-[#4A5568]">Total platit</dt>
-                <dd className="text-[14px] font-semibold text-[#0D1117]">{formatLei(order.total)}</dd>
+              <div>
+                <dt>Total plătit</dt>
+                <dd className={styles.total}>{formatLei(order.total)}</dd>
+              </div>
+              <div>
+                <dt>Livrare</dt>
+                <dd>În maximum 48 de ore</dd>
               </div>
             </dl>
-            <Button href="/" size="lg" variant="outline">Inapoi la prima pagina</Button>
+
+            <div className={styles.actiuni}>
+              <Link href="/" className={styles.primar}>
+                Înapoi la prima pagină
+                <ArrowRight aria-hidden />
+              </Link>
+              <Link href="/portofoliu" className={styles.secundar}>
+                Vezi portofoliul
+              </Link>
+            </div>
           </>
         ) : (
           <>
-            <p className="text-[#4A5568] text-[1.0625rem] leading-relaxed mb-8">
-              Daca ai finalizat plata, vei primi confirmarea pe email in cateva minute. Daca nu, poti relua comanda sau ne poti scrie direct.
+            <p className={styles.text}>
+              Dacă ai finalizat plata, vei primi confirmarea pe email în câteva minute. Dacă nu, poți relua comanda
+              sau ne poți scrie direct.
             </p>
-            <div className="flex flex-wrap justify-center gap-3">
-              <Button href={`${MOTION_PATH}#comanda`} size="lg">Reia comanda</Button>
-              <Button href="/contact" size="lg" variant="outline">Contacteaza-ne</Button>
+            <div className={styles.actiuni}>
+              <Link href={`${MOTION_PATH}#comanda`} className={styles.primar}>
+                Reia comanda
+                <ArrowRight aria-hidden />
+              </Link>
+              <Link href="/contact" className={styles.secundar}>
+                Contactează-ne
+              </Link>
             </div>
           </>
         )}

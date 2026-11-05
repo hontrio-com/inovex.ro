@@ -1,0 +1,305 @@
+/* Campurile formularelor (contact, oferta), in stilul redesign-ului: gri deschis cu colturi de 12px,
+   etichete negre, buton negru plin ca in restul site-ului. */
+
+.formular {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.rand {
+  display: grid;
+  gap: 18px;
+}
+
+.camp {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.eticheta {
+  color: #0b0f14;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.obligatoriu {
+  color: #8b919c;
+  font-weight: 500;
+}
+
+.optional {
+  color: #8b919c;
+  font-weight: 400;
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+  background: #f4f5f7;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.06);
+  color: #0b0f14;
+  font: inherit;
+  font-size: 15px;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.input,
+.select {
+  height: 48px;
+  padding: 0 14px;
+}
+
+.textarea {
+  display: block;
+  min-height: 132px;
+  padding: 12px 14px;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: #9aa0aa;
+}
+
+/* sageata listei, desenata, ca sa arate la fel in toate browserele */
+.select {
+  appearance: none;
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b919c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-position: right 14px center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+/* inainte de alegere, textul listei e gri, ca un placeholder */
+.select[data-gol='true'] {
+  color: #9aa0aa;
+}
+
+.select option {
+  color: #0b0f14;
+}
+
+/* in camp: fundal alb si contur negru fin, in locul inelului albastru */
+.input:focus-visible,
+.select:focus-visible,
+.textarea:focus-visible {
+  outline: none;
+  background-color: #fff;
+  box-shadow: inset 0 0 0 1.5px #0b0f14;
+}
+
+.input[aria-invalid='true'],
+.select[aria-invalid='true'],
+.textarea[aria-invalid='true'] {
+  box-shadow: inset 0 0 0 1.5px #d93636;
+}
+
+/* sub un camp, o indicatie mica, cu link (ex. configuratorul serviciului ales) */
+.indiciu {
+  color: #5b6270;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.indiciu a {
+  color: #0b0f14;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(11, 15, 20, 0.3);
+  text-underline-offset: 3px;
+}
+
+.eroare {
+  color: #c62828;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* ─── Acordul ─── */
+
+.acord {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.bifa {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  accent-color: #0b0f14;
+  cursor: pointer;
+}
+
+/* eticheta de baza (ui/form) e flex, cu gol: aici textul si linkul curg pe acelasi rand */
+.acord .acordText {
+  display: block;
+}
+
+.acordText {
+  color: #5b6270;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.acordText a {
+  color: #0b0f14;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(11, 15, 20, 0.3);
+  text-underline-offset: 3px;
+}
+
+.esec {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #fdf0f0;
+  color: #a12222;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.esec svg {
+  flex: none;
+  width: 17px;
+  height: 17px;
+}
+
+/* butonul, ca „Solicită ofertă” */
+.trimite {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 52px;
+  margin-top: 4px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 12px;
+  background: #0b0f14;
+  color: #fff;
+  font: inherit;
+  font-size: 15.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.trimite svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.2s ease;
+}
+
+.trimite:disabled {
+  background: #4a5160;
+  cursor: progress;
+}
+
+/* ─── Mesajul de dupa trimitere ─── */
+
+.succes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 16px;
+  text-align: center;
+}
+
+.succesIcon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: #f4f5f7;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.06);
+  color: #0b0f14;
+}
+
+.succesIcon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.succesTitlu {
+  margin-top: 18px;
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.succesText {
+  margin-top: 8px;
+  color: #5b6270;
+  font-size: 15.5px;
+}
+
+.succesText strong {
+  color: #0b0f14;
+}
+
+.inca {
+  margin-top: 22px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #0b0f14;
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(11, 15, 20, 0.3);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .input:hover:not(:focus-visible),
+  .select:hover:not(:focus-visible),
+  .textarea:hover:not(:focus-visible) {
+    background-color: #eef0f2;
+  }
+
+  .trimite:not(:disabled):hover {
+    background: #2a3039;
+  }
+
+  .trimite:not(:disabled):hover svg {
+    transform: translateX(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trimite svg {
+    transition: none;
+  }
+}
+
+@media (min-width: 640px) {
+  .rand {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .trimite {
+    align-self: flex-start;
+  }
+}

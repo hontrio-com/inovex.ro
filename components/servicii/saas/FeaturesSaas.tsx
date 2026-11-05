@@ -112,7 +112,7 @@ export default function FeaturesSaas() {
             className="mb-4"
           >
             Tot ce ai nevoie{' '}
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>
+            <span style={{ color: '#2B8FCC' }}>
               sa functioneze
             </span>
           </h2>

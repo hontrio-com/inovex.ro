@@ -56,7 +56,7 @@ export default function HeroMobile() {
               className="mb-5"
             >
               Aplicatii mobile{' '}
-              <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>native</span>
+              <span style={{ color: '#2B8FCC' }}>native</span>
               {', '}livrate pe ambele platforme
             </h1>
 

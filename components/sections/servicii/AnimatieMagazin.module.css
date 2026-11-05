@@ -1,0 +1,57 @@
+/* Stilurile animatiei din casuta „Magazine online”, ca in fisierul original. Interfata e construita
+   din cod (filmMagazin.ts), cu clasele de acolo; aici sunt valabile doar in scena ei. Scena si bara
+   ferestrei sunt in Animatie.module.css. */
+
+.magazin :global(.win) {
+  position: absolute;
+  top: 140px;
+  left: 430px;
+  width: 1060px;
+  height: 800px;
+  overflow: hidden;
+  border-radius: 22px;
+  background: var(--ground);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.1),
+    0 0 0 2px color-mix(in srgb, var(--second) 8%, transparent);
+}
+
+.magazin :global(.soft) {
+  position: absolute;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--ground) 88%, var(--second));
+}
+
+.magazin :global(.blue) {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--main);
+  color: var(--ground);
+  font-weight: 700;
+}
+
+.magazin :global(.card) {
+  border-radius: 16px;
+  background: var(--ground);
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.1),
+    0 0 0 1px color-mix(in srgb, var(--second) 7%, transparent);
+}
+
+.magazin :global(.t-ui) {
+  position: absolute;
+  font-size: 24px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* magazinul din animatie are culoarea lui, portocaliu */
+.magazin :global(.win),
+.magazin :global(.u-inv),
+.magazin :global(.u-awb) {
+  --main: #e44004;
+  --accent: #fdf0ea;
+}

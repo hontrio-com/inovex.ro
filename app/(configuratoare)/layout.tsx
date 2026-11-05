@@ -1,99 +1,47 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import { Phone, FileText, Receipt, Shield } from 'lucide-react';
+import { FileText, Phone, Receipt, Shield } from 'lucide-react';
 import { CookieConsent } from '@/components/layout/CookieConsent';
+import { TELEFON } from '@/components/layout/meniu-servicii/date';
 import { PhoneLink } from '@/components/ui/PhoneLink';
+import styles from './configuratoare.module.css';
+
+/* Cadrul configuratoarelor (2026-10-29): fara meniu, ca vizitatorul sa ramana pe formular. Sus, o bara
+   alba cu sigla si telefonul (PhoneLink: conversia „telefon” la Google si TikTok); jos, o bara fixa cu
+   cele trei garantii. */
+
+const GARANTII = [
+  { Icon: FileText, text: 'Contract de prestări servicii' },
+  { Icon: Receipt, text: 'Factură fiscală inclusă' },
+  { Icon: Shield, text: 'Garanție și asistență gratuită' },
+];
 
 export default function ConfiguratoareLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      {/* Header minimal */}
-      <header
-        className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-[#E8ECF0]"
-        style={{ height: '56px' }}
-      >
-        <div
-          className="max-w-[1200px] mx-auto px-4 sm:px-6 flex items-center justify-between h-full"
-        >
-          <Link href="/" aria-label="Inovex - Acasa">
-            <img
-              src="/imagini/logo_negru.png"
-              alt="Inovex"
-              style={{ height: 32, width: 'auto', display: 'block' }}
-            />
+      <header className={styles.antet}>
+        <div className={styles.bara}>
+          <Link href="/" aria-label="Inovex, prima pagină" className={styles.logo}>
+            <Image src="/imagini/logo-inovex-antet.png" alt="Inovex" width={95} height={22} unoptimized loading="eager" />
           </Link>
-
-          <PhoneLink
-            className="flex items-center gap-2"
-            style={{ textDecoration: 'none' }}
-          >
-            <Phone size={15} className="text-[#2B8FCC]" />
-            <span
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontWeight: 600,
-                fontSize: '14px',
-                color: '#0D1117',
-              }}
-            >
-              0750 456 096
-            </span>
+          <PhoneLink className={styles.telefon}>
+            <Phone aria-hidden />
+            {TELEFON.text}
           </PhoneLink>
         </div>
       </header>
 
-      {/* Main content */}
-      <main className="pt-14 pb-[52px] min-h-screen">{children}</main>
+      <main>{children}</main>
 
-      {/* Footer minimal */}
-      <footer
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#E8ECF0]"
-        style={{ height: '52px' }}
-      >
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 flex items-center justify-center h-full">
-          <div className="flex items-center gap-6 sm:gap-10">
-            <div className="flex items-center gap-1.5">
-              <FileText size={13} className="text-[#2B8FCC]" />
-              <span
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '11px',
-                  fontWeight: 500,
-                  color: '#4A5568',
-                }}
-              >
-                Contract de prestari servicii
-              </span>
-            </div>
-
-            <div className="flex items-center gap-1.5">
-              <Receipt size={13} className="text-[#2B8FCC]" />
-              <span
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '11px',
-                  fontWeight: 500,
-                  color: '#4A5568',
-                }}
-              >
-                Factura fiscala inclusa
-              </span>
-            </div>
-
-            <div className="flex items-center gap-1.5">
-              <Shield size={13} className="text-[#16A34A]" />
-              <span
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '11px',
-                  fontWeight: 500,
-                  color: '#16A34A',
-                }}
-              >
-                Garantie si asistenta gratuita
-              </span>
-            </div>
-          </div>
-        </div>
+      <footer className={styles.jos}>
+        <ul className={styles.garantii}>
+          {GARANTII.map(({ Icon, text }) => (
+            <li key={text}>
+              <Icon aria-hidden />
+              {text}
+            </li>
+          ))}
+        </ul>
       </footer>
 
       <CookieConsent />

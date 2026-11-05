@@ -1,0 +1,541 @@
+/* Configuratoarele, in stilul redesign-ului: chenar alb cu contur fin, ca la contact si oferta;
+   optiunile sunt carduri albe care, alese, primesc contur negru; negru #0b0f14 pentru tot ce e activ. */
+
+/* sub antetul fix al configuratoarelor (64px) si deasupra barei de jos (52px) */
+.pagina {
+  padding: calc(64px + var(--rama)) var(--rama) calc(52px + 32px);
+  background: #fff;
+}
+
+.card {
+  max-width: 880px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: var(--rama-raza);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(11, 15, 20, 0.08),
+    0 1px 3px rgba(11, 15, 20, 0.05);
+}
+
+/* ─── Sus: mesajul si pasii, pe fundalul gri granulat ─── */
+
+.sus {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 16px 20px;
+  border-bottom: 1px solid #eceef1;
+  background: radial-gradient(120% 140% at 50% 0%, #f4f5f7 0%, #e3e6ea 70%, #d8dce1 100%);
+}
+
+/* granulatia, ca la servicii */
+.sus::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.anunt {
+  padding: 6px 14px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.06);
+  color: #3d4450;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.pasi {
+  width: 100%;
+  max-width: 560px;
+}
+
+.pasi ol {
+  display: flex;
+  align-items: flex-start;
+}
+
+.pas {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 72px;
+  text-align: center;
+}
+
+.pasCerc {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: inset 0 0 0 1.5px #d5d9de;
+  color: #8b919c;
+  font-size: 13px;
+  font-weight: 700;
+  transition:
+    background-color 0.25s ease,
+    box-shadow 0.25s ease,
+    color 0.25s ease;
+}
+
+.pasCerc svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2.5;
+}
+
+.pas[data-stare='curent'] .pasCerc,
+.pas[data-stare='facut'] .pasCerc {
+  background: #0b0f14;
+  box-shadow: none;
+  color: #fff;
+}
+
+.pasNume {
+  color: #8b919c;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.pas[data-stare='curent'] .pasNume {
+  color: #0b0f14;
+  font-weight: 600;
+}
+
+/* linia dintre doi pasi, la inaltimea cercurilor */
+.linie {
+  flex: 1;
+  height: 1.5px;
+  margin-top: 15px;
+  border-radius: 1px;
+  background: #d5d9de;
+  transition: background-color 0.25s ease;
+}
+
+.linie[data-facut='true'] {
+  background: #0b0f14;
+}
+
+/* ─── Continutul pasului ─── */
+
+.continut {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 20px 32px;
+}
+
+.titlu {
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.subtitlu {
+  margin-top: 10px;
+  margin-bottom: 24px;
+  color: #5b6270;
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+.intrebare {
+  margin: 28px 0 12px;
+  color: #0b0f14;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.grila {
+  display: grid;
+  grid-template-columns: repeat(var(--col-telefon, 2), minmax(0, 1fr));
+  gap: 10px;
+}
+
+/* ─── Optiunile ─── */
+
+.optiune,
+.simplu,
+.numar {
+  position: relative;
+  width: 100%;
+  border: 0;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #e3e6ea;
+  color: #0b0f14;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.optiune {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 12px 16px;
+}
+
+.optiuneIcon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 4px;
+  border-radius: 12px;
+  background: #f4f5f7;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.06);
+  color: #0b0f14;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.optiuneIcon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.optiuneNume {
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.optiuneDesc {
+  color: #8b919c;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.simplu {
+  min-height: 48px;
+  padding: 10px 14px;
+  font-size: 14.5px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.numar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 18px 10px;
+}
+
+.numarValoare {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.numarValoare[data-lung='true'] {
+  font-size: 16px;
+  letter-spacing: -0.02em;
+}
+
+/* aleasa: contur negru si fundal gri foarte deschis; iconita trece pe negru */
+.optiune[data-ales='true'],
+.simplu[data-ales='true'],
+.numar[data-ales='true'] {
+  background: #f7f8f9;
+  box-shadow: inset 0 0 0 2px #0b0f14;
+}
+
+.simplu[data-ales='true'] {
+  font-weight: 600;
+}
+
+.optiune[data-ales='true'] .optiuneIcon {
+  background: #0b0f14;
+  box-shadow: none;
+  color: #fff;
+}
+
+/* bifa din colt, la optiunile cu alegere multipla */
+.bifaColt {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #0b0f14;
+  color: #fff;
+}
+
+.bifaColt svg {
+  width: 12px;
+  height: 12px;
+  stroke-width: 3;
+}
+
+/* ─── Informatii si atentionari ─── */
+
+.stiai {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 28px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #f4f5f7;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.05);
+  color: #5b6270;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.stiai strong {
+  color: #0b0f14;
+}
+
+.stiaiIcon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.06);
+  color: #0b0f14;
+}
+
+.stiaiIcon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.avertisment {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #fdf6e8;
+  box-shadow: inset 0 0 0 1px #f1dfb5;
+  color: #6b4d12;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.avertisment svg {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  margin-top: 3px;
+  color: #b7791f;
+}
+
+.avertisment strong {
+  color: #4a3409;
+}
+
+/* ─── Butoanele de jos ─── */
+
+.navigare {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid #eceef1;
+}
+
+.inapoi,
+.inainte {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.inapoi {
+  padding: 0 18px;
+  background: #f0f1f3;
+  color: #0b0f14;
+}
+
+.inainte {
+  background: #0b0f14;
+  color: #fff;
+}
+
+.inapoi svg,
+.inainte svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.2s ease;
+}
+
+.inainte:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ─── Dupa trimitere ─── */
+
+.succes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 56px 20px;
+  text-align: center;
+}
+
+.succes .subtitlu {
+  margin-bottom: 28px;
+}
+
+.succesIcon {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  margin-bottom: 20px;
+  border-radius: 16px;
+  background: #f4f5f7;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.06);
+  color: #0b0f14;
+}
+
+.succesIcon svg {
+  width: 30px;
+  height: 30px;
+}
+
+@media (hover: hover) {
+  .optiune:not([data-ales='true']):hover,
+  .simplu:not([data-ales='true']):hover,
+  .numar:not([data-ales='true']):hover {
+    background: #fafbfb;
+    box-shadow: inset 0 0 0 1px #c9ced5;
+  }
+
+  .inapoi:hover {
+    background: #e6e8eb;
+  }
+
+  .inainte:not(:disabled):hover {
+    background: #2a3039;
+  }
+
+  .inainte:not(:disabled):hover svg {
+    transform: translateX(2px);
+  }
+
+  .inapoi:hover svg {
+    transform: translateX(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inapoi svg,
+  .inainte svg {
+    transition: none;
+  }
+}
+
+/* in modul de contrast ridicat, alegerea se vede prin contur */
+@media (forced-colors: active) {
+  .optiune[data-ales='true'],
+  .simplu[data-ales='true'],
+  .numar[data-ales='true'] {
+    outline: 3px solid Highlight;
+  }
+}
+
+/* ─── Marimi ─── */
+
+@media (max-width: 379.98px) {
+  .pas {
+    width: 60px;
+  }
+
+  .pasNume {
+    font-size: 11px;
+  }
+}
+
+@media (min-width: 640px) {
+  .sus {
+    padding: 26px 32px 24px;
+  }
+
+  .continut {
+    padding: 44px 40px 40px;
+  }
+
+  .titlu {
+    font-size: 32px;
+  }
+
+  .grila {
+    grid-template-columns: repeat(var(--col-mare, 2), minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .pas {
+    width: 96px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .pagina {
+    padding-top: calc(64px + var(--rama) + 12px);
+  }
+
+  .continut {
+    padding: 52px 40px 44px;
+  }
+
+  .titlu {
+    font-size: 36px;
+  }
+}

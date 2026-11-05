@@ -40,7 +40,7 @@ export default function PentruCine() {
             }}
           >
             Un sistem custom este solutia ta{' '}
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>daca...</span>
+            <span style={{ color: '#2B8FCC' }}>daca...</span>
           </h2>
         </div>
 

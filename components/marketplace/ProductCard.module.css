@@ -1,0 +1,412 @@
+/* Cardul unui produs din marketplace, in stilul portofoliului (Portofoliu.module.css): card alb cu
+   contur fin, fereastra de browser pe fundalul gri granulat, nume Manrope, sageata in cerc gri. */
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 12px 12px 20px;
+  border-radius: var(--rama-raza);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(11, 15, 20, 0.08),
+    0 1px 3px rgba(11, 15, 20, 0.05);
+  transition: box-shadow 0.2s ease;
+}
+
+/* ─── Fereastra, pe fundal gri ─── */
+
+.vizual {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+  background: radial-gradient(120% 95% at 50% 30%, #eceff2 0%, #c3c7cd 55%, #b1b6be 100%);
+}
+
+/* granulatia de pe fundal, ca la servicii */
+.vizual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* fereastra iese putin pe jos, ca sa para ca urca din fundal */
+.fereastra {
+  position: absolute;
+  top: 16%;
+  right: 9%;
+  bottom: -12px;
+  left: 9%;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(11, 15, 20, 0.06),
+    0 2px 4px rgba(11, 15, 20, 0.06),
+    0 24px 48px -24px rgba(11, 15, 20, 0.4);
+  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.bara {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 24px;
+  padding: 0 10px;
+  background: #f4f4f4;
+}
+
+.butoane {
+  display: flex;
+  flex: none;
+  gap: 5px;
+}
+
+.butoane i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d2d3d3;
+}
+
+.adresa {
+  overflow: hidden;
+  min-width: 0;
+  margin-left: 6px;
+  padding: 1px 12px;
+  border-radius: 99px;
+  background: #fff;
+  color: #6b7280;
+  font-size: 10.5px;
+  line-height: 1.4;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.captura {
+  position: absolute;
+  inset: 24px 0 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+.captura img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0;
+}
+
+/* schita unei pagini, cand produsul nu are imagine */
+.schita {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  height: 100%;
+  padding: 12px 14px;
+}
+
+.schita span,
+.schita i {
+  display: block;
+  border-radius: 4px;
+  background: #eceef1;
+}
+
+.schitaNav {
+  width: 100%;
+  height: 6px;
+  margin-bottom: 6px;
+}
+
+.schitaTitlu {
+  width: 62%;
+  height: 10px;
+  background: #d9dce1 !important;
+}
+
+.schitaText {
+  width: 44%;
+  height: 6px;
+}
+
+.schitaButon {
+  width: 64px;
+  height: 14px;
+  background: #0b0f14 !important;
+}
+
+.schitaGrila {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  width: 100%;
+  margin-top: 6px;
+  background: none !important;
+}
+
+.schitaGrila i {
+  height: 36px;
+}
+
+/* eticheta categoriei (stanga sus) si cea speciala (dreapta sus) */
+.categorie,
+.eticheta {
+  position: absolute;
+  top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.categorie {
+  left: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.06);
+  color: #0b0f14;
+}
+
+.eticheta {
+  right: 10px;
+  background: #0b0f14;
+  color: #fff;
+}
+
+.eticheta svg {
+  width: 11px;
+  height: 11px;
+}
+
+/* produs vandut: un strat alb peste fereastra */
+.vandut {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(4px);
+  color: #5b6270;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.vandut svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ─── Textul ─── */
+
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 18px 6px 0;
+}
+
+.platforma {
+  color: #8b919c;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.nume {
+  margin-top: 4px;
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+}
+
+/* linkul acopera tot cardul; „Demo live” si „Solicită similar” stau deasupra lui */
+.link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: var(--rama-raza);
+}
+
+.link:focus-visible {
+  outline: none;
+}
+
+.link:focus-visible::after {
+  outline: 2px solid #2b8fcc;
+  outline-offset: 2px;
+}
+
+.descriere {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 6px;
+  color: #5b6270;
+  font-size: 14.5px;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.tehnologii {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.tehnologii li {
+  padding: 3px 9px;
+  border-radius: 7px;
+  background: #f4f5f7;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.05);
+  color: #3d4450;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.jos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #eceef1;
+}
+
+/* aer intre text si linia de deasupra pretului */
+.descriere,
+.tehnologii {
+  margin-bottom: 16px;
+}
+
+.descriere + .tehnologii {
+  margin-top: -2px;
+}
+
+.pret {
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.pret span {
+  color: #8b919c;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.actiuni {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.demo,
+.similar {
+  position: relative;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: #f0f1f3;
+  color: #0b0f14;
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.demo svg {
+  width: 14px;
+  height: 14px;
+}
+
+.sageata {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f0f1f3;
+  color: #0b0f14;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.sageata svg {
+  width: 17px;
+  height: 17px;
+}
+
+.indisponibil {
+  color: #8b919c;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.card[data-vandut] .nume,
+.card[data-vandut] .descriere {
+  color: #8b919c;
+}
+
+@media (hover: hover) {
+  .card:hover {
+    box-shadow:
+      0 0 0 1px rgba(11, 15, 20, 0.12),
+      0 18px 36px -24px rgba(11, 15, 20, 0.3);
+  }
+
+  .card:hover .fereastra {
+    transform: translateY(-6px);
+  }
+
+  .card:hover .sageata {
+    background: #0b0f14;
+    color: #fff;
+  }
+
+  .demo:hover,
+  .similar:hover {
+    background: #e6e8eb;
+  }
+}
+
+.card:has(.link:focus-visible) .sageata {
+  background: #0b0f14;
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fereastra {
+    transition: none;
+  }
+}

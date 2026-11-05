@@ -22,7 +22,7 @@ export function OrganizationJsonLd() {
       email: 'contact@inovex.ro',
       contactType: 'customer service',
       availableLanguage: 'Romanian',
-      hoursAvailable: 'Mo-Fr 08:00-20:00',
+      hoursAvailable: 'Mo-Fr 09:00-18:00',
     },
     sameAs: [
       'https://www.facebook.com/inovex.ro',
@@ -67,8 +67,8 @@ export function LocalBusinessJsonLd() {
     openingHoursSpecification: {
       '@type': 'OpeningHoursSpecification',
       dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      opens: '08:00',
-      closes: '20:00',
+      opens: '09:00',
+      closes: '18:00',
     },
     areaServed: {
       '@type': 'Country',

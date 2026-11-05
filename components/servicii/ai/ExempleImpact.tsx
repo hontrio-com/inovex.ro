@@ -97,7 +97,7 @@ export default function ExempleImpact() {
             }}
           >
             Ce s-a schimbat concret{' '}
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>pentru clientii nostri</span>
+            <span style={{ color: '#2B8FCC' }}>pentru clientii nostri</span>
           </h2>
           <p style={{ color: '#4A5568', fontSize: '0.9375rem', lineHeight: 1.7 }}>
             Exemple din implementari reale. Fara exagerari, fara estimari optimiste.

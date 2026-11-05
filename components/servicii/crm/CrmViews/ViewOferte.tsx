@@ -119,7 +119,7 @@ export default function ViewOferte() {
                 <TableCell className="py-2.5 pl-4">
                   <p
                     className="text-[12px] font-bold text-[#2B8FCC]"
-                    style={{ fontFamily: 'monospace' }}
+                    style={{ fontFamily: 'var(--font-body)', fontVariantNumeric: 'tabular-nums' }}
                   >
                     {oferta.nr}
                   </p>

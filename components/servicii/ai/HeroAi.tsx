@@ -176,7 +176,7 @@ export default function HeroAi() {
           {...makeMotion(2)}
         >
           Lasa{' '}
-          <span style={{ fontStyle: 'italic', color: '#4AADE8' }}>AI-ul</span>{' '}
+          <span style={{ color: '#4AADE8' }}>AI-ul</span>{' '}
           sa faca munca repetitiva. Tu concentreaza-te pe ce conteaza.
         </motion.h1>
 

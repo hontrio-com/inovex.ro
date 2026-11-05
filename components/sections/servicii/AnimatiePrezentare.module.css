@@ -1,0 +1,78 @@
+/* Stilurile animatiei din casuta „Website-uri de prezentare”, ca in fisierul original. Interfata e
+   construita din cod (filmPrezentare.ts), cu clasele de acolo; aici sunt valabile doar in scena ei.
+   Scena si bara ferestrei sunt in Animatie.module.css. */
+
+.prezentare :global(.win) {
+  position: absolute;
+  top: 150px;
+  left: 200px;
+  width: 1060px;
+  height: 860px;
+  overflow: hidden;
+  border-radius: 22px;
+  background: var(--ground);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.1),
+    0 0 0 2px color-mix(in srgb, var(--second) 8%, transparent);
+}
+
+.prezentare :global(.mut) {
+  color: color-mix(in srgb, var(--second) 58%, var(--ground));
+}
+
+.prezentare :global(.card) {
+  border-radius: 18px;
+  background: var(--ground);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--second) 6%, transparent),
+    0 18px 44px -16px rgba(0, 0, 0, 0.2);
+}
+
+/* schita paginii */
+.prezentare :global(.wf) {
+  position: absolute;
+  box-sizing: border-box;
+  border: 2px dashed color-mix(in srgb, var(--main) 70%, var(--ground));
+  border-radius: 10px;
+}
+
+.prezentare :global(.wl) {
+  position: absolute;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--main) 22%, var(--ground));
+}
+
+/* codul din editor */
+.prezentare :global(.code) {
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 22px;
+  white-space: pre;
+}
+
+.prezentare :global(.kw) {
+  color: var(--main);
+  font-weight: 700;
+}
+
+.prezentare :global(.st) {
+  color: color-mix(in srgb, var(--main) 55%, var(--second));
+}
+
+.prezentare :global(.tg) {
+  color: var(--main);
+}
+
+/* pe fondul inchis al editorului, culori mai deschise */
+.prezentare :global(.e-ed .kw) {
+  color: color-mix(in srgb, var(--main) 80%, var(--ground));
+  font-weight: 700;
+}
+
+.prezentare :global(.e-ed .st) {
+  color: color-mix(in srgb, var(--main) 38%, var(--ground));
+}
+
+.prezentare :global(.e-ed .tg) {
+  color: color-mix(in srgb, var(--main) 62%, var(--ground));
+}

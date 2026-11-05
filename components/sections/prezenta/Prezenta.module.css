@@ -1,0 +1,382 @@
+/* Prezenta nationala, in stilul serviciilor (Servicii.module.css): acelasi rand cu textul intr-o parte
+   si fundalul gri, cu granulatie, in cealalta; aceleasi titluri in doua tonuri, linii fine si butoane;
+   pe ecranele mari, acelasi chenar cu contur fin (rama de sticla e doar la hero), iar pe telefon si tableta un card. */
+
+.prezenta {
+  padding: 8px var(--rama) 64px;
+  background: #fff;
+}
+
+.chenar {
+  position: relative;
+}
+
+.card {
+  display: grid;
+  overflow: hidden;
+  border-radius: var(--rama-raza);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(11, 15, 20, 0.08),
+    0 1px 3px rgba(11, 15, 20, 0.05),
+    0 18px 36px -28px rgba(11, 15, 20, 0.22);
+}
+
+/* ─── Textul, ca la servicii ─── */
+
+.text {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 28px 22px 30px;
+}
+
+/* iconita, intr-o casuta gri */
+.icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #f4f5f7;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.06);
+  color: #0b0f14;
+}
+
+.icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.titlu {
+  margin-top: 22px;
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.descriere {
+  max-width: 30em;
+  margin-top: 14px;
+  color: #5b6270;
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+/* cifrele, despartite de linii fine, ca lista din casutele serviciilor */
+.cifre {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-self: stretch;
+  max-width: 32em;
+  margin-top: 26px;
+  border-top: 1px solid #eceef1;
+  border-bottom: 1px solid #eceef1;
+}
+
+.cifre li {
+  padding: 18px 12px 16px 0;
+}
+
+.cifre li + li {
+  padding-left: 16px;
+  border-left: 1px solid #eceef1;
+}
+
+.valoare {
+  display: block;
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 30px;
+  font-size: clamp(24px, 9.6cqi, 30px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ce {
+  display: block;
+  margin-top: 8px;
+  color: #5b6270;
+  font-size: 13.5px;
+  line-height: 1.35;
+}
+
+/* textul pentru cititoarele de ecran, ascuns pe ecran */
+.ascuns {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* butoanele, ca la servicii: negru plin si gri */
+.actiuni {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.primar,
+.secundar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.primar {
+  background: #0b0f14;
+  color: #fff;
+}
+
+.primar svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.2s ease;
+}
+
+.secundar {
+  background: #f0f1f3;
+  color: #0b0f14;
+}
+
+/* pe telefoanele cele mai inguste, coloanele cifrelor mai apropiate */
+@container (max-width: 299.98px) {
+  .cifre li {
+    padding-right: 8px;
+  }
+
+  .cifre li + li {
+    padding-left: 12px;
+  }
+}
+
+/* cand butoanele nu incap alaturi, fiecare ia tot randul */
+@container (max-width: 339.98px) {
+  .actiuni {
+    align-self: stretch;
+  }
+
+  .primar,
+  .secundar {
+    flex: 1 1 auto;
+  }
+}
+
+/* ─── Harta, pe fundal gri ─── */
+
+.vizual {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  padding: 36px 18px 40px;
+  background: radial-gradient(120% 95% at 50% 40%, #eceff2 0%, #c3c7cd 60%, #b1b6be 100%);
+}
+
+/* granulatia de pe fundal, ca la servicii */
+.vizual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.harta {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+}
+
+.harta svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* granitele dintre judete, linii fine, si conturul tarii, ceva mai apasat; punctele stau la distanta de
+   ele, asa ca liniile trec prin culoare goale */
+.granite,
+.contur {
+  fill: none;
+  stroke-width: 1px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.granite {
+  stroke: rgba(11, 15, 20, 0.26);
+}
+
+.contur {
+  stroke: rgba(11, 15, 20, 0.4);
+}
+
+/* fiecare judet e un sir de puncte; cand harta se aprinde, judetele trec pe rand (--t, intr-o ordine
+   amestecata) din gri prin albastrul din sigla in negru */
+.harta g {
+  fill: none;
+  stroke: #0b0f14;
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition:
+    stroke-width 0.25s ease,
+    opacity 0.25s ease;
+}
+
+/* zona in care judetul raspunde la mouse: 16 > 2 x 13 / radical(3), punctele mari se ating si nu lasa
+   goluri, nici in culoarele de langa granite */
+.harta .zona {
+  stroke: transparent;
+  stroke-width: 16;
+}
+
+[data-aprindere='astept'] .harta g {
+  stroke: #a9afb8;
+}
+
+[data-aprindere='aprins'] .harta g {
+  animation: aprinde 0.9s ease both;
+  animation-delay: calc(var(--t) * 1.8s);
+}
+
+@keyframes aprinde {
+  from {
+    stroke: #a9afb8;
+  }
+
+  35% {
+    stroke: #2b8fcc;
+  }
+
+  to {
+    stroke: #0b0f14;
+  }
+}
+
+/* sub mouse, judetul iese in fata: punctele lui cresc putin, iar celelalte judete se estompeaza, doar
+   cand mouse-ul chiar se misca pe harta (`data-mouse`, vezi Aprindere), nu si la derulare */
+@media (hover: hover) {
+  .harta g:hover {
+    stroke-width: 7.5;
+  }
+
+  [data-mouse] .harta svg:has(g:hover) g:not(:hover) {
+    opacity: 0.3;
+  }
+}
+
+/* in modul de contrast ridicat, harta ramane cum e (altfel punctele negre ar sta pe fundal negru) */
+@media (forced-colors: active) {
+  .vizual {
+    forced-color-adjust: none;
+  }
+}
+
+@media (hover: hover) {
+  .primar:hover {
+    background: #2a3039;
+  }
+
+  .secundar:hover {
+    background: #e6e8eb;
+  }
+
+  .primar:hover svg {
+    transform: translateX(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primar svg {
+    transition: none;
+  }
+}
+
+/* ─── Marimi ─── */
+
+@media (min-width: 640px) {
+  .text {
+    padding: 40px 40px 44px;
+  }
+
+  .titlu {
+    font-size: 30px;
+  }
+
+  .vizual {
+    padding: 48px 40px 52px;
+  }
+}
+
+/* textul si harta alaturi, intr-un chenar ca al hero-ului */
+@media (min-width: 1024px) {
+  .prezenta {
+    padding: 12px var(--rama) 104px;
+  }
+
+
+  .card {
+    position: relative;
+    grid-template-columns: 1fr 1fr;
+    min-height: clamp(500px, 41vw, 640px);
+    box-shadow:
+      0 0 0 1px rgba(11, 15, 20, 0.08),
+      0 1px 3px rgba(11, 15, 20, 0.05);
+  }
+
+  .text {
+    padding: 56px;
+  }
+
+  .titlu {
+    font-size: 32px;
+  }
+
+  .descriere {
+    font-size: 16px;
+  }
+
+  .vizual {
+    padding: 56px 48px;
+  }
+
+  .harta {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .text {
+    padding: 64px 72px;
+  }
+
+  .titlu {
+    font-size: 36px;
+  }
+}

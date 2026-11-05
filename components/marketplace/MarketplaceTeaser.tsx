@@ -54,7 +54,7 @@ export function MarketplaceTeaser() {
             }}
           >
             Website-uri gata sa lucreze pentru tine{' '}
-            <em style={{ fontStyle: 'italic', color: '#2B8FCC' }}>din prima zi</em>
+            <em style={{ color: '#2B8FCC' }}>din prima zi</em>
           </motion.h2>
 
           <motion.p

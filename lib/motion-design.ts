@@ -53,14 +53,14 @@ export function formatLei(amount: number): string {
 
 /** Ce primeste clientul pentru fiecare videoclip, indiferent de pachet. */
 export const MOTION_INCLUDED: string[] = [
-  'Videoclip de pana la 60 de secunde',
-  'Scenariu si storyboard realizate de noi',
-  'Animatie in identitatea vizuala a brandului tau',
-  'Muzica si efecte sonore cu licenta comerciala',
-  'Formate 16:9, 9:16 si 1:1 pentru toate platformele',
+  'Videoclip de până la 60 de secunde',
+  'Scenariu și storyboard realizate de noi',
+  'Animație în identitatea vizuală a brandului tău',
+  'Muzică și efecte sonore cu licență comercială',
+  'Formate 16:9, 9:16 și 1:1 pentru toate platformele',
   '2 runde de revizii incluse',
-  'Livrare in maximum 48 de ore',
-  'Factura emisa automat in SPV (e-Factura)',
+  'Livrare în maximum 48 de ore',
+  'Factură emisă automat în SPV (e-Factura)',
 ];
 
 /* ── Materiale atasate la brief (logo, imagini etc.) ──

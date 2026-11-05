@@ -6,7 +6,7 @@ import PortfolioMotion from '@/components/servicii/motion/PortfolioMotion';
 import ComandaMotion from '@/components/servicii/motion/ComandaMotion';
 import StickyComandaMotion from '@/components/servicii/motion/StickyComandaMotion';
 import MotionPixelEvent from '@/components/servicii/motion/MotionPixelEvent';
-import { FAQ } from '@/components/sections/FAQ';
+import { Intrebari } from '@/components/sections/intrebari/Intrebari';
 import { motionPrice } from '@/lib/motion-design';
 import type { FaqItem } from '@/lib/site-data';
 
@@ -25,38 +25,38 @@ export const metadata: Metadata = {
 const FAQ_ITEMS: FaqItem[] = [
   {
     id: '1',
-    q: 'Ce se intampla dupa ce platesc?',
-    a: 'Primesti confirmarea pe email si ne apucam imediat de lucru, pe baza descrierii si a materialelor trimise la comanda. In maximum 48 de ore ai videoclipul. Daca avem nevoie de lamuriri, te contactam noi.',
+    q: 'Ce se întâmplă după ce plătesc?',
+    a: 'Primești confirmarea pe email și ne apucăm imediat de lucru, pe baza descrierii și a materialelor trimise la comandă. În maximum 48 de ore ai videoclipul. Dacă avem nevoie de lămuriri, te contactăm noi.',
   },
   {
     id: '2',
-    q: 'Ce trebuie sa va trimit?',
-    a: 'In formularul de comanda ne spui pe scurt despre ce este videoclipul si atasezi logo-ul, imagini sau alte materiale de brand. Daca ai deja texte sau capturi de ecran, ne ajuta, dar nu sunt obligatorii.',
+    q: 'Ce trebuie să vă trimit?',
+    a: 'În formularul de comandă ne spui pe scurt despre ce este videoclipul și atașezi logo-ul, imagini sau alte materiale de brand. Dacă ai deja texte sau capturi de ecran, ne ajută, dar nu sunt obligatorii.',
   },
   {
     id: '3',
-    q: 'Cat dureaza pana primesc videoclipul?',
-    a: 'Maximum 48 de ore de la plata. Termenul curge din momentul in care avem comanda platita, cu descrierea si materialele tale.',
+    q: 'Cât durează până primesc videoclipul?',
+    a: 'Maximum 48 de ore de la plată. Termenul curge din momentul în care avem comanda plătită, cu descrierea și materialele tale.',
   },
   {
     id: '4',
-    q: 'Pot cere modificari?',
-    a: 'Da. Reviziile incluse in pret acopera ajustari de text, ritm, culori si sunet. Un concept complet nou se discuta separat.',
+    q: 'Pot cere modificări?',
+    a: 'Da. Reviziile incluse în preț acoperă ajustări de text, ritm, culori și sunet. Un concept complet nou se discută separat.',
   },
   {
     id: '5',
-    q: 'De ce e mai ieftin daca iau mai multe videoclipuri?',
-    a: 'Cu cat comanzi mai multe, cu atat scade pretul pe fiecare: reducerea porneste de la 20% la doua videoclipuri si ajunge pana la 50%. Fiecare videoclip poate fi despre alt produs, alt serviciu sau alta campanie.',
+    q: 'De ce e mai ieftin dacă iau mai multe videoclipuri?',
+    a: 'Cu cât comanzi mai multe, cu atât scade prețul pe fiecare: reducerea pornește de la 20% la două videoclipuri și ajunge până la 50%. Fiecare videoclip poate fi despre alt produs, alt serviciu sau altă campanie.',
   },
   {
     id: '6',
-    q: 'Primesc factura?',
-    a: 'Da. La plata completezi datele firmei si codul fiscal, iar factura se emite automat si se transmite in SPV (e-Factura).',
+    q: 'Primesc factură?',
+    a: 'Da. La plată completezi datele firmei și codul fiscal, iar factura se emite automat și se transmite în SPV (e-Factura).',
   },
   {
     id: '7',
     q: 'Am nevoie de un video mai lung sau de un proiect mai complex. Se poate?',
-    a: 'Sigur. Pachetele de pe pagina acopera cele mai frecvente cereri. Pentru videoclipuri mai lungi, serii de clipuri sau animatie 3D, scrie-ne si iti facem o oferta personalizata.',
+    a: 'Sigur. Pachetele de pe pagină acoperă cele mai frecvente cereri. Pentru videoclipuri mai lungi, serii de clipuri sau animație 3D, scrie-ne și îți facem o ofertă personalizată.',
   },
 ];
 
@@ -83,7 +83,7 @@ export default function Page() {
       <BeneficiiMotion />
       <PortfolioMotion />
       <ComandaMotion />
-      <FAQ items={FAQ_ITEMS} />
+      <Intrebari items={FAQ_ITEMS} />
       <StickyComandaMotion />
     </>
   );

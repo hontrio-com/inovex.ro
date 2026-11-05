@@ -119,7 +119,7 @@ export default function FeaturesMobile() {
             className="mb-4"
           >
             Tot ce include un proiect de{' '}
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>aplicatie mobila</span>
+            <span style={{ color: '#2B8FCC' }}>aplicatie mobila</span>
           </h2>
           <p className="text-[#4A5568] text-[0.9375rem] leading-relaxed">
             Gestionam fiecare aspect al dezvoltarii, de la design la publicare in store-uri.

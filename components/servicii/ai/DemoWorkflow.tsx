@@ -136,7 +136,7 @@ export default function DemoWorkflow() {
           }}
         >
           Vezi cum functioneaza{' '}
-          <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>un workflow AI</span>
+          <span style={{ color: '#2B8FCC' }}>un workflow AI</span>
         </h2>
         <p style={{ color: '#4A5568', fontSize: '0.9375rem', lineHeight: 1.7 }}>
           Alege un scenariu, apasa Run si urmareste executia pas cu pas. Asa arata automatizarile pe care le implementam pentru clientii nostri.

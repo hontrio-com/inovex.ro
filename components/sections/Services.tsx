@@ -181,7 +181,7 @@ function renderTitle(title: string, italicWord: string) {
   return (
     <>
       {title.slice(0, idx)}
-      <em style={{ fontStyle: 'italic' }}>{italicWord}</em>
+      <em>{italicWord}</em>
       {title.slice(idx + italicWord.length)}
     </>
   );
@@ -566,7 +566,7 @@ function SectionHeader({ reduce }: { reduce: boolean }) {
           }}
         >
           Solutii construite<br />
-          pentru <em style={{ fontStyle: 'italic', color: '#2B8FCC' }}>rezultate</em>
+          pentru <em style={{ color: '#2B8FCC' }}>rezultate</em>
         </h2>
       </motion.div>
 

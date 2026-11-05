@@ -559,7 +559,7 @@ function CookieTable() {
                     <td
                       style={{
                         padding: '8px 12px',
-                        fontFamily: 'monospace',
+                        fontFamily: 'var(--font-body)', fontVariantNumeric: 'tabular-nums',
                         fontSize: 11,
                         color: '#1A202C',
                         borderBottom: '1px solid #F1F5F9',
@@ -633,7 +633,7 @@ function SectionHeading({ id, children }: { id: string; children: React.ReactNod
     <h2
       data-section={id}
       style={{
-        fontFamily: 'var(--font-serif)',
+        fontFamily: 'var(--font-display)',
         fontWeight: 600,
         fontSize: '1.5rem',
         color: '#0D1117',
@@ -872,7 +872,7 @@ export default function PoliticaCookiesClient() {
         {/* H1 */}
         <h1
           style={{
-            fontFamily: 'var(--font-serif)',
+            fontFamily: 'var(--font-display)',
             fontWeight: 600,
             fontSize: 'clamp(2rem,3.5vw,3rem)',
             color: '#0D1117',

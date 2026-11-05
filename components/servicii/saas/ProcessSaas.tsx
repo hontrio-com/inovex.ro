@@ -88,7 +88,7 @@ export default function ProcessSaas() {
             className="mb-4"
           >
             Procesul nostru{' '}
-            <span style={{ fontStyle: 'italic', color: '#4AADE8' }}>
+            <span style={{ color: '#4AADE8' }}>
               in 5 pasi
             </span>
           </h2>

@@ -106,7 +106,7 @@ export default function WorkflowLog({
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, flexWrap: 'wrap' }}>
-                      <span style={{ fontFamily: 'monospace', fontSize: 10, color: '#8A94A6', flexShrink: 0 }}>
+                      <span style={{ fontFamily: 'var(--font-body)', fontVariantNumeric: 'tabular-nums', fontSize: 10, color: '#8A94A6', flexShrink: 0 }}>
                         {log.time}
                       </span>
                       <span style={{ fontSize: 12, fontWeight: 500, color: '#1A202C', lineHeight: 1.45 }}>

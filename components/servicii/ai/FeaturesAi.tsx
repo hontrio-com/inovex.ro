@@ -107,7 +107,7 @@ export default function FeaturesAi() {
             }}
           >
             Ce implementam concret{' '}
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>in afacerea ta</span>
+            <span style={{ color: '#2B8FCC' }}>in afacerea ta</span>
           </h2>
           <p style={{ color: '#4A5568', fontSize: '0.9375rem', lineHeight: 1.7 }}>
             Nu vindem tool-uri. Implementam solutii complete, configurate pe procesele tale, cu training si suport inclus.

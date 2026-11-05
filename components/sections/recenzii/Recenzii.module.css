@@ -1,0 +1,291 @@
+/* Recenziile de pe prima pagina, in stilul portofoliului (Portofoliu.module.css): acelasi titlu in
+   doua tonuri, aceleasi linii fine intre celule, acelasi buton negru si, pe ecranele mari, acelasi
+   chenar cu contur fin (rama de sticla e doar la hero). Pe telefon si tableta, fiecare recenzie e un card separat. */
+
+.recenzii {
+  padding: 32px var(--rama) 64px;
+  background: #fff;
+}
+
+/* ─── Titlul sectiunii, ca la portofoliu ─── */
+
+.cap {
+  max-width: 760px;
+  margin: 0 auto 36px;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.titlu {
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: clamp(30px, 7.4vw, 40px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+/* sub titlu: stelele si textul, ca in hero */
+.evaluare {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.evaluareText {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #5b6270;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.stele {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  color: #fbbc04;
+}
+
+.stele svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.google {
+  flex: none;
+  width: 15px;
+  height: 15px;
+}
+
+/* ─── Recenziile ─── */
+
+.chenar {
+  position: relative;
+}
+
+.grila {
+  display: grid;
+  gap: 16px;
+}
+
+.celula {
+  border-radius: var(--rama-raza);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(11, 15, 20, 0.08),
+    0 1px 3px rgba(11, 15, 20, 0.05),
+    0 18px 36px -28px rgba(11, 15, 20, 0.22);
+}
+
+/* pe telefon, doar primele recenzii; restul, de la 640px */
+.celula[data-in-plus] {
+  display: none;
+}
+
+.recenzie {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 24px 22px 22px;
+}
+
+.sus {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.text {
+  flex: 1;
+  margin-top: 16px;
+  color: #2b313b;
+  font-size: 15.5px;
+  line-height: 1.65;
+}
+
+/* numele, cu linie fina deasupra, ca lista din casutele serviciilor */
+.autor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #eceef1;
+}
+
+/* initialele, intr-o casuta gri, ca iconitele serviciilor */
+.initiale {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: #f4f5f7;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.06);
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.cine {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.nume {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #0b0f14;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.verificat {
+  flex: none;
+  width: 15px;
+  height: 15px;
+}
+
+.site {
+  margin-top: 2px;
+  color: #8b919c;
+  font-size: 13.5px;
+  line-height: 1.3;
+}
+
+/* ─── Butonul de sub recenzii, ca la portofoliu ─── */
+
+.actiuni {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.primar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 12px;
+  background: #0b0f14;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.primar svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.2s ease;
+}
+
+@media (hover: hover) {
+  .primar:hover {
+    background: #2a3039;
+  }
+
+  .primar:hover svg {
+    transform: translateX(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primar svg {
+    transition: none;
+  }
+}
+
+/* ─── Marimi ─── */
+
+@media (min-width: 640px) {
+  .recenzii {
+    padding-top: 40px;
+  }
+
+  .titlu {
+    font-size: 44px;
+  }
+
+  .evaluare {
+    flex-direction: row;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .grila {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .celula[data-in-plus] {
+    display: block;
+  }
+}
+
+/* un singur chenar, cu recenziile despartite de linii fine */
+@media (min-width: 1024px) {
+  .recenzii {
+    padding: 48px var(--rama) 104px;
+  }
+
+  .cap {
+    max-width: 1040px;
+    margin-bottom: 52px;
+  }
+
+  .titlu {
+    font-size: 52px;
+  }
+
+
+  /* liniile dintre recenzii sunt golul de 1px dintre celule, pe fundalul gri al grilei */
+  .grila {
+    position: relative;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    overflow: hidden;
+    border-radius: var(--rama-raza);
+    background: #eceef1;
+    box-shadow:
+      0 0 0 1px rgba(11, 15, 20, 0.08),
+      0 1px 3px rgba(11, 15, 20, 0.05);
+  }
+
+  .celula {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .recenzie {
+    padding: 32px 32px 30px;
+  }
+
+  .actiuni {
+    margin-top: 44px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .titlu {
+    font-size: 56px;
+  }
+
+  .recenzie {
+    padding: 36px 40px 34px;
+  }
+}

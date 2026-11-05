@@ -76,7 +76,7 @@ export default function ProcessMobile() {
             className="mb-4"
           >
             De la idee la aplicatia{' '}
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>in buzunarul clientilor tai</span>
+            <span style={{ color: '#2B8FCC' }}>in buzunarul clientilor tai</span>
           </h2>
           <p className="text-[#4A5568] text-[0.9375rem] leading-relaxed">
             Un proces riguros, de la prima discutie pana la publicare in store-uri.

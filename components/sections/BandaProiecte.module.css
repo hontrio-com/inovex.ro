@@ -1,0 +1,93 @@
+/* Coloanele inclinate din banda hero-ului. Containerul e mai mare decat banda in toate partile,
+   ca dupa inclinare sa nu ramana colturi goale (verificat pana la 1920px latime). */
+
+.banda {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.coloane {
+  position: absolute;
+  top: -55%;
+  right: -6%;
+  bottom: -55%;
+  left: -6%;
+  display: flex;
+  gap: 14px;
+  transform: rotate(-10deg);
+}
+
+.coloana {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* telefon: 3 coloane; tableta: 5; desktop: 6 */
+.coloana:nth-child(n + 4) {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .coloana:nth-child(n + 4) {
+    display: block;
+  }
+
+  .coloana:nth-child(n + 6) {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .coloana:nth-child(n + 6) {
+    display: block;
+  }
+}
+
+.pista {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.pista[data-gata='true'] {
+  opacity: 1;
+}
+
+.set {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 14px;
+}
+
+.card {
+  overflow: hidden;
+  border: 1px solid rgba(11, 15, 20, 0.08);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(11, 15, 20, 0.06);
+  transition: box-shadow 0.4s ease, transform 0.4s ease;
+}
+
+.card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+
+@media (hover: hover) {
+  .card:hover {
+    box-shadow: 0 14px 36px -12px rgba(11, 15, 20, 0.3);
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pista,
+  .card {
+    transition: none;
+  }
+}

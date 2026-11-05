@@ -38,7 +38,7 @@ export default function CTASaas() {
           className="mb-5"
         >
           Ai o idee de aplicatie? Sa o transformam in{' '}
-          <span style={{ fontStyle: 'italic', color: '#4AADE8' }}>
+          <span style={{ color: '#4AADE8' }}>
             produs real
           </span>
           .

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Send, CheckCircle2, AlertCircle } from 'lucide-react';
+import { AlertCircle, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { trackConversions } from '@/lib/gtm';
 import { trackTikTok } from '@/lib/tiktok';
 import { trackEvent, generateEventId } from '@/lib/meta-pixel';
@@ -17,21 +17,20 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
+import { TELEFON } from '@/components/layout/meniu-servicii/date';
+import styles from './Formular.module.css';
 
+// valorile ajung asa in CRM (/api/contact): se schimba doar etichetele
 const SERVICII = [
-  { value: '', label: 'Selecteaza un serviciu' },
-  { value: 'magazin-online', label: 'Magazin Online' },
-  { value: 'website-prezentare', label: 'Website de Prezentare' },
-  { value: 'aplicatii-mobile', label: 'Aplicatii Mobile iOS & Android' },
-  { value: 'automatizari-ai', label: 'Automatizari AI' },
-  { value: 'aplicatii-web-saas', label: 'Aplicatii Web / SaaS' },
-  { value: 'cms-crm-erp', label: 'CMS / CRM / ERP' },
-  { value: 'seo-marketing', label: 'SEO & Marketing Digital' },
-  { value: 'altele', label: 'Altele / Nu stiu inca' },
+  { value: '', label: 'Alege un serviciu' },
+  { value: 'magazin-online', label: 'Magazin online' },
+  { value: 'website-prezentare', label: 'Website de prezentare' },
+  { value: 'aplicatii-mobile', label: 'Aplicații mobile iOS și Android' },
+  { value: 'automatizari-ai', label: 'Automatizări AI' },
+  { value: 'aplicatii-web-saas', label: 'Aplicații web și SaaS' },
+  { value: 'cms-crm-erp', label: 'CMS, CRM și ERP' },
+  { value: 'seo-marketing', label: 'SEO și marketing digital' },
+  { value: 'altele', label: 'Altele / Nu știu încă' },
 ];
 
 const schema = z.object({
@@ -39,7 +38,7 @@ const schema = z.object({
   email:            z.string().email('Email invalid'),
   telefon:          z.string().min(10, 'Telefonul trebuie să aibă cel puțin 10 cifre'),
   companie:         z.string().optional(),
-  serviciu:         z.string().min(1, 'Te rugam sa selectezi un serviciu'),
+  serviciu:         z.string().min(1, 'Te rugăm să alegi un serviciu'),
   mesaj:            z.string().min(10, 'Mesajul trebuie să aibă cel puțin 10 caractere'),
   acordPrivacitate: z.literal<boolean>(true, { message: 'Trebuie să accepți politica de confidențialitate' }),
 });
@@ -82,21 +81,15 @@ export function ContactForm() {
 
   if (status === 'success') {
     return (
-      <div className="flex flex-col items-center text-center py-16 px-8 bg-[#F0FDF4] border border-[#BBF7D0] rounded-2xl">
-        <CheckCircle2 size={52} className="text-[#16A34A] mb-4" />
-        <h3
-          style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.25rem', color: '#0D1117' }}
-          className="mb-2"
-        >
-          Mesaj trimis cu succes!
-        </h3>
-        <p className="text-[#4A5568] text-[0.9375rem] mb-6">
-          Te contactam in maximum <strong>24 de ore</strong>.
+      <div className={styles.succes} role="status">
+        <span className={styles.succesIcon}>
+          <CheckCircle2 aria-hidden />
+        </span>
+        <h3 className={styles.succesTitlu}>Mesaj trimis cu succes</h3>
+        <p className={styles.succesText}>
+          Te contactăm în maximum <strong>24 de ore</strong>.
         </p>
-        <button
-          onClick={() => setStatus('idle')}
-          className="text-sm text-[#2B8FCC] hover:underline font-medium"
-        >
+        <button type="button" onClick={() => setStatus('idle')} className={styles.inca}>
           Trimite alt mesaj
         </button>
       </div>
@@ -105,22 +98,20 @@ export function ContactForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
-
-        {/* Rand 1: Nume + Email */}
-        <div className="grid sm:grid-cols-2 gap-5">
+      <form onSubmit={form.handleSubmit(onSubmit)} noValidate className={styles.formular}>
+        <div className={styles.rand}>
           <FormField
             control={form.control}
             name="nume"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-[#0D1117] font-semibold text-[13px]">
-                  Nume complet <span className="text-red-500">*</span>
+              <FormItem className={styles.camp}>
+                <FormLabel className={styles.eticheta}>
+                  Nume complet <span className={styles.obligatoriu}>*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="Ion Popescu" {...field} />
+                  <input autoComplete="name" placeholder="Ion Popescu" className={styles.input} {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className={styles.eroare} />
               </FormItem>
             )}
           />
@@ -128,33 +119,32 @@ export function ContactForm() {
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-[#0D1117] font-semibold text-[13px]">
-                  Email <span className="text-red-500">*</span>
+              <FormItem className={styles.camp}>
+                <FormLabel className={styles.eticheta}>
+                  Email <span className={styles.obligatoriu}>*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="ion@firma.ro" {...field} />
+                  <input type="email" autoComplete="email" placeholder="ion@firma.ro" className={styles.input} {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className={styles.eroare} />
               </FormItem>
             )}
           />
         </div>
 
-        {/* Rand 2: Telefon + Companie */}
-        <div className="grid sm:grid-cols-2 gap-5">
+        <div className={styles.rand}>
           <FormField
             control={form.control}
             name="telefon"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-[#0D1117] font-semibold text-[13px]">
-                  Telefon <span className="text-red-500">*</span>
+              <FormItem className={styles.camp}>
+                <FormLabel className={styles.eticheta}>
+                  Telefon <span className={styles.obligatoriu}>*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input type="tel" placeholder="07xx xxx xxx" {...field} />
+                  <input type="tel" autoComplete="tel" placeholder="07xx xxx xxx" className={styles.input} {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className={styles.eroare} />
               </FormItem>
             )}
           />
@@ -162,34 +152,29 @@ export function ContactForm() {
             control={form.control}
             name="companie"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-[#0D1117] font-semibold text-[13px]">
-                  Companie <span className="text-[#8A94A6] font-normal">(optional)</span>
+              <FormItem className={styles.camp}>
+                <FormLabel className={styles.eticheta}>
+                  Companie <span className={styles.optional}>(opțional)</span>
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="Firma SRL" {...field} />
+                  <input autoComplete="organization" placeholder="Firma SRL" className={styles.input} {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className={styles.eroare} />
               </FormItem>
             )}
           />
         </div>
 
-        {/* Rand 3: Serviciu */}
         <FormField
           control={form.control}
           name="serviciu"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[#0D1117] font-semibold text-[13px]">
-                Serviciu de interes <span className="text-red-500">*</span>
+            <FormItem className={styles.camp}>
+              <FormLabel className={styles.eticheta}>
+                Serviciu de interes <span className={styles.obligatoriu}>*</span>
               </FormLabel>
               <FormControl>
-                <select
-                  {...field}
-                  className="w-full h-10 rounded-lg border border-[#E8ECF0] bg-white px-3 text-[14px] text-[#0D1117] focus:outline-none focus:ring-2 focus:ring-[#2B8FCC] focus:border-transparent transition-all"
-                  style={{ fontFamily: 'var(--font-body)' }}
-                >
+                <select className={styles.select} data-gol={field.value === ''} {...field}>
                   {SERVICII.map((s) => (
                     <option key={s.value} value={s.value} disabled={s.value === ''}>
                       {s.label}
@@ -197,76 +182,67 @@ export function ContactForm() {
                   ))}
                 </select>
               </FormControl>
-              <FormMessage />
+              <FormMessage className={styles.eroare} />
             </FormItem>
           )}
         />
 
-        {/* Rand 4: Mesaj */}
         <FormField
           control={form.control}
           name="mesaj"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[#0D1117] font-semibold text-[13px]">
-                Mesaj <span className="text-red-500">*</span>
+            <FormItem className={styles.camp}>
+              <FormLabel className={styles.eticheta}>
+                Mesaj <span className={styles.obligatoriu}>*</span>
               </FormLabel>
               <FormControl>
-                <Textarea
-                  rows={5}
-                  placeholder="Descrie pe scurt ce ai nevoie..."
-                  className="resize-none"
-                  {...field}
-                />
+                <textarea rows={5} placeholder="Descrie pe scurt ce ai nevoie..." className={styles.textarea} {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage className={styles.eroare} />
             </FormItem>
           )}
         />
 
-        {/* GDPR */}
         <FormField
           control={form.control}
           name="acordPrivacitate"
           render={({ field }) => (
-            <FormItem>
-              <div className="flex items-start gap-3">
+            <FormItem className={styles.camp}>
+              <div className={styles.acord}>
                 <FormControl>
-                  <Checkbox
+                  <input
+                    type="checkbox"
+                    className={styles.bifa}
                     checked={field.value}
-                    onCheckedChange={field.onChange}
-                    className="mt-0.5"
+                    onChange={(e) => field.onChange(e.target.checked)}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
                   />
                 </FormControl>
-                <FormLabel className="text-[13px] text-[#4A5568] font-normal cursor-pointer leading-relaxed">
+                <FormLabel className={styles.acordText}>
                   Sunt de acord cu{' '}
-                  <a href="/politica-de-confidentialitate" className="text-[#2B8FCC] hover:underline" target="_blank">
-                    Politica de Confidentialitate
+                  <a href="/politica-de-confidentialitate" target="_blank">
+                    Politica de confidențialitate
                   </a>
                 </FormLabel>
               </div>
-              <FormMessage />
+              <FormMessage className={styles.eroare} />
             </FormItem>
           )}
         />
 
-        {/* Error */}
         {status === 'error' && (
-          <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
-            <AlertCircle size={16} className="shrink-0" />
-            A aparut o eroare. Incearca din nou sau suna la 0750 456 096.
+          <div className={styles.esec} role="alert">
+            <AlertCircle aria-hidden />
+            A apărut o eroare. Încearcă din nou sau sună la {TELEFON.text}.
           </div>
         )}
 
-        <Button
-          type="submit"
-          size="lg"
-          loading={status === 'loading'}
-          rightIcon={<Send size={16} />}
-          className="w-full sm:w-auto"
-        >
-          Trimite mesajul
-        </Button>
+        <button type="submit" className={styles.trimite} disabled={status === 'loading'}>
+          {status === 'loading' ? 'Se trimite...' : 'Trimite mesajul'}
+          {status !== 'loading' && <ArrowRight aria-hidden />}
+        </button>
       </form>
     </Form>
   );

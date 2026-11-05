@@ -1,0 +1,168 @@
+/* Proiectele de pe pagina /portofoliu (modelul A „Fișă de proiect”, ales de proprietar pe 2026-11-05):
+   cardul alb cu contur fin (.celula din Portofoliu.module.css), captura in fereastra de browser, apoi
+   textul si o fisa cu randuri despartite de linii fine, ca la servicii. */
+
+/* un card pe rand pe telefon, 2 pe tableta, 3 de la 1024px */
+.grila {
+  display: grid;
+  gap: 16px;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  color: #0b0f14;
+}
+
+.corp {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 18px 6px 8px;
+}
+
+.cap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 14px;
+}
+
+.eticheta {
+  color: #8b919c;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.nume {
+  margin-top: 3px;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+
+/* linkul din nume; stratul lui acopera tot cardul, deci clicul merge oriunde */
+.link {
+  color: inherit;
+}
+
+.link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: var(--rama-raza);
+}
+
+/* inelul de focus, pe tot cardul, in interiorul lui (cardul taie tot ce iese din el) */
+.link:focus-visible {
+  outline: none;
+}
+
+.link:focus-visible::after {
+  outline: 2px solid #2b8fcc;
+  outline-offset: -4px;
+}
+
+.sageata {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #f0f1f3;
+  color: #0b0f14;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.sageata svg {
+  width: 18px;
+  height: 18px;
+}
+
+.card:has(.link:focus-visible) .sageata {
+  background: #0b0f14;
+  color: #fff;
+}
+
+@media (hover: hover) {
+  .card:hover .sageata {
+    background: #0b0f14;
+    color: #fff;
+  }
+}
+
+.descriere {
+  margin: 10px 0 20px;
+  color: #5b6270;
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+
+/* fisa: eticheta in stanga, valoarea in dreapta; sta jos in card, ca fisele de pe acelasi rand sa se
+   termine la aceeasi inaltime */
+.fisa {
+  margin-top: auto;
+  border-top: 1px solid #eceef1;
+}
+
+.fisa > div {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid #eceef1;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
+.fisa > div:last-child {
+  padding-bottom: 2px;
+  border-bottom: 0;
+}
+
+.fisa > .randSigle {
+  align-items: center;
+}
+
+.fisa dt {
+  color: #8b919c;
+}
+
+.fisa dd {
+  min-width: 0;
+  color: #1f242c;
+  font-weight: 500;
+}
+
+.fisa dd li + li {
+  margin-top: 4px;
+}
+
+@media (min-width: 640px) {
+  .grila {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grila {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .corp {
+    padding: 20px 8px 10px;
+  }
+}

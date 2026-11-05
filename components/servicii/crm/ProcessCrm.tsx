@@ -77,7 +77,7 @@ export default function ProcessCrm() {
             }}
           >
             Procesul nostru in{' '}
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>7 pasi clari</span>
+            <span style={{ color: '#2B8FCC' }}>7 pasi clari</span>
           </h2>
         </div>
 

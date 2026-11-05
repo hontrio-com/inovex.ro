@@ -72,7 +72,7 @@ function renderBlock(block: Block, idx: number): ReactNode {
           borderLeft: '4px solid #2B8FCC', margin: '24px 0', padding: '12px 20px',
           background: '#F0F7FF', borderRadius: '0 8px 8px 0',
         }}>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '1.0625rem', fontStyle: 'italic', color: '#1A365D', marginBottom: block.author ? 8 : 0, lineHeight: 1.7 }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: '1.0625rem', color: '#1A365D', marginBottom: block.author ? 8 : 0, lineHeight: 1.7 }}>
             {String(block.text ?? '')}
           </p>
           {block.author != null && (
@@ -139,7 +139,7 @@ function renderBlock(block: Block, idx: number): ReactNode {
             borderRadius: 10,
             padding: '16px 20px',
             overflowX: 'auto',
-            fontFamily: 'monospace',
+            fontFamily: 'var(--font-body)', fontVariantNumeric: 'tabular-nums',
             fontSize: '0.875rem',
             lineHeight: 1.7,
             marginBottom: 16,

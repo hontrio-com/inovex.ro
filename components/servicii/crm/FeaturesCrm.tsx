@@ -105,7 +105,7 @@ export default function FeaturesCrm() {
             }}
           >
             Tot ce ai nevoie ca afacerea ta sa{' '}
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>functioneze organizat</span>
+            <span style={{ color: '#2B8FCC' }}>functioneze organizat</span>
           </h2>
         </div>
 

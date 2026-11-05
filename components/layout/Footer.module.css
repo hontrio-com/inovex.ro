@@ -1,0 +1,237 @@
+/* Subsolul, in stilul sectiunilor de pe prima pagina: un chenar alb cu contur fin, la --rama de
+   marginile ecranului (rama de sticla ramane doar la hero); aceleasi linii fine si acelasi gri. */
+
+.subsol {
+  padding: var(--rama);
+  background: #fff;
+}
+
+.chenar {
+  position: relative;
+}
+
+.card {
+  overflow: hidden;
+  border-radius: var(--rama-raza);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(11, 15, 20, 0.08),
+    0 1px 3px rgba(11, 15, 20, 0.05);
+}
+
+/* ─── Sus: sigla si coloanele ─── */
+
+.sus {
+  display: grid;
+  gap: 36px;
+  padding: 36px 22px 32px;
+}
+
+.logo {
+  display: inline-block;
+}
+
+.logo img {
+  display: block;
+  width: 95px;
+  height: auto;
+}
+
+.despre {
+  max-width: 24em;
+  margin-top: 16px;
+  color: #5b6270;
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+/* retelele, in casute gri, ca iconitele sectiunilor */
+.retele {
+  display: flex;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.retele a {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #f4f5f7;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.06);
+  color: #0b0f14;
+  transition: background-color 0.15s ease;
+}
+
+.retele svg {
+  width: 16px;
+  height: 16px;
+}
+
+.coloane {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px 16px;
+}
+
+.titlu {
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.linkuri,
+.contact {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.linkuri a,
+.contact a,
+.contact span {
+  color: #5b6270;
+  font-size: 14.5px;
+  line-height: 1.4;
+  transition: color 0.15s ease;
+}
+
+.contact a,
+.contact span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contact svg {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  color: #8b919c;
+}
+
+/* ─── Jos: drepturile, firma, ANPC si cookies, sub o linie fina ─── */
+
+.jos {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px 22px 22px;
+  border-top: 1px solid #eceef1;
+}
+
+.firma {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #8b919c;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.dreapta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+}
+
+.anpc {
+  display: flex;
+  gap: 8px;
+}
+
+.anpc img {
+  display: block;
+  width: auto;
+  height: 35px;
+}
+
+.cookies {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #8b919c;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(139, 145, 156, 0.4);
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+
+@media (hover: hover) {
+  .linkuri a:hover,
+  .contact a:hover {
+    color: #0b0f14;
+  }
+
+  .retele a:hover {
+    background: #e6e8eb;
+  }
+
+  .cookies:hover {
+    color: #0b0f14;
+  }
+}
+
+/* ─── Marimi ─── */
+
+@media (min-width: 640px) {
+  .sus {
+    padding: 44px 40px 40px;
+  }
+
+  .coloane {
+    grid-template-columns: repeat(4, auto);
+    justify-content: space-between;
+  }
+
+  .jos {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .subsol {
+    padding-bottom: 16px;
+  }
+
+
+  .card {
+    position: relative;
+  }
+
+  .sus {
+    grid-template-columns: minmax(260px, 1fr) 2.4fr;
+    gap: 64px;
+    padding: 56px 56px 48px;
+  }
+
+  .jos {
+    padding: 20px 56px;
+  }
+
+  .firma {
+    flex-direction: row;
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .sus {
+    padding: 64px 72px 56px;
+  }
+
+  .jos {
+    padding: 22px 72px;
+  }
+}

@@ -1,0 +1,73 @@
+/* Siglele si steagurile din fisele de pe pagina /portofoliu. */
+
+/* siglele: o grila cu casute egale, de cel putin 74px (LOC din Sigle.tsx); casutele late (cu nume scris sau
+   cu sigla lunga) iau doua locuri, iar „dense” muta casutele mici in golurile lasate de ele, ca randurile sa
+   fie pline si sa ramana loc gol doar la capat */
+.sigle {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(74px, 1fr));
+  grid-auto-flow: row dense;
+  gap: 6px;
+}
+
+/* casutele albe cu contur fin, ca siglele de la servicii (Servicii.module.css), putin mai mici */
+.casuta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #e6e8ec;
+}
+
+.casuta[data-lat] {
+  grid-column: span 2;
+}
+
+.casuta img {
+  display: block;
+  flex: none;
+}
+
+/* numele scris: langa siglele care sunt doar un semn si in locul celor pe care nu le avem */
+.text {
+  color: #3d4450;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* steagurile limbilor, cu un contur fin, ca partile albe sa nu se piarda pe fondul alb */
+.steaguri {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.steag {
+  display: block;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(11, 15, 20, 0.12);
+}
+
+/* „+9”: cate limbi mai are site-ul */
+.inPlus {
+  margin-left: 2px;
+  color: #5b6270;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ascuns {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

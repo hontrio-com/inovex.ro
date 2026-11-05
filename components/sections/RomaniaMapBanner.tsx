@@ -211,7 +211,7 @@ export default function RomaniaMapBanner() {
               margin:        0,
             }}>
               Lucram cu firme din{' '}
-              <em style={{ fontStyle: 'italic', color: '#2B8FCC', fontFamily: 'var(--font-serif)' }}>toate</em>
+              <em style={{ color: '#2B8FCC', fontFamily: 'var(--font-display)' }}>toate</em>
               {' '}colturile tarii
             </h2>
 

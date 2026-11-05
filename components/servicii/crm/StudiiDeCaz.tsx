@@ -78,7 +78,7 @@ export default function StudiiDeCaz() {
             }}
           >
             Ce am construit pentru{' '}
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>alti antreprenori</span>
+            <span style={{ color: '#2B8FCC' }}>alti antreprenori</span>
           </h2>
           <p className="mt-4 text-[#4A5568] text-[0.9375rem] leading-relaxed">
             Fiecare sistem este unic. Acestea sunt exemple de probleme reale pe care le-am rezolvat.

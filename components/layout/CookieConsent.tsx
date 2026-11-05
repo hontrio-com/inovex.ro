@@ -216,7 +216,7 @@ export function CookieConsent() {
                   <h2
                     id="cookie-banner-title"
                     style={{
-                      fontFamily: 'var(--font-serif)',
+                      fontFamily: 'var(--font-display)',
                       fontWeight: 600,
                       fontSize: 18,
                       color: '#fff',

@@ -97,7 +97,7 @@ export function TechMarquee() {
       aria-label="Tehnologii cu care lucrăm"
       style={{
         background: '#fff',
-        borderTop: '1px solid #f3f4f6',
+        // fara linie sus: deasupra e chenarul hero-ului, cu rama lui, pe acelasi alb
         borderBottom: '1px solid #f3f4f6',
         paddingTop: '2.25rem',
         paddingBottom: '2.25rem',
@@ -116,7 +116,7 @@ export function TechMarquee() {
           fontFamily: 'var(--font-body)',
         }}
       >
-        Lucram cu
+        Lucrăm cu tehnologii de top
       </p>
 
       <div style={{ position: 'relative' }}>

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Plus_Jakarta_Sans, Fraunces } from 'next/font/google';
+import { Inter, Manrope } from 'next/font/google';
 import './globals.css';
 import { Suspense } from 'react';
 import Script from 'next/script';
@@ -8,24 +8,17 @@ import { MetaPixel } from '@/components/analytics/MetaPixel';
 import { OpenAIPixel } from '@/components/analytics/OpenAIPixel';
 import { LinkedInInsight } from '@/components/analytics/LinkedInInsight';
 
+// Tipografia site-ului: doar doua fonturi. Inter pentru text, Manrope pentru titluri.
+// latin-ext se preincarca si el: contine ă, ș, ț.
 const inter = Inter({
   variable: '--font-body',
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
   display: 'swap',
 });
 
-const jakartaSans = Plus_Jakarta_Sans({
+const manrope = Manrope({
   variable: '--font-display',
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-  display: 'swap',
-});
-
-const fraunces = Fraunces({
-  variable: '--font-serif',
-  subsets: ['latin'],
-  weight: ['400', '600', '700'],
-  style: ['italic', 'normal'],
+  subsets: ['latin', 'latin-ext'],
   display: 'swap',
 });
 
@@ -93,7 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="ro"
-      className={`${inter.variable} ${jakartaSans.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${inter.variable} ${manrope.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <GoogleTagManager />

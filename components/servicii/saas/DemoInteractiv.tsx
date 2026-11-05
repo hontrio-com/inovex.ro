@@ -84,7 +84,7 @@ export default function DemoInteractiv() {
             className="mb-4"
           >
             Exploreaza un exemplu real de aplicatie{' '}
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>SaaS</span>
+            <span style={{ color: '#2B8FCC' }}>SaaS</span>
           </h2>
           <p className="text-[#4A5568] text-[0.9375rem] leading-relaxed">
             Navigheza prin toate sectiunile unui dashboard real. Datele sunt

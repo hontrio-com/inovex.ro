@@ -1,0 +1,95 @@
+/* Pastila din titlul hero-ului: acelasi negru si aceleasi colturi ca butoanele. Totul e in em, ca
+   sa urmeze marimea titlului pe orice ecran. */
+
+.pastila {
+  position: relative;
+  display: inline-block;
+  /* latimea pusa din JS e a textului; marginile interioare se adauga peste */
+  box-sizing: content-box;
+  /* randul din pastila e putin mai strans decat al titlului (1.04 fata de 1.1), iar dedesubt are
+     loc de coada lui g si p si de virgula lui ț si ș; asa textul sta la mijloc */
+  padding: 0 0.26em 0.22em;
+  border-radius: 0.22em;
+  background: #0b0f14;
+  color: #fff;
+  line-height: 1.04;
+  /* o linie fina de lumina sus si o umbra scurta dedesubt, ca o tasta */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 1px 2px rgba(11, 15, 20, 0.18),
+    0 10px 20px -12px rgba(11, 15, 20, 0.45);
+  vertical-align: baseline;
+  transition: width 0.6s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.masura {
+  visibility: hidden;
+  white-space: nowrap;
+}
+
+/* cat toata pastila, cu colturile ei: cuvintele care intra si ies se vad doar prin ea */
+.fereastra {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.cuvant {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  white-space: nowrap;
+  /* la mijloc, mutat cu jumatate din spatierea negativa a titlului (--litere, din Hero), care se
+     pune si dupa ultima litera */
+  translate: calc(-50% + var(--litere, 0em) / 2) 0;
+  transition:
+    transform 0.6s cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 0.4s ease,
+    filter 0.5s ease;
+}
+
+.cuvant[data-stare='activ'] {
+  transition-delay: 0.05s;
+}
+
+.cuvant[data-stare='iese'] {
+  opacity: 0;
+  filter: blur(4px);
+  transform: translateY(-70%);
+}
+
+/* asteapta sub pastila, nevazut; ajunge acolo dintr-o data */
+.cuvant[data-stare='asteapta'] {
+  opacity: 0;
+  filter: blur(4px);
+  transform: translateY(70%);
+  transition: none;
+}
+
+/* Pe telefon pastila sta singura pe rand si un cuvant foarte lung („website-uri de prezentare”)
+   n-ar incapea la marimea titlului: se micsoreaza putin. Inaltimea randului ramane a pastilei
+   (1.04 / 0.86 = 1.21), ca textul sa stea tot la mijlocul ei. */
+@media (max-width: 639.98px) {
+  .cuvant[data-lung] {
+    font-size: 0.86em;
+    line-height: 1.21;
+  }
+}
+
+/* daca setarea se schimba cu pagina deschisa: cuvintele doar se inlocuiesc, fara miscare */
+@media (prefers-reduced-motion: reduce) {
+  .pastila {
+    transition: none;
+  }
+
+  .cuvant {
+    transition: opacity 0.3s ease;
+  }
+
+  .cuvant[data-stare] {
+    filter: none;
+    transform: none;
+    transition-delay: 0s;
+  }
+}

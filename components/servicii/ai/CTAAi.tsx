@@ -140,7 +140,7 @@ export default function CTAAi() {
           {...makeMotion(1)}
         >
           Cate ore pierde echipa ta azi pe sarcini pe care le-ar putea face{' '}
-          <span style={{ fontStyle: 'italic', color: '#4AADE8' }}>AI-ul</span>?
+          <span style={{ color: '#4AADE8' }}>AI-ul</span>?
         </motion.h2>
 
         {/* Subtitle */}

@@ -1,0 +1,416 @@
+/* Portofoliul de pe prima pagina, in stilul serviciilor (Servicii.module.css): acelasi titlu in doua
+   tonuri, acelasi fundal gri sub capturi, acelasi buton negru si, pe ecranele mari, acelasi chenar
+   cu contur fin (rama de sticla e doar la hero). Pe telefon si tableta, fiecare proiect e un card separat. */
+
+.portofoliu {
+  padding: 56px var(--rama) 64px;
+  background: #fff;
+}
+
+/* ─── Titlul sectiunii, ca la servicii ─── */
+
+.cap {
+  max-width: 760px;
+  margin: 0 auto 36px;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.titlu {
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: clamp(30px, 7.4vw, 40px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+/* pe pagina /portofoliu, sectiunea incepe sub antetul fix */
+.portofoliu.pagina {
+  padding-top: calc(var(--rama) + 60px + 32px);
+}
+
+@media (min-width: 1024px) {
+  .portofoliu.pagina {
+    padding-top: calc(var(--rama) + 60px + 56px);
+  }
+}
+
+/* calea de pe pagina /portofoliu, deasupra titlului */
+.cale {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  color: #8b919c;
+  font-size: 13.5px;
+}
+
+.cale a {
+  color: #5b6270;
+}
+
+.cale [aria-current] {
+  color: #0b0f14;
+  font-weight: 500;
+}
+
+/* nota de sub textul paginii /portofoliu */
+.nota {
+  max-width: 34em;
+  margin: 14px auto 0;
+  color: #8b919c;
+  font-size: 14.5px;
+  line-height: 1.55;
+  text-wrap: balance;
+}
+
+.nota a {
+  color: #0b0f14;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(11, 15, 20, 0.3);
+  text-underline-offset: 3px;
+}
+
+.lead {
+  max-width: 34em;
+  margin: 16px auto 0;
+  color: #5b6270;
+  font-size: 16px;
+  line-height: 1.6;
+  text-wrap: balance;
+}
+
+/* ─── Proiectele ─── */
+
+.chenar {
+  position: relative;
+}
+
+.grila {
+  display: grid;
+  gap: 16px;
+}
+
+.celula {
+  overflow: hidden;
+  border-radius: var(--rama-raza);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(11, 15, 20, 0.08),
+    0 1px 3px rgba(11, 15, 20, 0.05),
+    0 18px 36px -28px rgba(11, 15, 20, 0.22);
+}
+
+/* pe telefon, doar primele proiecte; restul, de la 640px */
+.celula[data-in-plus] {
+  display: none;
+}
+
+.proiect {
+  display: block;
+  height: 100%;
+  padding: 12px 12px 20px;
+  border-radius: inherit;
+  color: #0b0f14;
+}
+
+/* inelul de focus, in interiorul proiectului: celula si grila taie tot ce iese din ele */
+.proiect:focus-visible {
+  outline-offset: -4px;
+}
+
+/* captura, intr-o fereastra de browser care urca din fundalul gri, ca la servicii */
+.vizual {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  background: radial-gradient(120% 95% at 50% 30%, #eceff2 0%, #c3c7cd 55%, #b1b6be 100%);
+}
+
+/* granulatia de pe fundal, ca la servicii */
+.vizual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* fereastra iese putin pe jos, ca sa para ca urca din fundal */
+.fereastra {
+  position: absolute;
+  top: 10%;
+  right: 8%;
+  bottom: -12px;
+  left: 8%;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(11, 15, 20, 0.06),
+    0 2px 4px rgba(11, 15, 20, 0.06),
+    0 24px 48px -24px rgba(11, 15, 20, 0.4);
+}
+
+.bara {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 26px;
+  padding: 0 10px;
+  background: #f4f4f4;
+}
+
+.butoane {
+  display: flex;
+  flex: none;
+  gap: 5px;
+}
+
+.butoane i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d2d3d3;
+}
+
+.adresa {
+  overflow: hidden;
+  min-width: 0;
+  margin-left: 6px;
+  padding: 2px 12px;
+  border-radius: 99px;
+  background: #fff;
+  color: #6b7280;
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* sub bara, partea de sus a paginii; se termina unde se termina fundalul */
+.captura {
+  position: absolute;
+  top: 26px;
+  right: 0;
+  bottom: 12px;
+  left: 0;
+  overflow: hidden;
+  background: #f4f5f7;
+}
+
+.imagine {
+  object-fit: cover;
+  object-position: 50% 0%;
+  transition: object-position 1.2s ease;
+}
+
+.text {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 14px;
+  padding: 18px 6px 0;
+}
+
+.nume {
+  grid-column: 1;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+
+.descriere {
+  grid-column: 1;
+  margin-top: 4px;
+  color: #5b6270;
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.sageata {
+  display: grid;
+  grid-row: 1;
+  grid-column: 2;
+  margin-block: -7px;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #f0f1f3;
+  color: #0b0f14;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.sageata svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* textul pentru cititoarele de ecran, ascuns pe ecran */
+.ascuns {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ─── Butonul de sub proiecte, ca la servicii ─── */
+
+.actiuni {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.primar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 12px;
+  background: #0b0f14;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.primar svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.2s ease;
+}
+
+.proiect:focus-visible .sageata {
+  background: #0b0f14;
+  color: #fff;
+}
+
+@media (hover: hover) {
+  .proiect:hover .sageata {
+    background: #0b0f14;
+    color: #fff;
+  }
+
+  .primar:hover {
+    background: #2a3039;
+  }
+
+  .primar:hover svg {
+    transform: translateX(2px);
+  }
+}
+
+/* cat timp proiectul e sub mouse sau, fara mouse, la mijlocul ecranului, captura coboara pana la
+   capatul paginii si urca inapoi, pe rand (ListaProiecte; 6s, ca DRUM de acolo) */
+.celula[data-derulare='jos'] .imagine {
+  object-position: 50% 100%;
+  transition: object-position 6s ease-in-out;
+}
+
+.celula[data-derulare='sus'] .imagine {
+  object-position: 50% 0%;
+  transition: object-position 6s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .imagine,
+  .primar svg {
+    transition: none;
+  }
+}
+
+/* ─── Marimi ─── */
+
+@media (min-width: 640px) {
+  .portofoliu {
+    padding-top: 72px;
+  }
+
+  .titlu {
+    font-size: 44px;
+  }
+
+  .lead {
+    font-size: 17px;
+  }
+
+  .grila {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .celula[data-in-plus] {
+    display: block;
+  }
+}
+
+/* un singur chenar, cu proiectele despartite de linii fine */
+@media (min-width: 1024px) {
+  .portofoliu {
+    padding: 88px var(--rama) 104px;
+  }
+
+  .cap {
+    max-width: 1040px;
+    margin-bottom: 52px;
+  }
+
+  .titlu {
+    font-size: 52px;
+  }
+
+  .lead {
+    font-size: 18px;
+  }
+
+
+  /* liniile dintre proiecte sunt golul de 1px dintre celule, pe fundalul gri al grilei */
+  .grila {
+    position: relative;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    overflow: hidden;
+    border-radius: var(--rama-raza);
+    background: #eceef1;
+    box-shadow:
+      0 0 0 1px rgba(11, 15, 20, 0.08),
+      0 1px 3px rgba(11, 15, 20, 0.05);
+  }
+
+  .grila .celula {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .proiect {
+    padding: 24px 24px 30px;
+  }
+
+  .actiuni {
+    margin-top: 44px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .titlu {
+    font-size: 56px;
+  }
+}

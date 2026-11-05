@@ -1,0 +1,350 @@
+/* Intrebarile frecvente, in stilul prezentei nationale (Prezenta.module.css): acelasi rand cu textul
+   intr-o parte, aceleasi titluri in doua tonuri, linii fine si butoane; pe ecranele mari, acelasi
+   chenar cu contur fin (rama de sticla e doar la hero), iar pe telefon si tableta un card. */
+
+.intrebari {
+  padding: 8px var(--rama) 64px;
+  background: #fff;
+}
+
+.chenar {
+  position: relative;
+}
+
+.card {
+  display: grid;
+  /* clip, nu hidden: cu hidden, textul de pe desktop n-ar mai ramane lipit pe ecran (sticky) */
+  overflow: clip;
+  border-radius: var(--rama-raza);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(11, 15, 20, 0.08),
+    0 1px 3px rgba(11, 15, 20, 0.05),
+    0 18px 36px -28px rgba(11, 15, 20, 0.22);
+}
+
+/* ─── Textul, ca la prezenta ─── */
+
+.text {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 28px 22px 26px;
+}
+
+/* iconita, intr-o casuta gri */
+.icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #f4f5f7;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.06);
+  color: #0b0f14;
+}
+
+.icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.titlu {
+  margin-top: 22px;
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.descriere {
+  max-width: 30em;
+  margin-top: 14px;
+  color: #5b6270;
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+/* butoanele, ca la prezenta: negru plin si gri */
+.actiuni {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.primar,
+.secundar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.primar {
+  background: #0b0f14;
+  color: #fff;
+}
+
+.primar svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.2s ease;
+}
+
+.secundar {
+  background: #f0f1f3;
+  color: #0b0f14;
+}
+
+.secundar svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* cand butoanele nu incap alaturi, fiecare ia tot randul */
+@container (max-width: 339.98px) {
+  .actiuni {
+    align-self: stretch;
+  }
+
+  .primar,
+  .secundar {
+    flex: 1 1 auto;
+  }
+}
+
+/* ─── Intrebarile ─── */
+
+.lista {
+  padding: 0 22px 10px;
+}
+
+.intrebare + .intrebare {
+  border-top: 1px solid #eceef1;
+}
+
+/* pe telefon, prima intrebare e despartita de text printr-o linie */
+.intrebare:first-child {
+  border-top: 1px solid #eceef1;
+}
+
+.rand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.rand::-webkit-details-marker {
+  display: none;
+}
+
+/* inelul de focus, in interiorul randului: cardul taie tot ce iese din el */
+.rand:focus-visible {
+  border-radius: 8px;
+  outline-offset: -2px;
+}
+
+.q {
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 16.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+}
+
+/* plusul, intr-un cerc gri, ca sageata de la portofoliu; deschis, devine x pe negru */
+.plus {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f0f1f3;
+  color: #0b0f14;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.plus svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.25s ease;
+}
+
+.intrebare[open] .plus {
+  background: #0b0f14;
+  color: #fff;
+}
+
+.intrebare[open] .plus svg {
+  transform: rotate(45deg);
+}
+
+.a {
+  max-width: 40em;
+  padding: 0 48px 22px 0;
+  color: #5b6270;
+  font-size: 15.5px;
+  line-height: 1.65;
+}
+
+/* raspunsul se deschide lin, unde browserul stie (Chrome, Edge); in rest, deodata */
+@supports selector(::details-content) {
+  .intrebare {
+    interpolate-size: allow-keywords;
+  }
+
+  .intrebare::details-content {
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition:
+      height 0.3s ease,
+      opacity 0.3s ease,
+      content-visibility 0.3s allow-discrete;
+  }
+
+  .intrebare[open]::details-content {
+    height: auto;
+    opacity: 1;
+  }
+}
+
+@media (hover: hover) {
+  .rand:hover .plus {
+    background: #e6e8eb;
+  }
+
+  .intrebare[open] .rand:hover .plus {
+    background: #2a3039;
+  }
+
+  .primar:hover {
+    background: #2a3039;
+  }
+
+  .secundar:hover {
+    background: #e6e8eb;
+  }
+
+  .primar:hover svg {
+    transform: translateX(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primar svg,
+  .plus svg,
+  .intrebare::details-content {
+    transition: none;
+  }
+}
+
+/* ─── Marimi ─── */
+
+@media (min-width: 640px) {
+  .text {
+    padding: 40px 40px 32px;
+  }
+
+  .titlu {
+    font-size: 30px;
+  }
+
+  .lista {
+    padding: 0 40px 16px;
+  }
+
+  .q {
+    font-size: 17.5px;
+  }
+}
+
+/* textul si intrebarile alaturi, intr-un chenar ca al hero-ului */
+@media (min-width: 1024px) {
+  .intrebari {
+    padding: 12px var(--rama) 104px;
+  }
+
+
+  /* intre text si intrebari, o linie fina pe toata inaltimea */
+  .card {
+    position: relative;
+    grid-template-columns: 5fr 7fr;
+    box-shadow:
+      0 0 0 1px rgba(11, 15, 20, 0.08),
+      0 1px 3px rgba(11, 15, 20, 0.05);
+  }
+
+  /* textul ramane pe ecran cat timp derulezi prin intrebari */
+  .text {
+    position: sticky;
+    top: 96px;
+    align-self: start;
+    padding: 56px;
+  }
+
+  .titlu {
+    font-size: 32px;
+  }
+
+  .descriere {
+    font-size: 16px;
+  }
+
+  .lista {
+    padding: 28px 56px;
+    border-left: 1px solid #eceef1;
+  }
+
+  .intrebare:first-child {
+    border-top: 0;
+  }
+
+  .rand {
+    padding: 24px 0;
+  }
+
+  .q {
+    font-size: 19px;
+  }
+
+  .a {
+    padding-bottom: 26px;
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .text {
+    padding: 64px 72px;
+  }
+
+  .titlu {
+    font-size: 36px;
+  }
+
+  .lista {
+    padding: 36px 72px;
+  }
+}

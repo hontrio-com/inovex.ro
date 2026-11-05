@@ -88,7 +88,7 @@ export default function DemoCrm() {
             className="mb-4"
           >
             Exploreaza un CRM real, construit pentru{' '}
-            <span style={{ fontStyle: 'italic', color: '#2B8FCC' }}>vanzari romanesti</span>
+            <span style={{ color: '#2B8FCC' }}>vanzari romanesti</span>
           </h2>
           <p className="text-[#4A5568] text-[0.9375rem] leading-relaxed">
             Navigheza prin toate sectiunile unui CRM real. Datele sunt demonstrative, dar interfata este identica cu ce construim pentru clientii nostri.

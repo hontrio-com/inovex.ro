@@ -102,7 +102,7 @@ export function SignClient({ token, contractNumber, title, content, clientName, 
         {/* Contract */}
         <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: 14, padding: '36px 40px', marginBottom: 20, maxHeight: 480, overflowY: 'auto' }}>
           {title && <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', marginBottom: 16 }}>{title}</div>}
-          <div style={{ fontFamily: 'Georgia, serif', fontSize: '0.92rem', color: '#1e293b', lineHeight: 1.7 }} dangerouslySetInnerHTML={{ __html: content }} />
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.92rem', color: '#1e293b', lineHeight: 1.7 }} dangerouslySetInnerHTML={{ __html: content }} />
         </div>
 
         {/* Semnare */}

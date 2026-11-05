@@ -1,0 +1,81 @@
+/* Stilurile animatiei din casuta „Aplicații web și SaaS”, ca in fisierul original. Interfata e
+   construita din cod (filmAplicatii.ts), cu clasele de acolo; aici sunt valabile doar in scena ei.
+   Scena si bara ferestrei sunt in Animatie.module.css. */
+
+.aplicatii :global(.win) {
+  position: absolute;
+  top: 150px;
+  left: 200px;
+  width: 1060px;
+  height: 860px;
+  overflow: hidden;
+  border-radius: 22px;
+  background: var(--ground);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.1),
+    0 0 0 2px color-mix(in srgb, var(--second) 8%, transparent);
+}
+
+/* titlurile si cifrele mari */
+.aplicatii :global(.disp) {
+  font-family: var(--display, var(--sans, system-ui, sans-serif));
+  letter-spacing: -0.02em;
+}
+
+.aplicatii :global(.card) {
+  border-radius: 16px;
+  background: var(--ground);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--second) 6%, transparent),
+    0 14px 36px -16px rgba(0, 0, 0, 0.18),
+    0 0 0 1px color-mix(in srgb, var(--second) 6%, transparent);
+}
+
+.aplicatii :global(.chip) {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 11px;
+  background: var(--accent);
+  color: var(--main);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* partile arhitecturii, cu iconita lor */
+.aplicatii :global(.node) {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  border-radius: 14px;
+  background: var(--ground);
+  box-shadow:
+    0 0 0 1.5px color-mix(in srgb, var(--second) 12%, transparent),
+    0 10px 24px -14px rgba(0, 0, 0, 0.2);
+}
+
+.aplicatii :global(.nic) {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--main);
+}
+
+/* panourile si cursorul sunt in negrul Hontrio */
+.aplicatii :global(.r-arch),
+.aplicatii :global(.b-bill),
+.aplicatii :global(.c-scale),
+.aplicatii :global(.u-cur) {
+  --main: #18181b;
+  --accent: #f4f4f5;
+}
