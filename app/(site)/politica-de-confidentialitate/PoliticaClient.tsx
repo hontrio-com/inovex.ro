@@ -206,7 +206,7 @@ function JsonLd() {
     '@type': 'WebPage',
     name: 'Politica de Confidentialitate Inovex',
     url: 'https://inovex.ro/politica-de-confidentialitate',
-    dateModified: '2026-04-01',
+    dateModified: '2026-11-05',
   };
 
   return (
@@ -319,7 +319,7 @@ export default function PoliticaClient() {
           }}
         >
           <span style={{ fontSize: 13, color: '#64748B' }}>
-            Ultima actualizare: 1 aprilie 2026
+            Ultima actualizare: 5 noiembrie 2026
           </span>
           <span style={{ fontSize: 13, color: '#64748B' }}>Versiunea 1.0</span>
 
@@ -779,6 +779,11 @@ export default function PoliticaClient() {
                   Manager, Google Ads; acoperit de SCC
                 </Item>
                 <Item>
+                  LinkedIn Ireland Unlimited Company (Irlanda) - LinkedIn Insight Tag, pentru
+                  masurarea campaniilor LinkedIn Ads, doar cu acordul tau pentru cookie-urile de
+                  marketing; datele pot ajunge la LinkedIn Corporation (SUA), transfer acoperit de SCC
+                </Item>
+                <Item>
                   Resend Inc. (SUA) - serviciu de trimitere emailuri tranzactionale; acoperit de
                   SCC
                 </Item>
@@ -1018,7 +1023,7 @@ export default function PoliticaClient() {
                   bannerul de cookie-uri.
                 </Item>
                 <Item>
-                  c) Cookie-uri de marketing: utilizam Google Ads si TikTok Pixel pentru masurarea
+                  c) Cookie-uri de marketing: utilizam Google Ads, TikTok Pixel si LinkedIn Insight Tag pentru masurarea
                   eficientei campaniilor publicitare. Poti dezactiva aceste cookie-uri din bannerul
                   de cookie-uri.
                 </Item>
@@ -1255,7 +1260,7 @@ export default function PoliticaClient() {
               <Para>
                 Prezenta Politica de Confidentialitate a fost redactata in conformitate cu
                 Regulamentul (UE) 2016/679 (GDPR) si cu legislatia romana aplicabila in vigoare la
-                data: 1 aprilie 2026.
+                data: 5 noiembrie 2026.
               </Para>
             </section>
 

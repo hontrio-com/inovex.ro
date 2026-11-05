@@ -6,6 +6,7 @@ import Script from 'next/script';
 import { GoogleTagManager } from '@/components/analytics/GoogleTagManager';
 import { MetaPixel } from '@/components/analytics/MetaPixel';
 import { OpenAIPixel } from '@/components/analytics/OpenAIPixel';
+import { LinkedInInsight } from '@/components/analytics/LinkedInInsight';
 
 const inter = Inter({
   variable: '--font-body',
@@ -98,6 +99,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <GoogleTagManager />
         <Suspense fallback={null}><MetaPixel /></Suspense>
         <Suspense fallback={null}><OpenAIPixel /></Suspense>
+        <LinkedInInsight />
         <Script
           id="tiktok-pixel"
           strategy="afterInteractive"

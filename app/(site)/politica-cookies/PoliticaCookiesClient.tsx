@@ -136,7 +136,7 @@ const COOKIE_CATEGORIES: CookieCategory[] = [
     borderColor: '#F59E0B',
     textColor: '#92400E',
     description:
-      'Google Ads si TikTok Pixel - masurare conversii campanii. Necesita consimtamant.',
+      'Google Ads, TikTok Pixel si LinkedIn Insight Tag - masurare conversii campanii. Necesita consimtamant.',
     rows: [
       {
         name: '_gcl_au',
@@ -168,6 +168,54 @@ const COOKIE_CATEGORIES: CookieCategory[] = [
         providerUrl: 'https://www.tiktok.com/legal/page/global/privacy-policy',
         purpose: 'TikTok Pixel - identificare vizitator pentru atribuire',
         duration: '1 an',
+        type: 'HTTP',
+      },
+      {
+        name: 'li_sugr',
+        provider: 'linkedin.com',
+        providerUrl: 'https://www.linkedin.com/legal/cookie-policy',
+        purpose: 'LinkedIn Insight Tag - identificare browser pentru masurarea campaniilor LinkedIn',
+        duration: '3 luni',
+        type: 'HTTP',
+      },
+      {
+        name: 'bcookie',
+        provider: 'linkedin.com',
+        providerUrl: 'https://www.linkedin.com/legal/cookie-policy',
+        purpose: 'LinkedIn - identificator de browser',
+        duration: '1 an',
+        type: 'HTTP',
+      },
+      {
+        name: 'lidc',
+        provider: 'linkedin.com',
+        providerUrl: 'https://www.linkedin.com/legal/cookie-policy',
+        purpose: 'LinkedIn - alegerea centrului de date care raspunde cererilor',
+        duration: '24 ore',
+        type: 'HTTP',
+      },
+      {
+        name: 'UserMatchHistory',
+        provider: 'linkedin.com',
+        providerUrl: 'https://www.linkedin.com/legal/cookie-policy',
+        purpose: 'LinkedIn Ads - sincronizarea identificatorului pentru reclame',
+        duration: '30 zile',
+        type: 'HTTP',
+      },
+      {
+        name: 'AnalyticsSyncHistory',
+        provider: 'linkedin.com',
+        providerUrl: 'https://www.linkedin.com/legal/cookie-policy',
+        purpose: 'LinkedIn - momentul ultimei sincronizari a datelor de masurare',
+        duration: '30 zile',
+        type: 'HTTP',
+      },
+      {
+        name: 'li_fat_id',
+        provider: 'linkedin.com',
+        providerUrl: 'https://www.linkedin.com/legal/cookie-policy',
+        purpose: 'LinkedIn Ads - atribuirea conversiilor campaniilor LinkedIn',
+        duration: '30 zile',
         type: 'HTTP',
       },
     ],
@@ -734,7 +782,7 @@ function JsonLd() {
     '@type': 'WebPage',
     name: 'Politica de Cookies Inovex',
     url: 'https://inovex.ro/politica-cookies',
-    dateModified: '2026-04-01',
+    dateModified: '2026-11-05',
   };
 
   return (
@@ -847,7 +895,7 @@ export default function PoliticaCookiesClient() {
           }}
         >
           <span style={{ fontSize: 13, color: '#64748B' }}>
-            Ultima actualizare: 1 aprilie 2026
+            Ultima actualizare: 5 noiembrie 2026
           </span>
           <span style={{ fontSize: 13, color: '#64748B' }}>Versiunea 1.0</span>
 
@@ -1199,7 +1247,7 @@ export default function PoliticaCookiesClient() {
               </Para>
               <Para>
                 Prezenta Politica de Cookies a fost redactata conform Legii 506/2004 si
-                Regulamentului (UE) 2016/679 (GDPR), in vigoare la data: 1 aprilie 2026.
+                Regulamentului (UE) 2016/679 (GDPR), in vigoare la data: 5 noiembrie 2026.
               </Para>
             </section>
 
