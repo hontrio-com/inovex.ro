@@ -3,6 +3,8 @@ import {
   paragraph, heading, separator, primaryButton, metadataFooter,
   quickActionButtons, timeline, contactDirect, smallDisclaimer, esc,
 } from '@/lib/email/layout';
+import { OFERTA, butonPortofoliu, etichetaLimba, type LimbaEmail } from '@/lib/email/texte';
+import { numeServiciu } from '@/lib/i18n/pagini/formulare';
 
 export interface OfertaData {
   serviciu: string;
@@ -13,6 +15,8 @@ export interface OfertaData {
   websiteExistent?: string;
   cumAiAflat?: string;
   ip?: string;
+  /** limba paginii de pe care a venit cererea */
+  limba?: LimbaEmail;
 }
 
 const SERVICIU_COLORS: Record<string, string> = {
@@ -34,7 +38,7 @@ function getServiciuColor(serviciu: string): string {
 /* ── Email INTERN ── */
 
 export function internSubject(d: OfertaData): string {
-  return `[OFERTA] ${d.serviciu} - ${d.nume}`;
+  return `${etichetaLimba(d.limba ?? 'ro')}[OFERTA] ${d.serviciu} - ${d.nume}`;
 }
 
 export function internHtml(d: OfertaData): string {
@@ -82,7 +86,7 @@ export function internHtml(d: OfertaData): string {
       ${primaryButton('https://inovex.ro/admin/bids', 'Deschide in admin', '#10B981')}
     </div>
 
-    ${metadataFooter(`Primit la: ${submittedAt} &nbsp;·&nbsp; Sursa: Formular Oferta${d.ip ? ` &nbsp;·&nbsp; IP: ${esc(d.ip)}` : ''}`)}
+    ${metadataFooter(`Primit la: ${submittedAt} &nbsp;·&nbsp; Sursa: Formular Oferta${d.limba && d.limba !== 'ro' ? ` (${d.limba.toUpperCase()})` : ''}${d.ip ? ` &nbsp;·&nbsp; IP: ${esc(d.ip)}` : ''}`)}
   `;
 
   return buildEmail({
@@ -94,33 +98,36 @@ export function internHtml(d: OfertaData): string {
 
 /* ── Email CLIENT ── */
 
-export function clientSubject(): string {
-  return 'Cererea ta de oferta a fost primita | Inovex';
+export function clientSubject(lang: LimbaEmail = 'ro'): string {
+  return OFERTA[lang].subiect;
 }
 
-export function clientHtml(d: OfertaData): string {
+export function clientHtml(d: OfertaData, lang: LimbaEmail = 'ro'): string {
+  const t = OFERTA[lang];
+  // serviciul, cu numele lui in limba clientului (in romana, valoarea din formular, ca pana acum)
+  const serviciu = lang === 'ro' ? d.serviciu : numeServiciu(lang, d.serviciu);
   const preview = d.descriereProiect.length > 200
     ? d.descriereProiect.slice(0, 200) + '...'
     : d.descriereProiect;
 
   const content = `
-    ${heading(`Buna, ${d.nume}!`)}
+    ${heading(t.salut(d.nume))}
 
-    ${paragraph(`Am primit cererea ta de oferta pentru <strong>${esc(d.serviciu)}</strong> si ne-am apucat deja sa o analizam. Un specialist din echipa Inovex te va contacta in maximum <strong>24 de ore</strong> cu o propunere tehnica personalizata.`)}
+    ${paragraph(t.primit(esc(serviciu)))}
 
     <div style="margin:8px 40px 20px;padding:16px 20px;background-color:#F8FAFB;
                 border:1px solid #E8ECF0;border-radius:8px;">
       <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;
                   color:#0D1117;margin-bottom:10px;">
-        Rezumatul cererii tale
+        ${t.rezumat}
       </div>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-        ${dataRow('Serviciu solicitat', d.serviciu)}
-        ${d.websiteExistent ? dataRow('Website existent', d.websiteExistent) : ''}
+        ${dataRow(t.serviciu, serviciu)}
+        ${d.websiteExistent ? dataRow(t.website, d.websiteExistent) : ''}
       </table>
       <div style="margin-top:12px;padding-top:12px;border-top:1px solid #E8ECF0;">
         <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#8A94A6;margin-bottom:6px;">
-          Descrierea ta:
+          ${t.descriere}
         </div>
         <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#4A5568;
                     line-height:1.7;font-style:italic;white-space:pre-wrap;">
@@ -129,29 +136,26 @@ export function clientHtml(d: OfertaData): string {
       </div>
     </div>
 
-    ${sectionHeading('Ce urmeaza?')}
+    ${sectionHeading(t.urmeaza)}
     <div style="padding:0 40px 8px;">
-      ${timeline([
-        { title: 'Analiza cerere', desc: 'Echipa noastra analizeaza detaliile proiectului tau si pregateste intrebarile relevante.' },
-        { title: 'Te contactam', desc: 'Un specialist te suna sau iti trimite email in maximum 24 de ore.' },
-        { title: 'Propunere detaliata', desc: 'Primesti o propunere tehnica completa cu tot ce include proiectul si termenul de livrare.' },
-      ])}
+      ${timeline(t.pasi)}
     </div>
 
     ${separator()}
-    ${contactDirect()}
+    ${contactDirect(lang)}
 
     <div style="text-align:center;padding:16px 40px 8px;">
-      ${primaryButton('https://inovex.ro/portofoliu', 'Exploreaza portofoliul nostru')}
+      ${primaryButton(...butonPortofoliu(lang))}
     </div>
 
     ${separator()}
-    ${smallDisclaimer('Daca nu ai completat tu aceasta cerere sau e o greseala, ignora acest email. Nu ai niciun angajament.')}
+    ${smallDisclaimer(t.avertisment)}
   `;
 
   return buildEmail({
     content,
-    previewText: 'Cererea ta a fost primita. Te contactam in 24 de ore.',
-    headerTag: 'Confirmare',
+    previewText: t.previzualizare,
+    headerTag: t.eticheta,
+    lang,
   });
 }

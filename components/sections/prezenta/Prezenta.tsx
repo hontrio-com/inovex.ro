@@ -1,7 +1,11 @@
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
-import { ArrowRight, MapPin } from 'lucide-react';
+import { ArrowRight, Globe, MapPin } from 'lucide-react';
+import { cale, linkPagina, type Limba } from '@/lib/i18n/config';
+import { dictionar } from '@/lib/i18n/dictionare';
+import { textAcasa } from '@/lib/i18n/pagini/acasa';
 import { Aprindere } from './Aprindere';
+import { Glob } from './Glob';
 import HARTA from './harta.json';
 import { Numar } from './Numar';
 import styles from './Prezenta.module.css';
@@ -12,7 +16,9 @@ import styles from './Prezenta.module.css';
    granita. Cand sectiunea ajunge pe ecran, judetele se aprind pe rand, intr-o ordine amestecata, pana
    se umple toata tara (Aprindere). Pe ecranele mari, totul sta intr-un chenar ca al hero-ului; pe
    telefon si tableta, intr-un card. Harta e generata cu scripts/harta-prezenta.mjs din public/ro.svg
-   (harta.json). */
+   (harta.json).
+   In engleza, germana si franceza (2026-11-05, cerut de proprietar): in locul hartii, un glob (Glob.tsx) si
+   textul „lucram cu afaceri din toata lumea”, in acelasi chenar. */
 
 // numele judetelor, cu diacritice, pentru eticheta de la trecerea cu mouse-ul
 const NUME: Record<string, string> = {
@@ -67,7 +73,8 @@ const CIFRE = [
   { n: 100, dupa: '%', text: 'colaborare online' },
 ];
 
-export function Prezenta() {
+export function Prezenta({ lang = 'ro' }: { lang?: Limba }) {
+  if (lang !== 'ro') return <PrezentaGlob lang={lang} />;
   return (
     <section className={styles.prezenta} aria-labelledby="prezenta-titlu">
       <Aprindere className={styles.chenar}>
@@ -135,6 +142,59 @@ export function Prezenta() {
           </div>
         </div>
       </Aprindere>
+    </section>
+  );
+}
+
+// limbile straine: acelasi chenar si acelasi text, cu globul in locul hartii
+function PrezentaGlob({ lang }: { lang: Limba }) {
+  const t = textAcasa(lang).glob;
+  const d = dictionar(lang);
+  return (
+    <section className={styles.prezenta} aria-labelledby="prezenta-titlu">
+      <div className={styles.chenar}>
+        <div className={styles.card}>
+          <div className={styles.text}>
+            <span className={styles.icon}>
+              <Globe strokeWidth={1.6} aria-hidden />
+            </span>
+            <h2 id="prezenta-titlu" className={styles.titlu}>
+              {t.titlu}
+            </h2>
+            <p className={styles.descriere}>{t.descriere}</p>
+            <ul className={styles.cifre}>
+              {t.cifre.map((c) => (
+                <li key={c.text}>
+                  <span aria-hidden>
+                    <span className={styles.valoare}>
+                      <Numar n={c.n} />
+                      {c.dupa}
+                    </span>
+                    <span className={styles.ce}>{c.text}</span>
+                  </span>
+                  <span className={styles.ascuns}>
+                    {c.n}
+                    {c.dupa} {c.text}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <div className={styles.actiuni}>
+              <Link href={cale(lang, '/oferta')} className={styles.primar}>
+                {d.antet.oferta}
+                <ArrowRight aria-hidden />
+              </Link>
+              <Link href={linkPagina(lang, '/portofoliu') ?? cale(lang, '/')} className={styles.secundar}>
+                {d.servicii.veziPortofoliul}
+              </Link>
+            </div>
+          </div>
+
+          <div className={styles.vizual}>
+            <Glob aria={t.aria} />
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

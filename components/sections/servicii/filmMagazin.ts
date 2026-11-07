@@ -8,6 +8,7 @@
    cu cupon, plata, apoi factura si AWB-ul. Redarea si uneltele comune sunt in film.ts. */
 
 import {
+  traducator,
   clamp01,
   eio,
   eo,
@@ -27,6 +28,9 @@ import {
   toate,
   typist,
 } from './film';
+import type { Limba } from '@/lib/i18n/config';
+import { bani, harta } from './texte';
+import { DINAMIC, STATIC, panouBanner } from './texte/magazin';
 
 const DIR = '/imagini/servicii/acasa/animatie-magazin';
 
@@ -45,10 +49,9 @@ const ZOOM_ANTET = 1.38;
 // cat coboara camera in ultima scena, ca sa intre in cadru si documentele
 const COBORARE = 81;
 
-const ADRESA = 'magazinul-tau.ro';
-const CUPON = 'reducere20';
-const PLATA_A = 'Plătește 1.383,20 lei';
-const PLATA_B = 'Plată confirmată';
+// limba animatiei si textele schimbate in timpul ei (adresa, cuponul, plata, sumele): le alege porneste()
+let L: Limba = 'ro';
+let D = DINAMIC.ro;
 
 /* ─── Interfata ─── */
 
@@ -118,12 +121,24 @@ function antet() {
   return m;
 }
 
+// un banner din slider; in limbile straine, cu panoul si textul tradus peste textul romanesc din poza
+function slide(i: number) {
+  const src = DIR + '/banner-' + (i + 1) + '.webp';
+  if (L === 'ro') return '<img class="u-sl" alt="" src="' + src + '" style="position:absolute;left:' + i * 996 + 'px;top:0;width:996px;height:363px">';
+  return (
+    '<div class="u-sl" style="position:absolute;left:' + i * 996 + 'px;top:0;width:996px;height:363px">' +
+    '<img alt="" src="' + src + '" style="position:absolute;left:0;top:0;width:996px;height:363px">' +
+    panouBanner(L, i, 996) +
+    '</div>'
+  );
+}
+
 function banner() {
   const sageata = (pozitie: string, d: string) =>
     '<div class="pc" style="' + pozitie + ':18px;top:160px;width:44px;height:44px;border-radius:50%;background:color-mix(in srgb, var(--ground) 88%, transparent);color:var(--second);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.12)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="' + d + '"/></svg></div>';
   let m = '<div class="pc u-hero" style="left:32px;top:172px;width:996px;height:363px;border-radius:16px;overflow:hidden;background:var(--accent)">';
   m += '<div class="pc u-track" style="left:0;top:0;width:2988px;height:363px">';
-  for (let i = 0; i < 3; i++) m += '<img class="u-sl" alt="" src="' + DIR + '/banner-' + (i + 1) + '.webp" style="position:absolute;left:' + i * 996 + 'px;top:0;width:996px;height:363px">';
+  for (let i = 0; i < 3; i++) m += slide(i);
   m += '</div>';
   m += sageata('left', 'M15 5l-7 7 7 7') + sageata('right', 'M9 5l7 7-7 7');
   m += '<div class="pc" style="left:0;right:0;bottom:16px;display:flex;justify-content:center;gap:8px">';
@@ -171,8 +186,8 @@ function plata() {
     '<div class="pc soft" style="left:28px;top:74px;width:324px;height:56px;border-radius:12px;font-size:20px;font-weight:600;line-height:56px;padding-left:20px;letter-spacing:.06em">•••• •••• •••• 4821</div>' +
     '<div class="pc soft" style="left:28px;top:146px;width:154px;height:50px;border-radius:12px;font-size:18px;font-weight:600;line-height:50px;padding-left:20px">12 / 28</div>' +
     '<div class="pc soft" style="left:198px;top:146px;width:154px;height:50px;border-radius:12px;font-size:18px;font-weight:600;line-height:50px;padding-left:20px">•••</div>' +
-    '<div class="blue u-paybtn" style="left:28px;top:226px;width:324px;height:60px;border-radius:14px;font-size:21px">' + PLATA_A + '</div>' +
-    '<div class="pc" style="left:0;right:0;top:298px;display:flex;align-items:center;justify-content:center;gap:9px;font-size:12px;font-weight:600;color:color-mix(in srgb, var(--second) 55%, var(--ground))"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Plăți securizate prin</span><span style="background:var(--second);border-radius:7px;padding:5px 9px;display:flex"><img alt="" src="' + DIR + '/netopia.svg" style="height:20px;width:53px"></span></div>' +
+    '<div class="blue u-paybtn" style="left:28px;top:226px;width:324px;height:60px;border-radius:14px;font-size:21px">' + D.plataA + '</div>' +
+    '<div class="pc" style="left:0;right:0;top:298px;display:flex;align-items:center;justify-content:center;gap:9px;font-size:12px;font-weight:600;color:color-mix(in srgb, var(--second) 55%, var(--ground))"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Plăți securizate prin</span>' + logoPlata() + '</div>' +
     '</div>'
   );
 }
@@ -286,11 +301,6 @@ type Interfata = ReturnType<typeof construieste>;
 
 /* ─── Miscari ─── */
 
-function lei(v: number) {
-  const [a, b] = v.toFixed(2).split('.');
-  return a.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + b + ' lei';
-}
-
 // ft: timpul de la inceputul animatiei
 function slider(q: Interfata, ft: number) {
   const p = eio(seg(ft, 5.9, 6.5)) + eio(seg(ft, 8.3, 8.9));
@@ -314,8 +324,8 @@ function cosGata(q: Interfata) {
   for (const k of ['title', 'mont', 'prog', 'thead', 'row', 'coupon', 'sum'] as const) on(q.k[k]);
   q.k.bar.width = '58%';
   q.k.srow.height = '44px';
-  q.totalEl.textContent = '1.383,20 lei';
-  q.ctextEl.textContent = CUPON;
+  q.totalEl.textContent = bani(L, D.total);
+  q.ctextEl.textContent = D.cupon;
   off(q.hero);
   for (const c of ['c0', 'c1', 'c2', 'c3'] as const) off(q[c]);
 }
@@ -325,7 +335,7 @@ function cosGata(q: Interfata) {
 // fereastra goala, adresa se scrie in bara
 function sceneGol(box: HTMLElement, start: number) {
   const q = construieste(box);
-  const adresa = typist(ADRESA, 0.4, 24);
+  const adresa = typist(D.adresa, 0.4, 24);
   return (t: number) => {
     camera(q, start + t);
     const p = seg(t, -0.45, 0.4);
@@ -340,7 +350,7 @@ function sceneGol(box: HTMLElement, start: number) {
 // camera se apropie de antet cat se construieste, apoi se departeaza si vin banner-ul si produsele
 function sceneDesign(box: HTMLElement, start: number) {
   const q = construieste(box);
-  q.urlEl.textContent = ADRESA;
+  q.urlEl.textContent = D.adresa;
   const HDR = [['logo', 0.45, -60], ['search', 0.7, -60], ['contact', 0.95, -60], ['acct', 1.15, -60], ['heart', 1.35, -60], ['cart', 1.5, -60]] as const;
   return (t: number) => {
     const base = 1 + 0.004 * (start + t);
@@ -371,9 +381,9 @@ function sceneDesign(box: HTMLElement, start: number) {
 // produsul ajunge in cos, se aplica cuponul, apoi plata cu cardul
 function scenePlati(box: HTMLElement, start: number) {
   const q = construieste(box);
-  q.urlEl.textContent = ADRESA;
+  q.urlEl.textContent = D.adresa;
   q.caret.opacity = '0';
-  const cupon = typist(CUPON, 1.5, 22);
+  const cupon = typist(D.cupon, 1.5, 22);
   return (t: number) => {
     const base = 1 + 0.004 * (start + t);
     const k = eio(seg(t, 0.55, 1.25)) * (1 - eio(seg(t, 3.35, 3.95)));
@@ -402,18 +412,18 @@ function scenePlati(box: HTMLElement, start: number) {
     ring(q.k.sum, t, 1.4);
     q.k.bar.width = (58 * eo(seg(t, 1.3, 1.9))).toFixed(1) + '%';
     const scris = cupon(t);
-    q.ctextEl.textContent = scris || 'Cod cupon';
+    q.ctextEl.textContent = scris || D.codCupon;
     q.ctextEl.style.opacity = scris ? '1' : '0.45';
     q.k.apply.transform = 'scale(' + (1 - 0.05 * Math.sin(Math.PI * seg(t, 2.0, 2.15))).toFixed(4) + ')';
     const c = eo(seg(t, 2.1, 2.4));
     q.k.srow.height = (44 * c).toFixed(1) + 'px';
     q.k.srow.opacity = String(c);
-    q.totalEl.textContent = lei(lerp(1729, 1383.2, eio(seg(t, 2.15, 2.55))));
+    q.totalEl.textContent = bani(L, lerp(D.subtotal, D.total, eio(seg(t, 2.15, 2.55))));
     q.k.cta.transform = 'scale(' + (1 - 0.04 * Math.sin(Math.PI * seg(t, 2.65, 2.85))).toFixed(4) + ')';
     fly(q.pay, t, 2.85, 0.5, 420, 0);
     ring(q.pay, t, 3.35);
     const f = seg(t, 3.45, 3.75);
-    q.paybtnEl.textContent = f < 0.5 ? PLATA_A : PLATA_B;
+    q.paybtnEl.textContent = f < 0.5 ? D.plataA : D.plataB;
     q.paybtn.opacity = String(Math.abs(f - 0.5) * 2);
     q.paybtn.transform = 'scale(' + (1 - 0.03 * Math.sin(Math.PI * seg(t, 3.3, 3.5))).toFixed(4) + ')';
   };
@@ -422,9 +432,9 @@ function scenePlati(box: HTMLElement, start: number) {
 // factura se emite singura, AWB-ul se genereaza si coletul pleaca la curier
 function sceneComanda(box: HTMLElement, start: number) {
   const q = construieste(box);
-  q.urlEl.textContent = ADRESA;
+  q.urlEl.textContent = D.adresa;
   q.caret.opacity = '0';
-  q.paybtnEl.textContent = PLATA_B;
+  q.paybtnEl.textContent = D.plataB;
   return (t: number) => {
     q.cam.transform = 'translateY(' + (-COBORARE * eio(seg(t, 0.1, 0.8))).toFixed(1) + 'px) scale(' + (1 + 0.004 * (start + t)) + ')';
     slider(q, start + t);
@@ -450,4 +460,16 @@ const SCENE = [
 ];
 
 // porneste animatia in casuta (vezi pornesteFilmul)
-export const porneste = (cutie: HTMLElement, scena: HTMLElement) => pornesteFilmul(cutie, scena, { scene: SCENE, vedere: VEDERE });
+export const porneste = (cutie: HTMLElement, scena: HTMLElement, lang: Limba = 'ro') => {
+  L = lang;
+  D = DINAMIC[lang];
+  return pornesteFilmul(cutie, scena, { scene: SCENE, vedere: VEDERE, traduce: traducator(harta(STATIC, lang)) });
+};
+
+// sigla procesatorului de plati din formularul de card
+function logoPlata() {
+  return L === 'ro'
+    ? '<span style="background:var(--second);border-radius:7px;padding:5px 9px;display:flex"><img alt="" src="' + DIR + '/netopia.svg" style="height:20px;width:53px"></span>'
+    : '<span style="background:#fff;border-radius:7px;padding:5px 9px;display:flex;box-shadow:0 0 0 1px color-mix(in srgb, var(--second) 14%, transparent)"><img alt="" src="/imagini/servicii/acasa/integrari/stripe.svg" style="height:20px;width:48px"></span>';
+}
+

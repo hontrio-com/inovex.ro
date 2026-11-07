@@ -3,14 +3,15 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
-import { motionPrice, formatLei } from '@/lib/motion-design';
+import { completeaza } from '@/lib/i18n/completeaza';
 import styles from './Motion.module.css';
 
 /**
  * Bara lipita de marginea de jos, cu butonul „Comandă acum”. Apare dupa primul
- * scroll si dispare cat timp formularul de comanda este pe ecran.
+ * scroll si dispare cat timp formularul de comanda este pe ecran. Textele (si pretul deja scris, in lei
+ * sau in euro) vin de la pagina.
  */
-export default function StickyComandaMotion() {
+export default function StickyComandaMotion({ t, pret }: { t: { tare: string; dela: string; buton: string }; pret: string }) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -41,10 +42,10 @@ export default function StickyComandaMotion() {
         >
           <div className={styles.lipitInterior}>
             <p className={styles.lipitText}>
-              <strong>Reclamă video animată, gata în 48 de ore.</strong> De la {formatLei(motionPrice(1))}.
+              <strong>{t.tare}</strong> {completeaza(t.dela, { pret })}
             </p>
             <a href="#comanda" className={styles.primar}>
-              Comandă acum
+              {t.buton}
               <ArrowRight aria-hidden />
             </a>
           </div>

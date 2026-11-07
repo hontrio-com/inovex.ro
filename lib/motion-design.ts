@@ -22,25 +22,41 @@ export function isValidMotionQuantity(n: unknown): n is number {
   return typeof n === 'number' && Number.isInteger(n) && n >= 1 && n <= MOTION_MAX_VIDEOS;
 }
 
+/* ── Moneda (2026-11-06): in romana preturile sunt in lei; in engleza, germana si franceza, in euro,
+   la cursul BNR, rotunjite la euro intregi (asa reducerile raman aceleasi ca in lei). Cursul se schimba
+   doar aici; pagina, plata Stripe si emailurile il iau de aici. ── */
+export type MonedaMotion = 'RON' | 'EUR';
+
+/** Cursul BNR din 6 noiembrie 2026 (curs.bnr.ro/nbrfxrates.xml): 1 EUR = 5,3408 lei. */
+export const CURS_EUR_RON = 5.3408;
+
+export const monedaMotion = (lang: string): MonedaMotion => (lang === 'ro' ? 'RON' : 'EUR');
+
 /**
  * Pretul total, in lei, pentru n videoclipuri. De la 4 videoclipuri reducerea
  * creste cu 3 puncte la fiecare videoclip in plus (35% la 4), pana la 50%.
  * Totalul se rotunjeste la un pret "curat", terminat in 9.
  */
-export function motionPrice(n: number): number {
+function pretLei(n: number): number {
   if (FIXED_TOTALS[n]) return FIXED_TOTALS[n];
   const discount = Math.min(50, 35 + (n - 4) * 3) / 100;
   return Math.round((n * UNIT_PRICE * (1 - discount)) / 10) * 10 - 1;
 }
 
+/** Pretul total pentru n videoclipuri: in lei, sau in euro (pretul in lei la cursul BNR, rotunjit). */
+export function motionPrice(n: number, moneda: MonedaMotion = 'RON'): number {
+  const lei = pretLei(n);
+  return moneda === 'RON' ? lei : Math.round(lei / CURS_EUR_RON);
+}
+
 /** Cat economiseste clientul fata de cumpararea aceluiasi numar de clipuri la bucata. */
-export function motionSavings(n: number): number {
-  return Math.max(0, n * UNIT_PRICE - motionPrice(n));
+export function motionSavings(n: number, moneda: MonedaMotion = 'RON'): number {
+  return Math.max(0, n * motionPrice(1, moneda) - motionPrice(n, moneda));
 }
 
 /** Reducerea, in procente intregi, fata de pretul la bucata. */
-export function motionDiscountPercent(n: number): number {
-  return Math.round((motionSavings(n) / (n * UNIT_PRICE)) * 100);
+export function motionDiscountPercent(n: number, moneda: MonedaMotion = 'RON'): number {
+  return Math.round((motionSavings(n, moneda) / (n * motionPrice(1, moneda))) * 100);
 }
 
 export function motionLabel(n: number): string {
@@ -49,6 +65,19 @@ export function motionLabel(n: number): string {
 
 export function formatLei(amount: number): string {
   return `${amount.toLocaleString('ro-RO')} lei`;
+}
+
+/**
+ * Pretul afisat in limba paginii: 249 lei; €47 (engleza); 47 € (germana); 47 € cu spatiu fin
+ * (franceza). Euro in romana (emailul intern) apare ca „47 EUR”. Sumele sunt numere intregi.
+ */
+export function formatPret(amount: number, moneda: MonedaMotion, lang: string): string {
+  if (moneda === 'RON') return formatLei(amount);
+  const n = Number.isInteger(amount) ? String(amount) : amount.toFixed(2);
+  if (lang === 'en') return `€${n}`;
+  if (lang === 'de') return `${n.replace('.', ',')} €`;
+  if (lang === 'fr') return `${n.replace('.', ',')} €`;
+  return `${n.replace('.', ',')} EUR`;
 }
 
 /** Ce primeste clientul pentru fiecare videoclip, indiferent de pachet. */

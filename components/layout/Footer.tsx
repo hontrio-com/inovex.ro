@@ -1,46 +1,69 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Mail, MapPin, Phone } from 'lucide-react';
-import { DEZVOLTARE_WEB, SOLUTII_COMPLETE, TELEFON } from '@/components/layout/meniu-servicii/date';
+import { DEZVOLTARE_WEB, SOLUTII_COMPLETE } from '@/components/layout/meniu-servicii/date';
 import { LinkTelefon } from '@/components/ui/LinkTelefon';
+import { cale, linkPagina, type Limba } from '@/lib/i18n/config';
+import { dictionar, format } from '@/lib/i18n/dictionare';
+import { SelectorLimba } from './SelectorLimba';
 import { SetariCookies } from './SetariCookies';
 import styles from './Footer.module.css';
 
 /* Subsolul, in stilul redesign-ului (2026-10-29): un chenar alb ca al hero-ului, la --rama de
    marginile ecranului, cu rama de sticla pe ecranele mari. Sus: sigla, descrierea si retelele, apoi
    coloanele de linkuri; jos, sub o linie fina: drepturile, firma, insignele ANPC si setarile de
-   cookies. Telefonul trimite conversia „telefon”, ca in antet. */
-
-// serviciile din meniu, plus video motion design (scos din meniu, pagina ramane)
-const SERVICII = [
-  ...[...DEZVOLTARE_WEB, ...SOLUTII_COMPLETE].map((s) => ({ href: s.href, label: s.titlu })),
-  { href: '/servicii/video-motion-design', label: 'Video motion design' },
-];
-
-const COMPANIE = [
-  { href: '/portofoliu', label: 'Portofoliu' },
-  { href: '/marketplace', label: 'Marketplace' },
-  { href: '/invata-gratuit', label: 'Învață gratuit' },
-  { href: '/oferta', label: 'Solicită ofertă' },
-  { href: '/contact', label: 'Contact' },
-];
-
-const EXTERN = [{ href: 'https://www.novin.ro', label: 'Audit website gratuit' }];
-
-const LEGAL = [
-  { href: '/termeni-si-conditii', label: 'Termeni și condiții' },
-  { href: '/politica-de-confidentialitate', label: 'Politica de confidențialitate' },
-  { href: '/politica-cookies', label: 'Politica de cookies' },
-];
+   cookies. Telefonul trimite conversia „telefon”, ca in antet.
+   Din 2026-11-05 textele vin din dictionarul limbii; Marketplace, Invata gratuit si auditul (novin.ro, site
+   romanesc) sunt doar pentru Romania, deci apar doar in romana. Din 2026-11-07: in EN/DE/FR fara adresa,
+   firma si ANPC (cu link spre datele firmei din termeni), iar jos, langa setarile de cookies, selectorul de
+   limba (mutat din antet; limba se alege automat in proxy.ts). */
 
 const RETELE = [
-  { href: 'https://www.facebook.com/inovex.ro', label: 'Inovex pe Facebook', Icon: FacebookIcon },
-  { href: 'https://www.instagram.com/inovex.ro', label: 'Inovex pe Instagram', Icon: InstagramIcon },
-  { href: 'https://www.tiktok.com/@inovex.ro', label: 'Inovex pe TikTok', Icon: TikTokIcon },
+  { href: 'https://www.facebook.com/inovex.ro', retea: 'Facebook', Icon: FacebookIcon },
+  { href: 'https://www.instagram.com/inovex.ro', retea: 'Instagram', Icon: InstagramIcon },
+  { href: 'https://www.tiktok.com/@inovex.ro', retea: 'TikTok', Icon: TikTokIcon },
 ];
 
-export function Footer() {
+// pastreaza doar linkurile care au unde duce in limba paginii
+const areLink = <T extends { href: string | null }>(l: T): l is T & { href: string } => l.href !== null;
+
+export function Footer({ lang }: { lang: Limba }) {
   const an = new Date().getFullYear();
+  const d = dictionar(lang);
+  const t = d.subsol;
+  const ro = lang === 'ro';
+
+  // serviciile din meniu, plus video motion design (scos din meniu, pagina ramane). In EN/DE/FR, unde pagina
+  // serviciului nu e tradusa, linkul duce la configuratorul lui sau la cererea de oferta (linkPagina); un link
+  // fara inlocuitor nu se afiseaza.
+  const SERVICII = [
+    ...[...DEZVOLTARE_WEB, ...SOLUTII_COMPLETE].map((intern) => ({ href: linkPagina(lang, intern), label: d.servicii.lista[intern]?.titlu })),
+    { href: linkPagina(lang, '/servicii/video-motion-design'), label: d.servicii.motion },
+  ].filter(areLink);
+
+  const COMPANIE = [
+    { href: linkPagina(lang, '/portofoliu'), label: t.portofoliu },
+    ...(ro
+      ? [
+          { href: '/marketplace', label: t.marketplace },
+          { href: '/invata-gratuit', label: t.invataGratuit },
+        ]
+      : []),
+    { href: cale(lang, '/oferta'), label: t.oferta },
+    { href: cale(lang, '/contact'), label: t.contact },
+  ].filter(areLink);
+
+  const EXTERN = ro ? [{ href: 'https://www.novin.ro', label: t.audit }] : [];
+
+  // In EN/DE/FR subsolul nu mai arata adresa, firma si ANPC (cerut de proprietar, 2026-11-07); datele firmei
+  // raman la un clic, in sectiunea 1 din termeni („Impressum” in Germania si „mentions légales” in Franta
+  // sunt obligatorii si trebuie sa fie usor de gasit de pe orice pagina).
+  const LEGAL = [
+    ...(ro ? [] : [{ href: cale(lang, `/termeni-si-conditii#${t.impressumAncora}`), label: t.impressum }]),
+    { href: cale(lang, '/termeni-si-conditii'), label: t.termeni },
+    { href: cale(lang, '/politica-de-confidentialitate'), label: t.confidentialitate },
+    { href: cale(lang, '/politica-cookies'), label: t.cookies },
+  ];
 
   return (
     <footer className={styles.subsol}>
@@ -48,17 +71,14 @@ export function Footer() {
         <div className={styles.card}>
           <div className={styles.sus}>
             <div className={styles.brand}>
-              <Link href="/" aria-label="Inovex, prima pagină" className={styles.logo}>
+              <Link href={cale(lang, '/')} aria-label={d.antet.acasa} className={styles.logo}>
                 <Image src="/imagini/logo-inovex-antet.png" alt="Inovex" width={95} height={22} unoptimized />
               </Link>
-              <p className={styles.despre}>
-                Construim magazine online, website-uri de prezentare și aplicații web care se încarcă rapid,
-                arată profesional și aduc rezultate reale pentru afacerea ta.
-              </p>
+              <p className={styles.despre}>{t.despre}</p>
               <ul className={styles.retele}>
-                {RETELE.map(({ href, label, Icon }) => (
+                {RETELE.map(({ href, retea, Icon }) => (
                   <li key={href}>
-                    <a href={href} target="_blank" rel="noopener noreferrer" aria-label={label}>
+                    <a href={href} target="_blank" rel="noopener noreferrer" aria-label={format(t.retea, { retea })}>
                       <Icon />
                     </a>
                   </li>
@@ -66,9 +86,9 @@ export function Footer() {
               </ul>
             </div>
 
-            <nav className={styles.coloane} aria-label="Subsol">
+            <nav className={styles.coloane} aria-label={t.aria}>
               <div>
-                <p className={styles.titlu}>Servicii</p>
+                <p className={styles.titlu}>{t.titluServicii}</p>
                 <ul className={styles.linkuri}>
                   {SERVICII.map((l) => (
                     <li key={l.href}>
@@ -79,7 +99,7 @@ export function Footer() {
               </div>
 
               <div>
-                <p className={styles.titlu}>Companie</p>
+                <p className={styles.titlu}>{t.titluCompanie}</p>
                 <ul className={styles.linkuri}>
                   {COMPANIE.map((l) => (
                     <li key={l.href}>
@@ -97,7 +117,7 @@ export function Footer() {
               </div>
 
               <div>
-                <p className={styles.titlu}>Legal</p>
+                <p className={styles.titlu}>{t.titluLegal}</p>
                 <ul className={styles.linkuri}>
                   {LEGAL.map((l) => (
                     <li key={l.href}>
@@ -108,7 +128,7 @@ export function Footer() {
               </div>
 
               <div>
-                <p className={styles.titlu}>Contact</p>
+                <p className={styles.titlu}>{t.titluContact}</p>
                 <ul className={styles.contact}>
                   <li>
                     <a href="mailto:contact@inovex.ro">
@@ -119,15 +139,17 @@ export function Footer() {
                   <li>
                     <LinkTelefon>
                       <Phone aria-hidden />
-                      {TELEFON.text}
+                      {d.telefon}
                     </LinkTelefon>
                   </li>
-                  <li>
-                    <span>
-                      <MapPin aria-hidden />
-                      Târgu Jiu / București
-                    </span>
-                  </li>
+                  {ro && (
+                    <li>
+                      <span>
+                        <MapPin aria-hidden />
+                        {t.locatie}
+                      </span>
+                    </li>
+                  )}
                 </ul>
               </div>
             </nav>
@@ -135,19 +157,21 @@ export function Footer() {
 
           <div className={styles.jos}>
             <div className={styles.firma}>
-              <p>© {an} Inovex. Toate drepturile rezervate.</p>
-              <p>VOID SFT GAMES SRL · CUI 43474393</p>
+              <p>{format(t.drepturi, { an })}</p>
+              {ro && <p>VOID SFT GAMES SRL · CUI 43474393</p>}
             </div>
             <div className={styles.dreapta}>
-              <div className={styles.anpc}>
-                <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener noreferrer">
-                  <Image src="/imagini/footer/SAL.png" alt="Soluționarea alternativă a litigiilor (ANPC)" width={70} height={35} />
+              {/* pictograma SAL oficiala (anpc.ro), 250 x 50 px, cu link la platforma SAL: Ordinul ANPC 270/2026,
+                  doar in romana. Pictograma SOL a plecat: platforma europeana ODR s-a inchis pe 20 iulie 2025
+                  (Reg. UE 2024/3228). */}
+              {ro && (
+                <a className={styles.anpc} href="https://reclamatiisal.anpc.ro" target="_blank" rel="noopener noreferrer">
+                  <Image src="/imagini/footer/anpc-sal.png" alt={t.sal} width={250} height={50} unoptimized />
                 </a>
-                <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer">
-                  <Image src="/imagini/footer/SOL.png" alt="Soluționarea online a litigiilor (Comisia Europeană)" width={70} height={35} />
-                </a>
-              </div>
-              <SetariCookies className={styles.cookies} />
+              )}
+              {/* limba se alege automat (proxy.ts); aici se poate schimba de mana, discret */}
+              <SelectorLimba lang={lang} t={d.limba} />
+              <SetariCookies className={styles.cookies} text={t.setariCookies} />
             </div>
           </div>
         </div>

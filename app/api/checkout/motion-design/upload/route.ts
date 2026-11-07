@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { supabaseAdmin } from '@/lib/supabase';
+import { limbaEmail } from '@/lib/email/texte';
+import { completeaza, textMotion } from '@/lib/i18n/pagini/motion';
 import {
   MOTION_BRIEF_PREFIX, MOTION_MAX_FILES, MOTION_MAX_FILE_SIZE, MOTION_ALLOWED_EXT,
 } from '@/lib/motion-design';
@@ -26,6 +28,7 @@ const schema = z.object({
     name: z.string().min(1).max(200),
     size: z.number().int().positive().max(MOTION_MAX_FILE_SIZE),
   })).min(1).max(MOTION_MAX_FILES),
+  limba: z.enum(['ro', 'en', 'de', 'fr']).optional(),
 });
 
 /** Nume sigur pentru storage: fara diacritice, spatii sau cai; pastreaza extensia. */
@@ -49,14 +52,18 @@ function safeName(name: string, taken: Set<string>): string | null {
  * browser in Supabase Storage (o functie Vercel nu primeste corpuri > 4.5 MB).
  */
 export async function POST(req: NextRequest) {
+  // limba paginii, pentru mesajele de eroare
+  const corp = await req.json().catch(() => null);
+  const e = textMotion(limbaEmail(corp?.limba)).erori;
+
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0] ?? 'unknown';
   if (!checkRateLimit(ip)) {
-    return NextResponse.json({ error: 'Prea multe cereri. Incearca din nou mai tarziu.' }, { status: 429 });
+    return NextResponse.json({ error: e.preaMulte }, { status: 429 });
   }
 
-  const parsed = schema.safeParse(await req.json().catch(() => null));
+  const parsed = schema.safeParse(corp);
   if (!parsed.success) {
-    return NextResponse.json({ error: 'Fisiere invalide.' }, { status: 400 });
+    return NextResponse.json({ error: e.fisiere }, { status: 400 });
   }
 
   const orderId = crypto.randomUUID();
@@ -66,14 +73,14 @@ export async function POST(req: NextRequest) {
   for (const file of parsed.data.files) {
     const name = safeName(file.name, taken);
     if (!name) {
-      return NextResponse.json({ error: `Tip de fisier nepermis: ${file.name}` }, { status: 400 });
+      return NextResponse.json({ error: completeaza(e.tipFisier, { nume: file.name }) }, { status: 400 });
     }
     const { data, error } = await supabaseAdmin.storage
       .from(BUCKET)
       .createSignedUploadUrl(`${MOTION_BRIEF_PREFIX}/${orderId}/${name}`);
     if (error || !data) {
       console.error('[motion-design upload]', error?.message);
-      return NextResponse.json({ error: 'Nu am putut pregati incarcarea fisierelor.' }, { status: 500 });
+      return NextResponse.json({ error: e.incarcare }, { status: 500 });
     }
     uploads.push({ name: file.name, signedUrl: data.signedUrl });
   }

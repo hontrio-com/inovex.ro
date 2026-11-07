@@ -3,6 +3,7 @@ import {
   paragraph, heading, separator, metadataFooter,
   contactDirect, smallDisclaimer, esc,
 } from '@/lib/email/layout';
+import { CONTACT, etichetaLimba, type LimbaEmail } from '@/lib/email/texte';
 
 export interface ContactData {
   nume: string;
@@ -11,13 +12,15 @@ export interface ContactData {
   companie?: string;
   mesaj: string;
   ip?: string;
+  /** limba paginii de pe care a venit mesajul */
+  limba?: LimbaEmail;
 }
 
 /* ── Email INTERN ── */
 
 export function internSubject(d: ContactData): string {
   const preview = d.mesaj.slice(0, 50).replace(/\n/g, ' ');
-  return `[CONTACT] ${preview}${d.mesaj.length > 50 ? '...' : ''} - ${d.nume}`;
+  return `${etichetaLimba(d.limba ?? 'ro')}[CONTACT] ${preview}${d.mesaj.length > 50 ? '...' : ''} - ${d.nume}`;
 }
 
 export function internHtml(d: ContactData): string {
@@ -64,7 +67,7 @@ export function internHtml(d: ContactData): string {
       </div>
     </div>
 
-    ${metadataFooter(`Primit la: ${submittedAt} &nbsp;·&nbsp; Sursa: Formular Contact${d.ip ? ` &nbsp;·&nbsp; IP: ${esc(d.ip)}` : ''}`)}
+    ${metadataFooter(`Primit la: ${submittedAt} &nbsp;·&nbsp; Sursa: Formular Contact${d.limba && d.limba !== 'ro' ? ` (${d.limba.toUpperCase()})` : ''}${d.ip ? ` &nbsp;·&nbsp; IP: ${esc(d.ip)}` : ''}`)}
   `;
 
   return buildEmail({
@@ -76,23 +79,24 @@ export function internHtml(d: ContactData): string {
 
 /* ── Email CLIENT ── */
 
-export function clientSubject(): string {
-  return 'Mesajul tau a ajuns la noi | Inovex';
+export function clientSubject(lang: LimbaEmail = 'ro'): string {
+  return CONTACT[lang].subiect;
 }
 
-export function clientHtml(d: ContactData): string {
+export function clientHtml(d: ContactData, lang: LimbaEmail = 'ro'): string {
+  const t = CONTACT[lang];
   const preview = d.mesaj.length > 200 ? d.mesaj.slice(0, 200) + '...' : d.mesaj;
 
   const content = `
-    ${heading('Am primit mesajul tau!')}
+    ${heading(t.titlu)}
 
-    ${paragraph(`Multumim ca ne-ai contactat, <strong>${esc(d.nume)}</strong>. Unul dintre membrii echipei noastre iti va raspunde in maximum <strong>24 de ore</strong>.`)}
+    ${paragraph(t.multumim(esc(d.nume)))}
 
     <div style="margin:8px 40px 20px;padding:16px 20px;background-color:#F8FAFB;
                 border:1px solid #E8ECF0;border-radius:8px;">
       <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;
                   text-transform:uppercase;letter-spacing:1px;color:#8A94A6;margin-bottom:8px;">
-        Ai scris:
+        ${t.aiScris}
       </div>
       <div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;
                   color:#4A5568;line-height:1.75;font-style:italic;white-space:pre-wrap;">
@@ -101,15 +105,16 @@ export function clientHtml(d: ContactData): string {
     </div>
 
     ${separator()}
-    ${contactDirect()}
+    ${contactDirect(lang)}
     ${separator()}
 
-    ${smallDisclaimer('Daca nu ai trimis tu acest mesaj, ignora acest email.')}
+    ${smallDisclaimer(t.avertisment)}
   `;
 
   return buildEmail({
     content,
-    previewText: 'Multumim! Iti raspundem in maximum 24 de ore.',
-    headerTag: 'Confirmare',
+    previewText: t.previzualizare,
+    headerTag: t.eticheta,
+    lang,
   });
 }

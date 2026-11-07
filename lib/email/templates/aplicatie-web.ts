@@ -3,6 +3,8 @@ import {
   paragraph, heading, separator, primaryButton, metadataFooter,
   quickActionButtons, timeline, contactDirect, smallDisclaimer, esc,
 } from '@/lib/email/layout';
+import { butonPortofoliu, CONFIGURATOR, etichetaLimba, OFERTA, sufixLimba, type LimbaEmail } from '@/lib/email/texte';
+import { etichetaOptiune, textConfiguratoare } from '@/lib/i18n/pagini/configuratoare';
 
 export interface AplicatieWebData {
   ideaClaritate: string;
@@ -12,8 +14,13 @@ export interface AplicatieWebData {
   email?: string;
   telefon: string;
   ip?: string;
+  /** limba paginii (din 2026-11-07): confirmarea pleaca in limba clientului; internul ramane in romana */
+  limba?: LimbaEmail;
+  /** atasamentele (din 2026-11-07): numele si linkul din admin (deschis doar de cei logati) */
+  atasamente?: { nume: string; link: string }[];
 }
 
+// etichetele din emailurile in romana (internul si confirmarea romaneasca), ca pana acum
 const IDEE_LABEL: Record<string, string> = {
   'da-stiu-exact':        'Da, stiu exact ce vreau',
   'am-o-idee':            'Am o idee, dar nu este inca bine definita',
@@ -31,7 +38,7 @@ const TIP_LABEL: Record<string, string> = {
 /* ── Email INTERN ── */
 
 export function internSubject(d: AplicatieWebData): string {
-  return `[LEAD NOU] Aplicatie Web - ${d.numeComplet}`;
+  return `${etichetaLimba(d.limba ?? 'ro')}[LEAD NOU] Aplicatie Web - ${d.numeComplet}`;
 }
 
 export function internHtml(d: AplicatieWebData): string {
@@ -72,13 +79,24 @@ export function internHtml(d: AplicatieWebData): string {
       `)}
     ` : ''}
 
-    ${separator()}
+    ${d.atasamente?.length ? `${sectionHeading('Atasamente')}
+      <div style="padding:0 40px 8px;">
+        ${d.atasamente.map((a) => `
+          <div style="padding:8px 0;border-bottom:1px solid #F0F0F0;font-family:Arial,Helvetica,sans-serif;font-size:14px;">
+            <a href="${esc(a.link)}" style="color:#2B8FCC;font-weight:bold;text-decoration:none;">${esc(a.nume)}</a>
+          </div>`).join('')}
+        <div style="padding-top:8px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#8A94A6;">
+          Fisierele se deschid doar daca esti logat in admin.
+        </div>
+      </div>
+
+    ` : ''}${separator()}
 
     <div style="text-align:center;padding:0 40px 28px;">
       ${primaryButton('https://inovex.ro/admin/bids', 'Deschide in admin', '#10B981')}
     </div>
 
-    ${metadataFooter(`Primit la: ${submittedAt} &nbsp;·&nbsp; Sursa: Configurator Aplicatie Web${d.ip ? ` &nbsp;·&nbsp; IP: ${esc(d.ip)}` : ''}`)}
+    ${metadataFooter(`Primit la: ${submittedAt} &nbsp;·&nbsp; Sursa: Configurator Aplicatie Web${sufixLimba(d.limba)}${d.ip ? ` &nbsp;·&nbsp; IP: ${esc(d.ip)}` : ''}`)}
   `;
 
   return buildEmail({
@@ -90,52 +108,57 @@ export function internHtml(d: AplicatieWebData): string {
 
 /* ── Email CLIENT ── */
 
-export function clientSubject(): string {
-  return 'Am primit cererea ta - te contactam in 24 de ore | Inovex';
+export function clientSubject(lang: LimbaEmail = 'ro'): string {
+  return CONFIGURATOR[lang].subiect;
 }
 
-export function clientHtml(d: AplicatieWebData): string {
-  const content = `
-    ${heading(`Buna, ${d.numeComplet}!`)}
+export function clientHtml(d: AplicatieWebData, lang: LimbaEmail = 'ro'): string {
+  const o = OFERTA[lang];
+  const t = CONFIGURATOR[lang].aplicatie;
+  const r = t.randuri;
+  const p = textConfiguratoare(lang).aplicatie;
+  // in romana, etichetele de pana acum; in celelalte limbi, cele de pe pagina
+  const idee = lang === 'ro' ? IDEE_LABEL[d.ideaClaritate] ?? d.ideaClaritate : etichetaOptiune(p.claritate, d.ideaClaritate);
+  const tip = lang === 'ro' ? TIP_LABEL[d.tipAplicatie] ?? d.tipAplicatie : etichetaOptiune(p.tipuri, d.tipAplicatie);
 
-    ${paragraph('Am primit cererea ta pentru o <strong>aplicatie web / platforma SaaS</strong> si ne-am apucat deja sa o analizam. Un consultant din echipa Inovex te va contacta in maximum <strong>24 de ore</strong> pentru a discuta detaliile aplicatiei tale.')}
+  const content = `
+    ${heading(o.salut(d.numeComplet))}
+
+    ${paragraph(t.primit)}
 
     <div style="margin:8px 40px 20px;padding:16px 20px;background-color:#F8FAFB;
                 border:1px solid #E8ECF0;border-radius:8px;">
       <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;
                   color:#0D1117;margin-bottom:10px;">
-        Rezumatul cererii tale
+        ${o.rezumat}
       </div>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-        ${dataRow('Claritate idee', IDEE_LABEL[d.ideaClaritate] ?? d.ideaClaritate)}
-        ${dataRow('Tip aplicatie', TIP_LABEL[d.tipAplicatie] ?? d.tipAplicatie)}
-        ${d.descriereIdeea ? dataRow('Descriere', d.descriereIdeea.slice(0, 120) + (d.descriereIdeea.length > 120 ? '...' : '')) : ''}
+        ${dataRow(r.claritate, idee)}
+        ${dataRow(r.tip, tip)}
+        ${d.descriereIdeea ? dataRow(r.descriere, d.descriereIdeea.slice(0, 120) + (d.descriereIdeea.length > 120 ? '...' : '')) : ''}${d.atasamente?.length ? dataRow(r.atasamente, d.atasamente.map((a) => a.nume).join(', ')) : ''}
       </table>
     </div>
 
-    ${sectionHeading('Ce urmeaza?')}
+    ${sectionHeading(o.urmeaza)}
     <div style="padding:0 40px 8px;">
-      ${timeline([
-        { title: 'Analiza cerere', desc: 'Echipa noastra analizeaza detaliile aplicatiei tale si pregateste intrebarile relevante.' },
-        { title: 'Te contactam', desc: 'Un consultant te suna sau iti trimite email in maximum 24 de ore.' },
-        { title: 'Propunere detaliata', desc: 'Primesti o propunere tehnica completa cu arhitectura, functionalitati si termen de livrare.' },
-      ])}
+      ${timeline(t.pasi)}
     </div>
 
     ${separator()}
-    ${contactDirect()}
+    ${contactDirect(lang)}
 
     <div style="text-align:center;padding:16px 40px 8px;">
-      ${primaryButton('https://inovex.ro/portofoliu', 'Exploreaza portofoliul nostru')}
+      ${primaryButton(...butonPortofoliu(lang))}
     </div>
 
     ${separator()}
-    ${smallDisclaimer('Daca nu ai completat tu aceasta cerere sau e o greseala, ignora acest email. Nu ai niciun angajament.')}
+    ${smallDisclaimer(o.avertisment)}
   `;
 
   return buildEmail({
     content,
-    previewText: 'Multumim! Echipa Inovex analizeaza proiectul tau acum.',
-    headerTag: 'Confirmare',
+    previewText: t.previzualizare,
+    headerTag: o.eticheta,
+    lang,
   });
 }

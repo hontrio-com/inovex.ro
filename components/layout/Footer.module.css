@@ -140,15 +140,19 @@
   gap: 12px 20px;
 }
 
+/* caseta de 250 x 50 ceruta de ANPC; imaginea oficiala (201 x 50) sta in ea fara sa se deformeze */
 .anpc {
-  display: flex;
-  gap: 8px;
+  display: block;
+  width: 250px;
+  height: 50px;
 }
 
 .anpc img {
   display: block;
-  width: auto;
-  height: 35px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .cookies {

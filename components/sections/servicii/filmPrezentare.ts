@@ -9,6 +9,7 @@
    asistent AI il recomanda. Redarea si uneltele comune sunt in film.ts. */
 
 import {
+  traducator,
   ei,
   eio,
   eo,
@@ -30,6 +31,9 @@ import {
   typist,
   type Stil,
 } from './film';
+import type { Limba } from '@/lib/i18n/config';
+import { harta } from './texte';
+import { DINAMIC, STATIC, fisiere } from './texte/prezentare';
 
 const DIR = '/imagini/servicii/acasa/animatie-prezentare';
 
@@ -46,9 +50,8 @@ const CAMERA = { z0: 1.12, x0: 730, z1: 0.98, x1: 787 };
 // margini pentru apropierea lenta a camerei
 const VEDERE = { x: 282, y: 23, w: 1356, h: 1126 };
 
-const ADRESA = 'arcadia-studio.ro';
-const RASPUNS =
-  'Îți recomand Arcadia Studio, un birou de arhitectură din Cluj-Napoca. Fac proiecte rezidențiale și comerciale, design interior și consultanță, totul gândit de la zero, și au recenzii foarte bune de la clienți.';
+// adresa scrisa si raspunsul asistentului AI, in limba animatiei (le alege porneste())
+let D = DINAMIC.ro;
 
 /* ─── Interfata ─── */
 
@@ -140,11 +143,12 @@ const MU = 'color-mix(in srgb, var(--ground) 42%, var(--second))';
 const BD = 'color-mix(in srgb, var(--ground) 9%, var(--second))';
 
 // fisierele deschise in editor, cu liniile lor
-const FILES: [string, string[]][] = [
+const FILES_RO: [string, string[]][] = [
   ['page.tsx', ["import Hero from '@/components/Hero'", "import Servicii from '@/components/Servicii'", '', 'export const metadata = {', "  title: 'Arcadia Studio – Cluj',", '}', '', 'export default function Page() {', '  return <><Hero /><Servicii /></>', '}']],
   ['Hero.jsx', ['export default function Hero() {', '  return (', '    <section className="hero">', '      <h1>Spații gândite pentru tine.</h1>', '      <a href="/proiecte">Vezi proiectele</a>', '    </section>', '  )', '}']],
   ['web.php', ['<?php', '', 'use App\\Http\\Controllers\\Proiecte;', '', "Route::get('/', fn () => view('acasa'));", "Route::resource('proiecte', Proiecte::class);", "Route::post('/contact', Contact::class);"]],
 ];
+let FILES = FILES_RO;
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const KW = /\b(import|from|export|default|function|return|const|use|class|title)\b/g;
@@ -323,7 +327,7 @@ function construieste(box: HTMLElement) {
   );
   box.append(root);
   const urlEl = gaseste(root, 'u-url');
-  urlEl.textContent = ADRESA;
+  urlEl.textContent = D.adresa;
   return {
     cam: root.style,
     win: gaseste(root, 'u-win').style,
@@ -426,7 +430,7 @@ function rank(q: Interfata, t: number, t0: number) {
 // fereastra goala: se scrie adresa, cresc coloanele grilei si apare schita paginii
 function sceneSchita(box: HTMLElement, start: number) {
   const q = construieste(box);
-  const adresa = typist(ADRESA, 0.35, 24);
+  const adresa = typist(D.adresa, 0.35, 24);
   return (t: number) => {
     camera(q, start + t, 0);
     const p = seg(t, -0.45, 0.4);
@@ -582,7 +586,7 @@ function sceneAi(box: HTMLElement, start: number) {
     const sp = seg(t, 0.85, 1.1);
     q.a.av.opacity = String(eo(sp));
     q.a.av.transform = 'translateY(' + (6 * (1 - eo(sp))).toFixed(1) + 'px)';
-    q.ansEl.textContent = stream(RASPUNS, t, 1.0, 150);
+    q.ansEl.textContent = stream(D.raspuns, t, 1.0, 150);
     fly(q.a.src, t, 2.25, 0.4, 0, 16);
     const ap = seg(t, 2.35, 2.6);
     q.a.act.opacity = String(eo(ap));
@@ -603,4 +607,8 @@ const SCENE = [
 ];
 
 // porneste animatia in casuta (vezi pornesteFilmul)
-export const porneste = (cutie: HTMLElement, scena: HTMLElement) => pornesteFilmul(cutie, scena, { scene: SCENE, vedere: VEDERE });
+export const porneste = (cutie: HTMLElement, scena: HTMLElement, lang: Limba = 'ro') => {
+  D = DINAMIC[lang];
+  FILES = lang === 'ro' ? FILES_RO : fisiere(D);
+  return pornesteFilmul(cutie, scena, { scene: SCENE, vedere: VEDERE, traduce: traducator(harta(STATIC, lang)) });
+};

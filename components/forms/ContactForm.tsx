@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,36 +17,30 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { TELEFON } from '@/components/layout/meniu-servicii/date';
+import { cale, type Limba } from '@/lib/i18n/config';
+import type { TextFormulare } from '@/lib/i18n/pagini/formulare';
 import styles from './Formular.module.css';
 
-// valorile ajung asa in CRM (/api/contact): se schimba doar etichetele
-const SERVICII = [
-  { value: '', label: 'Alege un serviciu' },
-  { value: 'magazin-online', label: 'Magazin online' },
-  { value: 'website-prezentare', label: 'Website de prezentare' },
-  { value: 'aplicatii-mobile', label: 'Aplicații mobile iOS și Android' },
-  { value: 'automatizari-ai', label: 'Automatizări AI' },
-  { value: 'aplicatii-web-saas', label: 'Aplicații web și SaaS' },
-  { value: 'cms-crm-erp', label: 'CMS, CRM și ERP' },
-  { value: 'seo-marketing', label: 'SEO și marketing digital' },
-  { value: 'altele', label: 'Altele / Nu știu încă' },
-];
+type Text = TextFormulare['formularContact'];
 
-const schema = z.object({
-  nume:             z.string().min(2, 'Numele trebuie să aibă cel puțin 2 caractere'),
-  email:            z.string().email('Email invalid'),
-  telefon:          z.string().min(10, 'Telefonul trebuie să aibă cel puțin 10 cifre'),
-  companie:         z.string().optional(),
-  serviciu:         z.string().min(1, 'Te rugăm să alegi un serviciu'),
-  mesaj:            z.string().min(10, 'Mesajul trebuie să aibă cel puțin 10 caractere'),
-  acordPrivacitate: z.literal<boolean>(true, { message: 'Trebuie să accepți politica de confidențialitate' }),
-});
+// valorile serviciilor ajung asa in CRM (/api/contact), in orice limba: se traduc doar etichetele
+// (lib/i18n/pagini/formulare.ts). Regulile de validare, cu mesajele in limba paginii:
+const schemaPentru = (e: Text['erori']) =>
+  z.object({
+    nume:             z.string().min(2, e.nume),
+    email:            z.string().email(e.email),
+    telefon:          z.string().min(10, e.telefon),
+    companie:         z.string().optional(),
+    serviciu:         z.string().min(1, e.serviciu),
+    mesaj:            z.string().min(10, e.mesaj),
+    acordPrivacitate: z.literal<boolean>(true, { message: e.acord }),
+  });
 
-type FormData = z.infer<typeof schema>;
+type FormData = z.infer<ReturnType<typeof schemaPentru>>;
 
-export function ContactForm() {
+export function ContactForm({ lang, t, telefon }: { lang: Limba; t: Text; telefon: string }) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const schema = useMemo(() => schemaPentru(t.erori), [t.erori]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -63,7 +57,8 @@ export function ContactForm() {
       const res = await fetch('/api/contact', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json', 'X-Meta-Event-Id': metaEventId },
-        body:    JSON.stringify(data),
+        // limba: emailul de confirmare pleaca in limba paginii, iar in CRM se vede de unde a venit
+        body:    JSON.stringify({ ...data, limba: lang }),
       });
       if (!res.ok) throw new Error();
       setStatus('success');
@@ -85,12 +80,14 @@ export function ContactForm() {
         <span className={styles.succesIcon}>
           <CheckCircle2 aria-hidden />
         </span>
-        <h3 className={styles.succesTitlu}>Mesaj trimis cu succes</h3>
+        <h3 className={styles.succesTitlu}>{t.succesTitlu}</h3>
         <p className={styles.succesText}>
-          Te contactăm în maximum <strong>24 de ore</strong>.
+          {t.succesText[0]}
+          <strong>{t.succesText[1]}</strong>
+          {t.succesText[2]}
         </p>
         <button type="button" onClick={() => setStatus('idle')} className={styles.inca}>
-          Trimite alt mesaj
+          {t.altMesaj}
         </button>
       </div>
     );
@@ -106,10 +103,10 @@ export function ContactForm() {
             render={({ field }) => (
               <FormItem className={styles.camp}>
                 <FormLabel className={styles.eticheta}>
-                  Nume complet <span className={styles.obligatoriu}>*</span>
+                  {t.nume} <span className={styles.obligatoriu}>*</span>
                 </FormLabel>
                 <FormControl>
-                  <input autoComplete="name" placeholder="Ion Popescu" className={styles.input} {...field} />
+                  <input autoComplete="name" placeholder={t.exNume} className={styles.input} {...field} />
                 </FormControl>
                 <FormMessage className={styles.eroare} />
               </FormItem>
@@ -121,10 +118,10 @@ export function ContactForm() {
             render={({ field }) => (
               <FormItem className={styles.camp}>
                 <FormLabel className={styles.eticheta}>
-                  Email <span className={styles.obligatoriu}>*</span>
+                  {t.email} <span className={styles.obligatoriu}>*</span>
                 </FormLabel>
                 <FormControl>
-                  <input type="email" autoComplete="email" placeholder="ion@firma.ro" className={styles.input} {...field} />
+                  <input type="email" autoComplete="email" placeholder={t.exEmail} className={styles.input} {...field} />
                 </FormControl>
                 <FormMessage className={styles.eroare} />
               </FormItem>
@@ -139,10 +136,10 @@ export function ContactForm() {
             render={({ field }) => (
               <FormItem className={styles.camp}>
                 <FormLabel className={styles.eticheta}>
-                  Telefon <span className={styles.obligatoriu}>*</span>
+                  {t.telefon} <span className={styles.obligatoriu}>*</span>
                 </FormLabel>
                 <FormControl>
-                  <input type="tel" autoComplete="tel" placeholder="07xx xxx xxx" className={styles.input} {...field} />
+                  <input type="tel" autoComplete="tel" placeholder={t.exTelefon} className={styles.input} {...field} />
                 </FormControl>
                 <FormMessage className={styles.eroare} />
               </FormItem>
@@ -154,10 +151,10 @@ export function ContactForm() {
             render={({ field }) => (
               <FormItem className={styles.camp}>
                 <FormLabel className={styles.eticheta}>
-                  Companie <span className={styles.optional}>(opțional)</span>
+                  {t.companie} <span className={styles.optional}>{t.optional}</span>
                 </FormLabel>
                 <FormControl>
-                  <input autoComplete="organization" placeholder="Firma SRL" className={styles.input} {...field} />
+                  <input autoComplete="organization" placeholder={t.exCompanie} className={styles.input} {...field} />
                 </FormControl>
                 <FormMessage className={styles.eroare} />
               </FormItem>
@@ -171,13 +168,13 @@ export function ContactForm() {
           render={({ field }) => (
             <FormItem className={styles.camp}>
               <FormLabel className={styles.eticheta}>
-                Serviciu de interes <span className={styles.obligatoriu}>*</span>
+                {t.serviciu} <span className={styles.obligatoriu}>*</span>
               </FormLabel>
               <FormControl>
                 <select className={styles.select} data-gol={field.value === ''} {...field}>
-                  {SERVICII.map((s) => (
-                    <option key={s.value} value={s.value} disabled={s.value === ''}>
-                      {s.label}
+                  {t.servicii.map((s) => (
+                    <option key={s.valoare} value={s.valoare} disabled={s.valoare === ''}>
+                      {s.eticheta}
                     </option>
                   ))}
                 </select>
@@ -193,10 +190,10 @@ export function ContactForm() {
           render={({ field }) => (
             <FormItem className={styles.camp}>
               <FormLabel className={styles.eticheta}>
-                Mesaj <span className={styles.obligatoriu}>*</span>
+                {t.mesaj} <span className={styles.obligatoriu}>*</span>
               </FormLabel>
               <FormControl>
-                <textarea rows={5} placeholder="Descrie pe scurt ce ai nevoie..." className={styles.textarea} {...field} />
+                <textarea rows={5} placeholder={t.exMesaj} className={styles.textarea} {...field} />
               </FormControl>
               <FormMessage className={styles.eroare} />
             </FormItem>
@@ -221,10 +218,11 @@ export function ContactForm() {
                   />
                 </FormControl>
                 <FormLabel className={styles.acordText}>
-                  Sunt de acord cu{' '}
-                  <a href="/politica-de-confidentialitate" target="_blank">
-                    Politica de confidențialitate
+                  {t.acord[0]}
+                  <a href={cale(lang, '/politica-de-confidentialitate')} target="_blank">
+                    {t.acord[1]}
                   </a>
+                  {t.acord[2]}
                 </FormLabel>
               </div>
               <FormMessage className={styles.eroare} />
@@ -235,12 +233,12 @@ export function ContactForm() {
         {status === 'error' && (
           <div className={styles.esec} role="alert">
             <AlertCircle aria-hidden />
-            A apărut o eroare. Încearcă din nou sau sună la {TELEFON.text}.
+            {t.eroare.replace('{telefon}', telefon)}
           </div>
         )}
 
         <button type="submit" className={styles.trimite} disabled={status === 'loading'}>
-          {status === 'loading' ? 'Se trimite...' : 'Trimite mesajul'}
+          {status === 'loading' ? t.seTrimite : t.trimite}
           {status !== 'loading' && <ArrowRight aria-hidden />}
         </button>
       </form>

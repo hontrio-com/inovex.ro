@@ -1,6 +1,59 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase-middleware';
+import { cale, citesteCale, existaIn, rutaPublica, type Limba } from '@/lib/i18n/config';
+import { COOKIE_LIMBA, limbaPentru } from '@/lib/i18n/detectare';
+
+/* Ce nu e pagina a site-ului public: adminul, API-ul, semnarea contractelor, rutele Next/Vercel si
+   fisierele (imagini, manifest, sitemap-uri, fonturi, .well-known). Extensiile sunt enumerate, ca un
+   slug cu punct (ex. un produs din marketplace) sa ramana pagina. */
+const NU_E_SITE = /^\/(admin|api|contract|_next|_vercel|__nextjs|\.well-known)(\/|$)/;
+const FISIER = /\.(png|jpe?g|webp|avif|gif|svg|ico|txt|xml|json|webmanifest|js|mjs|css|map|woff2?|ttf|otf|pdf|mp4|webm|mp3|zip)$/i;
+const esteSitePublic = (pathname: string) => !NU_E_SITE.test(pathname) && !FISIER.test(pathname);
+
+/* ── Limba vizitatorului nou (2026-11-07, lib/i18n/detectare.ts): la prima pagina, dupa tara (Vercel) si
+   limbile browserului. Daca pagina exista in limba lui, redirect temporar spre ea (cu tot cu ?utm/gclid);
+   limba ramane intr-un cookie un an, deci detectarea se face o singura data, iar alegerea facuta de mana
+   (selectorul din subsol scrie acelasi cookie) are mereu ultimul cuvant. Robotii (motoare de cautare,
+   verificarea reclamelor, previzualizari de linkuri, unelte de test) nu sunt redirectionati niciodata: vad
+   exact pagina ceruta, altfel Google n-ar mai indexa paginile romanesti (crawlerul lui vine din SUA). */
+const ROBOT =
+  /bot|crawl|spider|slurp|mediapartners|google-inspectiontool|googleother|feedfetcher|facebookexternalhit|meta-externalagent|embedly|quora link preview|outbrain|vkshare|w3c_validator|whatsapp|skypeuripreview|bingpreview|lighthouse|pagespeed|headlesschrome|gtmetrix|ahrefs|semrush|petalbot|yandex|baidu|duckduck|applebot|gptbot|chatgpt-user|oai-searchbot|claude|anthropic|perplexity|ccbot|bytespider|amazonbot|diffbot|curl|wget|python-requests|python-urllib|httpclient|node-fetch|undici|axios|go-http-client|java\/|okhttp|scrapy|phantomjs|selenium|puppeteer|playwright/i;
+
+function tineLimba(response: NextResponse, lang: Limba) {
+  response.cookies.set(COOKIE_LIMBA, lang, {
+    maxAge: 365 * 24 * 60 * 60,
+    path: '/',
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+  });
+}
+
+/** Ce face cu un vizitator nou: redirect spre limba lui, doar tine minte limba (e deja pe ea) sau nimic. */
+function limbaAutomata(request: NextRequest): { redirect: NextResponse } | { tine: Limba } | null {
+  if (request.method !== 'GET' || request.cookies.has(COOKIE_LIMBA)) return null;
+  const ua = request.headers.get('user-agent') ?? '';
+  if (!ua || ROBOT.test(ua)) return null;
+  // doar navigarea propriu-zisa, nu cererile routerului (RSC, prefetch)
+  if (request.headers.has('rsc') || request.headers.has('next-router-prefetch') || request.headers.get('purpose') === 'prefetch') return null;
+  const destinatie = request.headers.get('sec-fetch-dest');
+  if (destinatie && destinatie !== 'document') return null;
+  // tara vine de la Vercel (x-vercel-ip-country, ce citeste si geolocation() din @vercel/functions); fara ea nu ghicim
+  const tara = request.headers.get('x-vercel-ip-country');
+  if (!tara) return null;
+
+  const dorita = limbaPentru(tara, request.headers.get('accept-language'));
+  const { lang, intern } = citesteCale(request.nextUrl.pathname);
+  if (dorita === lang) return { tine: dorita };
+  // pagina nu exista in limba lui (ex. un articol de blog romanesc): ramane aici; urmatoarea pagina mai incearca
+  if (!existaIn(dorita, intern)) return null;
+  const url = request.nextUrl.clone();
+  url.pathname = cale(dorita, intern);
+  const redirect = NextResponse.redirect(url, 307);
+  redirect.headers.set('Cache-Control', 'private, no-store');
+  tineLimba(redirect, dorita);
+  return { redirect };
+}
 
 /* ── Copiaza cookie-urile de sesiune (refresh Supabase) pe un raspuns nou ── */
 function copyCookies(target: NextResponse, source: NextResponse) {
@@ -77,6 +130,21 @@ export async function proxy(request: NextRequest) {
     if (pathname === '/admin/login' && user) {
       return applySecurityHeaders(copyCookies(NextResponse.redirect(new URL('/admin', request.url)), response), pathname);
     }
+  }
+
+  /* ── Site public pe limbi (2026-11-05, lib/i18n/config.ts): paginile stau sub app/[lang]. Romana ramane
+     la adresele de pana acum (/contact se rescrie intern pe /ro/contact), engleza/germana/franceza au
+     adrese traduse (/de/kontakt -> /de/contact), /ro/... trimite la adresa fara prefix, iar o pagina
+     netradusa inca da 404 in limba ceruta. */
+  if (esteSitePublic(pathname)) {
+    const automata = limbaAutomata(request);
+    if (automata && 'redirect' in automata) return applySecurityHeaders(automata.redirect, pathname);
+    const ruta = rutaPublica(pathname);
+    const url = request.nextUrl.clone();
+    url.pathname = ruta.cale;
+    if (ruta.tip === 'redirect') return applySecurityHeaders(NextResponse.redirect(url, 308), pathname);
+    response = NextResponse.rewrite(url, { request });
+    if (automata) tineLimba(response, automata.tine);
   }
 
   /* ── LinkedIn Ads: click ID-ul din link-ul reclamei (?li_fat_id=…) ramane 30 de zile intr-un cookie primar,

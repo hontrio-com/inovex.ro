@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cale, type Limba } from '@/lib/i18n/config';
+import type { Dictionar } from '@/lib/i18n/dictionare/ro';
 import {
   getCookieConsent,
   setCookieConsent,
@@ -30,7 +32,8 @@ function ToggleRow({
   checked: boolean;
   disabled?: boolean;
   onChange: (v: boolean) => void;
-  alwaysBadge?: boolean;
+  /** textul insignei „Întotdeauna active” */
+  alwaysBadge?: string;
 }) {
   return (
     <div
@@ -74,7 +77,7 @@ function ToggleRow({
                 letterSpacing: '0.04em',
               }}
             >
-              Intotdeauna active
+              {alwaysBadge}
             </span>
           )}
         </div>
@@ -131,7 +134,8 @@ function ToggleRow({
 // Main banner
 // ---------------------------------------------------------------------------
 
-export function CookieConsent() {
+export function CookieConsent({ lang, t }: { lang: Limba; t: Dictionar['cookies'] }) {
+  const politica = cale(lang, '/politica-cookies');
   const [visible, setVisible] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
   const [analytics, setAnalytics] = useState(false);
@@ -223,11 +227,11 @@ export function CookieConsent() {
                       margin: 0,
                     }}
                   >
-                    Personalizeaza preferintele de cookie-uri
+                    {t.titluPanou}
                   </h2>
                   <button
                     onClick={() => setShowPanel(false)}
-                    aria-label="Inchide panoul"
+                    aria-label={t.inchidePanou}
                     style={{
                       background: 'none',
                       border: 'none',
@@ -249,24 +253,24 @@ export function CookieConsent() {
                   }}
                 >
                   <ToggleRow
-                    title="Cookie-uri esentiale"
-                    description="Necesare pentru functionarea de baza a site-ului. Nu pot fi dezactivate."
+                    title={t.esentiale}
+                    description={t.esentialeText}
                     checked={true}
                     disabled
                     onChange={() => {}}
-                    alwaysBadge
+                    alwaysBadge={t.mereuActive}
                   />
                   <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }} />
                   <ToggleRow
-                    title="Cookie-uri analitice (Google Analytics 4)"
-                    description="Ne ajuta sa intelegem cum folosesti site-ul. Datele sunt anonimizate."
+                    title={t.analitice}
+                    description={t.analiticeText}
                     checked={analytics}
                     onChange={setAnalytics}
                   />
                   <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }} />
                   <ToggleRow
-                    title="Cookie-uri de marketing (Google Ads, TikTok)"
-                    description="Folosite pentru masurarea eficientei campaniilor noastre publicitare. Nu afisam reclame pe site."
+                    title={t.marketing}
+                    description={t.marketingText}
                     checked={marketing}
                     onChange={setMarketing}
                   />
@@ -286,14 +290,14 @@ export function CookieConsent() {
                   }}
                 >
                   <Link
-                    href="/politica-cookies"
+                    href={politica}
                     style={{
                       fontSize: 12,
                       color: '#4AADE8',
                       textDecoration: 'underline',
                     }}
                   >
-                    Politica de cookies completa
+                    {t.politicaCompleta}
                   </Link>
                   <div style={{ display: 'flex', gap: 8 }}>
                     <Button
@@ -301,14 +305,14 @@ export function CookieConsent() {
                       onClick={handleSaveSelected}
                       style={{ background: '#2B8FCC', color: '#fff', border: 'none' }}
                     >
-                      Accepta selectate
+                      {t.acceptaSelectate}
                     </Button>
                     <Button
                       size="sm"
                       onClick={handleAcceptAll}
                       style={{ background: '#10B981', color: '#fff', border: 'none' }}
                     >
-                      Accepta toate
+                      {t.acceptaToate}
                     </Button>
                   </div>
                 </div>
@@ -353,12 +357,12 @@ export function CookieConsent() {
                       fontFamily: 'var(--font-body)',
                     }}
                   >
-                    Folosim cookie-uri pentru a imbunatati experienta ta pe site si pentru a analiza traficul.{' '}
+                    {t.text}{' '}
                     <Link
-                      href="/politica-cookies"
+                      href={politica}
                       style={{ color: '#4AADE8', textDecoration: 'underline' }}
                     >
-                      Politica de cookies
+                      {t.politica}
                     </Link>
                   </p>
 
@@ -388,7 +392,7 @@ export function CookieConsent() {
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      Personalizeaza
+                      {t.personalizeaza}
                     </button>
                     <button
                       onClick={handleRejectAll}
@@ -405,7 +409,7 @@ export function CookieConsent() {
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      Refuza toate
+                      {t.refuzaToate}
                     </button>
                     <button
                       onClick={handleAcceptAll}
@@ -422,7 +426,7 @@ export function CookieConsent() {
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      Accepta toate
+                      {t.acceptaToate}
                     </button>
                   </div>
                 </div>

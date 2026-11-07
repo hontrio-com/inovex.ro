@@ -61,7 +61,10 @@ function Logo({ name, file }: { name: string; file: string }) {
   );
 }
 
-export function TechMarquee() {
+export function TechMarquee({
+  titlu = 'Lucrăm cu tehnologii de top',
+  aria = 'Tehnologii cu care lucrăm',
+}: { titlu?: string; aria?: string }) {
   const x       = useMotionValue(0);
   const trackRef = useRef<HTMLDivElement>(null);
   const setW    = useRef(0);
@@ -94,7 +97,7 @@ export function TechMarquee() {
 
   return (
     <section
-      aria-label="Tehnologii cu care lucrăm"
+      aria-label={aria}
       style={{
         background: '#fff',
         // fara linie sus: deasupra e chenarul hero-ului, cu rama lui, pe acelasi alb
@@ -116,7 +119,7 @@ export function TechMarquee() {
           fontFamily: 'var(--font-body)',
         }}
       >
-        Lucrăm cu tehnologii de top
+        {titlu}
       </p>
 
       <div style={{ position: 'relative' }}>

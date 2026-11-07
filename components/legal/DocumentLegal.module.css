@@ -1,0 +1,774 @@
+/* Paginile legale, in stilul paginii de contact (PaginaFormular.module.css): chenar alb cu contur fin,
+   aceleasi linii fine, acelasi gri; textul lung la ~70 de caractere pe rand, ca sa se citeasca usor. */
+
+.pagina {
+  /* sub antetul fix: --rama + bara (60px) + aer */
+  padding: calc(var(--rama) + 60px + 16px) var(--rama) 64px;
+  background: #fff;
+}
+
+/* linkurile din cuprins duc lin la sectiune (fara, daca sistemul cere mai putina miscare) */
+@media (prefers-reduced-motion: no-preference) {
+  :global(html):has(.pagina) {
+    scroll-behavior: smooth;
+  }
+}
+
+.card {
+  border-radius: var(--rama-raza);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(11, 15, 20, 0.08),
+    0 1px 3px rgba(11, 15, 20, 0.05);
+}
+
+/* ─── Antetul documentului ─── */
+
+.antet {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px 22px 28px;
+  border-bottom: 1px solid #eceef1;
+}
+
+.cale {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+  color: #8b919c;
+  font-size: 13.5px;
+}
+
+.cale a {
+  color: #5b6270;
+  transition: color 0.15s ease;
+}
+
+.cale [aria-current] {
+  color: #0b0f14;
+  font-weight: 500;
+}
+
+.icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #f4f5f7;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.06);
+  color: #0b0f14;
+}
+
+.icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.titlu {
+  margin-top: 22px;
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.intro {
+  max-width: 40em;
+  margin-top: 14px;
+  color: #5b6270;
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+.data {
+  margin-top: 18px;
+  color: #8b919c;
+  font-size: 13.5px;
+}
+
+.data time {
+  color: #0b0f14;
+  font-weight: 500;
+}
+
+/* EN/DE/FR: originalul romanesc e cel care se aplica */
+.traducere {
+  max-width: 40em;
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #f4f5f7;
+  color: #5b6270;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.traducere a {
+  color: #0b0f14;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ─── Cuprinsul ─── */
+
+.corp {
+  padding: 0 22px 32px;
+}
+
+.cuprinsMobil {
+  margin: 0 -22px;
+  border-bottom: 1px solid #eceef1;
+}
+
+.cuprinsMobil summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 22px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.cuprinsMobil summary::-webkit-details-marker {
+  display: none;
+}
+
+/* sageata care se roteste cand se deschide */
+.cuprinsMobil summary::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  margin-left: auto;
+  border-right: 1.5px solid #0b0f14;
+  border-bottom: 1.5px solid #0b0f14;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.cuprinsMobil[open] summary::after {
+  transform: translateY(2px) rotate(-135deg);
+}
+
+.cuprinsMobil .cuprinsLista {
+  padding: 0 22px 16px;
+}
+
+.cuprins {
+  display: none;
+}
+
+.cuprinsTitlu {
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.cuprinsNumar {
+  color: #8b919c;
+  font-size: 13px;
+}
+
+.cuprinsLista a {
+  display: flex;
+  gap: 10px;
+  padding: 7px 0;
+  color: #5b6270;
+  font-size: 14px;
+  line-height: 1.4;
+  transition: color 0.15s ease;
+}
+
+.cuprinsNr {
+  flex: none;
+  min-width: 18px;
+  color: #a3a9b3;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.55;
+}
+
+.cuprinsLista a[aria-current] {
+  color: #0b0f14;
+  font-weight: 600;
+}
+
+.cuprinsLista a[aria-current] .cuprinsNr {
+  color: #0b0f14;
+}
+
+/* ─── Textul ─── */
+
+.text {
+  min-width: 0;
+  max-width: 46rem;
+}
+
+/* rezumatul de la inceputul politicii de confidentialitate */
+.rezumat {
+  margin-top: 28px;
+  padding: 20px 18px 18px;
+  border-radius: 14px;
+  background: #f7f8f9;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.05);
+}
+
+.rezumatTitlu {
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.rezumatLista {
+  margin-top: 12px;
+  border-top: 1px solid #e6e8ec;
+}
+
+.rezumatLista > div {
+  display: grid;
+  gap: 2px;
+  padding: 10px 0;
+  border-bottom: 1px solid #e6e8ec;
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.rezumatLista dt {
+  color: #8b919c;
+}
+
+.rezumatLista dd {
+  color: #0b0f14;
+  font-weight: 500;
+}
+
+.rezumatNota {
+  margin-top: 12px;
+  color: #8b919c;
+  font-size: 13.5px;
+}
+
+.sectiune {
+  padding-top: 32px;
+  /* la clic in cuprins, titlul nu ramane sub antetul fix */
+  scroll-margin-top: calc(var(--rama) + 60px + 24px);
+}
+
+.sectiune + .sectiune {
+  margin-top: 32px;
+  border-top: 1px solid #eceef1;
+}
+
+.h2 {
+  margin-bottom: 14px;
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.nr {
+  color: #a3a9b3;
+  font-variant-numeric: tabular-nums;
+}
+
+.h3 {
+  margin: 24px 0 8px;
+  color: #0b0f14;
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.p,
+.ul li,
+.ol li {
+  color: #343a45;
+  font-size: 15.5px;
+  line-height: 1.75;
+}
+
+.p {
+  margin-bottom: 12px;
+}
+
+.ul,
+.ol {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.ul li,
+.ol li {
+  position: relative;
+  padding-left: 22px;
+}
+
+/* bulina, centrata pe primul rand */
+.ul li::before {
+  content: '';
+  position: absolute;
+  top: calc(0.875em - 2.5px);
+  left: 6px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #a3a9b3;
+}
+
+/* a), b), c), puse de pagina (::marker cu continut nu merge in Safari) */
+.ol {
+  counter-reset: litera;
+}
+
+.ol li {
+  padding-left: 26px;
+  counter-increment: litera;
+}
+
+.ol li::before {
+  content: counter(litera, lower-alpha) ')';
+  position: absolute;
+  left: 0;
+  color: #8b919c;
+  font-weight: 600;
+}
+
+.text strong {
+  color: #0b0f14;
+  font-weight: 600;
+}
+
+/* linkurile din text (nu si butoanele din casete) */
+.text a:not(.primar, .secundar) {
+  color: #0b0f14;
+  text-decoration: underline;
+  text-decoration-color: rgba(11, 15, 20, 0.25);
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+  transition: text-decoration-color 0.15s ease;
+}
+
+/* in tabel, furnizorul, durata si tipul nu se rup pe doua randuri */
+.tabel td:nth-child(2) a,
+.tabel td:nth-child(n + 4) {
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
+/* caseta gri (ex. datele ANSPDCP) */
+.caseta {
+  margin: 4px 0 14px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: #f7f8f9;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.05);
+  color: #343a45;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* ─── Tabelul cu cookie-uri ─── */
+
+.categorie + .categorie {
+  margin-top: 8px;
+}
+
+.tabelCutie {
+  margin-bottom: 18px;
+}
+
+.tabel {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.tabel th,
+.tabel td {
+  color: #343a45;
+  text-align: left;
+  vertical-align: top;
+}
+
+.tabel code {
+  color: #0b0f14;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* pe telefon, fiecare cookie e o caseta cu eticheta in fata valorii */
+.tabel thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.tabel,
+.tabel tbody,
+.tabel tr,
+.tabel th,
+.tabel td {
+  display: block;
+}
+
+.tabel tr {
+  padding: 12px 14px;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px #e6e8ec;
+}
+
+.tabel tr + tr {
+  margin-top: 8px;
+}
+
+.tabel tbody th {
+  margin-bottom: 6px;
+}
+
+.tabel td {
+  display: grid;
+  grid-template-columns: 6.5em 1fr;
+  gap: 10px;
+  padding: 2px 0;
+}
+
+.tabel td::before {
+  content: attr(data-eticheta);
+  color: #8b919c;
+}
+
+/* ─── Casetele cu butoane: setarile cookie si contactul GDPR ─── */
+
+.panou {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  margin: 8px 0 18px;
+  padding: 18px;
+  border-radius: 14px;
+  background: #f7f8f9;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.05);
+}
+
+.panouText {
+  color: #5b6270;
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.panouTitlu {
+  margin-bottom: 4px;
+  color: #0b0f14;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.actiuni {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.primar,
+.secundar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.primar {
+  background: #0b0f14;
+  color: #fff;
+}
+
+.secundar {
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(11, 15, 20, 0.12);
+  color: #0b0f14;
+}
+
+.primar svg,
+.secundar svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media (hover: hover) {
+  .cale a:hover,
+  .cuprinsLista a:hover {
+    color: #0b0f14;
+  }
+
+  .text a:not(.primar, .secundar):hover {
+    text-decoration-color: currentColor;
+  }
+
+  .primar:hover {
+    background: #272c33;
+  }
+
+  .secundar:hover {
+    background: #f0f1f3;
+  }
+}
+
+/* ─── Marimi ─── */
+
+@media (min-width: 640px) {
+  .antet {
+    padding: 32px 40px 36px;
+  }
+
+  .titlu {
+    font-size: 38px;
+  }
+
+  .corp {
+    padding: 0 40px 44px;
+  }
+
+  .cuprinsMobil {
+    margin: 0 -40px;
+  }
+
+  .cuprinsMobil summary {
+    padding: 16px 40px;
+  }
+
+  .cuprinsMobil .cuprinsLista {
+    padding: 0 40px 18px;
+  }
+
+  .h2 {
+    font-size: 23px;
+  }
+
+  .p,
+  .ul li,
+  .ol li {
+    font-size: 16px;
+  }
+
+  .rezumat {
+    padding: 22px 24px 20px;
+  }
+
+  .rezumatLista > div {
+    grid-template-columns: 13em 1fr;
+    gap: 16px;
+  }
+
+  .panou {
+    padding: 22px 24px;
+  }
+
+  /* tabelul adevarat, cu capul vizibil */
+  .tabelCutie {
+    overflow-x: auto;
+    border-radius: 12px;
+    box-shadow: inset 0 0 0 1px #e6e8ec;
+  }
+
+  .tabel {
+    display: table;
+    min-width: 600px;
+  }
+
+  .tabel thead {
+    position: static;
+    display: table-header-group;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+  }
+
+  .tabel tbody {
+    display: table-row-group;
+  }
+
+  .tabel tr {
+    display: table-row;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .tabel th,
+  .tabel td {
+    display: table-cell;
+    padding: 10px 14px;
+    border-bottom: 1px solid #eceef1;
+  }
+
+  .tabel thead th {
+    background: #f7f8f9;
+    color: #5b6270;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .tabel tbody tr:last-child th,
+  .tabel tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .tabel tbody th {
+    margin: 0;
+  }
+
+  /* numele se rup doar la cratime si puncte, nu in mijlocul cuvantului */
+  .tabel code {
+    overflow-wrap: normal;
+  }
+
+  .tabel td::before {
+    content: none;
+  }
+}
+
+/* cuprinsul in stanga, lipit sub antet; textul in dreapta */
+@media (min-width: 1024px) {
+  .pagina {
+    padding-top: calc(var(--rama) + 60px + 24px);
+    padding-bottom: 104px;
+  }
+
+  .antet {
+    padding: 40px 56px 44px;
+  }
+
+  .titlu {
+    font-size: 44px;
+  }
+
+  .intro {
+    font-size: 16px;
+  }
+
+  .corp {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 56px;
+    padding: 0 56px 64px;
+  }
+
+  .cuprinsMobil {
+    display: none;
+  }
+
+  .cuprins {
+    position: sticky;
+    top: calc(var(--rama) + 60px + 32px);
+    display: block;
+    max-height: calc(100vh - var(--rama) - 60px - 56px);
+    padding-top: 40px;
+    overflow-y: auto;
+  }
+
+  .cuprins .cuprinsTitlu {
+    margin-bottom: 10px;
+  }
+
+  .rezumat {
+    margin-top: 40px;
+  }
+
+  .sectiune {
+    padding-top: 40px;
+  }
+
+  .sectiune + .sectiune {
+    margin-top: 40px;
+  }
+
+  .h2 {
+    font-size: 25px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .antet {
+    padding: 44px 72px 48px;
+  }
+
+  .titlu {
+    font-size: 52px;
+  }
+
+  .corp {
+    grid-template-columns: 270px minmax(0, 1fr);
+    gap: 72px;
+    padding: 0 72px 72px;
+  }
+}
+
+/* la tiparire (sau „Salveaza ca PDF”): doar documentul */
+@media print {
+  .pagina {
+    padding: 0;
+  }
+
+  .card {
+    box-shadow: none;
+  }
+
+  .lateral,
+  .cale,
+  .icon,
+  .actiuni {
+    display: none;
+  }
+
+  .corp {
+    display: block;
+  }
+
+  .sectiune {
+    break-inside: auto;
+  }
+
+  .h2,
+  .h3 {
+    break-after: avoid;
+  }
+}

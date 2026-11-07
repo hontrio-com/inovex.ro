@@ -1,4 +1,7 @@
 import { ArrowUpRight } from 'lucide-react';
+import { completeaza } from '@/lib/i18n/completeaza';
+import type { Limba } from '@/lib/i18n/config';
+import { textPortofoliu } from '@/lib/i18n/pagini/portofoliu';
 import type { PortfolioProject } from '@/lib/portfolio-data';
 import { Fereastra } from './Fereastra';
 import { Sigle, Steaguri } from './Sigle';
@@ -10,16 +13,19 @@ import styles from './FisaProiect.module.css';
    siglele reale), limbile si, cand sunt completate in date, anul si durata; fiecare rand apare doar cand
    are ce arata (limbile, ca steaguri). Numele e linkul spre site, intr-o fila noua; stratul lui acopera tot cardul, deci clicul
    merge oriunde, iar fisa ramane text obisnuit, in afara linkului. Elementul e un <li> pentru
-   ListaProiecte (captura care coboara pe pagina). */
+   ListaProiecte (captura care coboara pe pagina). Din 2026-11-07 etichetele sunt in limba paginii. */
 export function FisaProiect({
   p: x,
   sizes,
   priority = false,
+  lang = 'ro',
 }: {
   p: PortfolioProject;
   sizes: string;
   priority?: boolean;
+  lang?: Limba;
 }) {
+  const t = textPortofoliu(lang).fisa;
   // „Platformă SaaS · SaaS” ar spune acelasi lucru de doua ori
   const eticheta = x.tip.toLowerCase().includes(x.categoryLabel.toLowerCase())
     ? x.tip
@@ -36,7 +42,7 @@ export function FisaProiect({
             <h3 className={styles.nume}>
               <a href={x.url} target="_blank" rel="noopener noreferrer" className={styles.link}>
                 {x.title}
-                <span className={p.ascuns}> (se deschide într-o filă nouă)</span>
+                <span className={p.ascuns}>{t.filaNoua}</span>
               </a>
             </h3>
           </div>
@@ -48,7 +54,7 @@ export function FisaProiect({
         <dl className={styles.fisa}>
           {include.length > 0 && (
             <div>
-              <dt>Include</dt>
+              <dt>{t.include}</dt>
               <dd>
                 <ul>
                   {include.map((f) => (
@@ -60,7 +66,7 @@ export function FisaProiect({
           )}
           {x.integrari && x.integrari.length > 0 && (
             <div className={styles.randSigle}>
-              <dt>Integrări</dt>
+              <dt>{t.integrari}</dt>
               <dd>
                 <Sigle nume={x.integrari} />
               </dd>
@@ -68,7 +74,7 @@ export function FisaProiect({
           )}
           {x.tehnologii && x.tehnologii.length > 0 && (
             <div className={styles.randSigle}>
-              <dt>Tehnologie</dt>
+              <dt>{t.tehnologie}</dt>
               <dd>
                 <Sigle nume={x.tehnologii} />
               </dd>
@@ -76,16 +82,16 @@ export function FisaProiect({
           )}
           {x.limbi && x.limbi.length > 0 && (
             <div className={styles.randSigle}>
-              <dt>Limbi</dt>
+              <dt>{t.limbi}</dt>
               <dd>
-                <Steaguri coduri={x.limbi} total={x.limbiTotal} />
+                <Steaguri coduri={x.limbi} total={x.limbiTotal} lang={lang} />
               </dd>
             </div>
           )}
           {x.an && (
             <div>
-              <dt>Lansat</dt>
-              <dd>{x.durata ? `${x.an}, realizat în ${x.durata}` : x.an}</dd>
+              <dt>{t.lansat}</dt>
+              <dd>{x.durata ? completeaza(t.realizat, { an: x.an, durata: x.durata }) : x.an}</dd>
             </div>
           )}
         </dl>

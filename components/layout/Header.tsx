@@ -6,6 +6,8 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { ChevronDown, Menu, Phone, X } from 'lucide-react';
 import { trackConversions } from '@/lib/gtm';
+import { cale, linkPagina, type Limba } from '@/lib/i18n/config';
+import type { Dictionar } from '@/lib/i18n/dictionare/ro';
 import { DEZVOLTARE_WEB, SOLUTII_COMPLETE, TELEFON } from './meniu-servicii/date';
 import { MeniuServicii } from './meniu-servicii/MeniuServicii';
 import styles from './Header.module.css';
@@ -14,19 +16,28 @@ import styles from './Header.module.css';
 // proprietarului (2026-10-29): „Servicii” duce la sectiunea de servicii de pe prima pagina. Cu `true`
 // revine meniul mare pe desktop si lista pliabila pe telefon.
 const MENIU_SERVICII = false;
-const SERVICII_ANCORA = '/#servicii';
 
-// „Învață gratuit” e scos din meniu pentru moment (2026-10-29); pagina ramane.
-const PAGINI: { href: string; label: string; nou?: boolean }[] = [
-  { href: '/servicii/video-motion-design', label: 'Motion Design', nou: true },
-  { href: '/portofoliu', label: 'Portofoliu' },
-  { href: '/marketplace', label: 'Marketplace' },
-  { href: '/contact', label: 'Contact' },
-];
+/** Textele antetului (din dictionarul limbii, primite de la layout-ul site-ului). */
+export type TextAntet = Dictionar['antet'] & { telefon: string; meniu: Dictionar['servicii'] };
+
+type Pagina = { href: string; label: string; nou?: boolean };
+
+// „Învață gratuit” e scos din meniu pentru moment (2026-10-29); pagina ramane. Marketplace e doar pentru
+// Romania, deci apare doar in romana (2026-11-05). Linkurile trec prin linkPagina: o pagina netradusa e
+// inlocuita de echivalentul ei tradus sau nu apare.
+function pagini(lang: Limba, t: TextAntet): Pagina[] {
+  const lista: { href: string | null; label: string; nou?: boolean }[] = [
+    { href: linkPagina(lang, '/servicii/video-motion-design'), label: t.motion, nou: true },
+    { href: linkPagina(lang, '/portofoliu'), label: t.portofoliu },
+    ...(lang === 'ro' ? [{ href: '/marketplace', label: t.marketplace }] : []),
+    { href: linkPagina(lang, '/contact'), label: t.contact },
+  ];
+  return lista.filter((p): p is Pagina => p.href !== null);
+}
 
 // eticheta „Nou” de langa un link din meniu
-function Nou() {
-  return <span className={styles.nou}>Nou</span>;
+function Nou({ text }: { text: string }) {
+  return <span className={styles.nou}>{text}</span>;
 }
 
 const esteActiv = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);
@@ -40,8 +51,10 @@ const abonareDerulare = (anunta: () => void) => {
 const esteDerulat = () => window.scrollY > 16;
 const peServer = () => false;
 
-export function Header() {
+export function Header({ lang, t }: { lang: Limba; t: TextAntet }) {
   const pathname = usePathname();
+  const PAGINI = pagini(lang, t);
+  const serviciiAncora = cale(lang, '/#servicii');
   const derulat = useSyncExternalStore(abonareDerulare, esteDerulat, peServer);
   // Meniurile tin minte pagina pe care au fost deschise: dupa o navigare se inchid singure.
   const [serviciiPe, setServiciiPe] = useState<string | null>(null);
@@ -101,15 +114,15 @@ export function Header() {
 
       <header className={styles.antet} data-plutitor={plutitor} data-meniu={meniuOpen} data-servicii={serviciiOpen}>
         <div className={styles.bara}>
-          <Link href="/" aria-label="Inovex, prima pagină" className={styles.logo}>
+          <Link href={cale(lang, '/')} aria-label={t.acasa} className={styles.logo}>
             {/* logo decupat pe litere, la 3x: mic (5 KB), se incarca direct, fara optimizatorul de imagini */}
             <Image src="/imagini/logo-inovex-antet.png" alt="Inovex" width={95} height={22} unoptimized loading="eager" />
           </Link>
 
-          <nav aria-label="Navigare principală" className={styles.nav}>
+          <nav aria-label={t.navigare} className={styles.nav}>
             {!MENIU_SERVICII && (
-              <Link href={SERVICII_ANCORA} className={styles.navLink}>
-                Servicii
+              <Link href={serviciiAncora} className={styles.navLink}>
+                {t.servicii}
               </Link>
             )}
             {MENIU_SERVICII && (
@@ -129,14 +142,14 @@ export function Header() {
                 // de la tastatura (detail 0) butonul deschide si inchide; cu mouse-ul lista e deja deschisa la hover
                 onClick={(e) => (e.detail === 0 && serviciiOpen ? setServiciiPe(null) : deschideServicii())}
                 className={styles.navLink}
-                data-activ={pathname.startsWith('/servicii')}
+                data-activ={pathname.startsWith(cale(lang, '/servicii'))}
               >
-                Servicii
+                {t.servicii}
                 <ChevronDown aria-hidden className={styles.chevron} />
               </button>
               {serviciiOpen && (
                 <div id="meniu-servicii" className={styles.panouPoz}>
-                  <MeniuServicii onNavigate={() => setServiciiPe(null)} plutitor={plutitor} />
+                  <MeniuServicii lang={lang} t={t.meniu} onNavigate={() => setServiciiPe(null)} plutitor={plutitor} />
                 </div>
               )}
             </div>
@@ -153,7 +166,7 @@ export function Header() {
                   data-activ={activ}
                 >
                   {pagina.label}
-                  {pagina.nou && <Nou />}
+                  {pagina.nou && <Nou text={t.nou} />}
                 </Link>
               );
             })}
@@ -162,10 +175,10 @@ export function Header() {
           <div className={styles.actiuni}>
             <a href={TELEFON.href} onClick={() => trackConversions.telefon()} className={styles.telefon}>
               <Phone aria-hidden />
-              {TELEFON.text}
+              {t.telefon}
             </a>
-            <Link href="/oferta" className={styles.cta}>
-              Solicită ofertă
+            <Link href={cale(lang, '/oferta')} className={styles.cta}>
+              {t.oferta}
             </Link>
             <button
               ref={meniuButonRef}
@@ -173,7 +186,7 @@ export function Header() {
               onClick={() => setMeniuPe(meniuOpen ? null : pathname)}
               aria-expanded={meniuOpen}
               aria-controls="meniu-mobil"
-              aria-label={meniuOpen ? 'Închide meniul' : 'Deschide meniul'}
+              aria-label={meniuOpen ? t.inchideMeniul : t.deschideMeniul}
               className={styles.meniuBtn}
             >
               {meniuOpen ? <X aria-hidden /> : <Menu aria-hidden />}
@@ -181,22 +194,45 @@ export function Header() {
           </div>
         </div>
 
-        {meniuOpen && <MeniuMobil pathname={pathname} onNavigate={() => setMeniuPe(null)} />}
+        {meniuOpen && (
+          <MeniuMobil
+            lang={lang}
+            t={t}
+            pagini={PAGINI}
+            serviciiAncora={serviciiAncora}
+            pathname={pathname}
+            onNavigate={() => setMeniuPe(null)}
+          />
+        )}
       </header>
     </>
   );
 }
 
-function MeniuMobil({ pathname, onNavigate }: { pathname: string; onNavigate: () => void }) {
+function MeniuMobil({
+  lang,
+  t,
+  pagini: PAGINI,
+  serviciiAncora,
+  pathname,
+  onNavigate,
+}: {
+  lang: Limba;
+  t: TextAntet;
+  pagini: Pagina[];
+  serviciiAncora: string;
+  pathname: string;
+  onNavigate: () => void;
+}) {
   // pe o pagina de serviciu lista de servicii porneste deschisa
-  const [serviciiDeschise, setServiciiDeschise] = useState(pathname.startsWith('/servicii'));
+  const [serviciiDeschise, setServiciiDeschise] = useState(pathname.startsWith(cale(lang, '/servicii')));
 
   return (
     <div id="meniu-mobil" className={styles.mobil}>
-      <nav aria-label="Navigare principală">
+      <nav aria-label={t.navigare}>
         {!MENIU_SERVICII && (
-          <Link href={SERVICII_ANCORA} onClick={onNavigate} className={styles.mobilRand}>
-            Servicii
+          <Link href={serviciiAncora} onClick={onNavigate} className={styles.mobilRand}>
+            {t.servicii}
           </Link>
         )}
         {MENIU_SERVICII && (
@@ -207,24 +243,29 @@ function MeniuMobil({ pathname, onNavigate }: { pathname: string; onNavigate: ()
           aria-controls="mobil-servicii"
           className={styles.mobilRand}
         >
-          Servicii
+          {t.servicii}
           <ChevronDown aria-hidden className={styles.chevron} />
         </button>
         )}
         {MENIU_SERVICII && serviciiDeschise && (
           <ul id="mobil-servicii" className={styles.mobilServicii}>
-            {[...DEZVOLTARE_WEB, ...SOLUTII_COMPLETE].map((s) => (
-              <li key={s.href}>
-                <Link
-                  href={s.href}
-                  onClick={onNavigate}
-                  aria-current={pathname === s.href ? 'page' : undefined}
-                  className={styles.mobilServiciu}
-                >
-                  {s.titlu}
-                </Link>
-              </li>
-            ))}
+            {[...DEZVOLTARE_WEB, ...SOLUTII_COMPLETE].map((intern) => {
+              const href = linkPagina(lang, intern);
+              return (
+                href && (
+                  <li key={intern}>
+                    <Link
+                      href={href}
+                      onClick={onNavigate}
+                      aria-current={pathname === href ? 'page' : undefined}
+                      className={styles.mobilServiciu}
+                    >
+                      {t.meniu.lista[intern]?.titlu}
+                    </Link>
+                  </li>
+                )
+              );
+            })}
           </ul>
         )}
 
@@ -239,7 +280,7 @@ function MeniuMobil({ pathname, onNavigate }: { pathname: string; onNavigate: ()
               >
                 <span className={styles.mobilEticheta}>
                   {pagina.label}
-                  {pagina.nou && <Nou />}
+                  {pagina.nou && <Nou text={t.nou} />}
                 </span>
               </Link>
             </li>
@@ -248,12 +289,12 @@ function MeniuMobil({ pathname, onNavigate }: { pathname: string; onNavigate: ()
       </nav>
 
       <div className={styles.mobilActiuni}>
-        <Link href="/oferta" onClick={onNavigate} className={styles.mobilCta}>
-          Solicită ofertă
+        <Link href={cale(lang, '/oferta')} onClick={onNavigate} className={styles.mobilCta}>
+          {t.oferta}
         </Link>
         <a href={TELEFON.href} onClick={() => trackConversions.telefon()} className={styles.mobilTelefon}>
           <Phone aria-hidden />
-          Sună: {TELEFON.text}
+          {t.suna}: {t.telefon}
         </a>
       </div>
     </div>

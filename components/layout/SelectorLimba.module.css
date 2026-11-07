@@ -1,0 +1,113 @@
+/* Selectorul de limba din subsol (din 2026-11-07): discret, ca linkul de cookies de langa el (gri, 13px);
+   lista se deschide in sus, intr-o caseta alba cu umbra fina, ca meniurile din antet. */
+
+.selector {
+  position: relative;
+}
+
+.buton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: #8b919c;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.buton[aria-expanded='true'] {
+  color: #0b0f14;
+}
+
+.glob {
+  width: 14px;
+  height: 14px;
+}
+
+.chevron {
+  width: 13px;
+  height: 13px;
+  transition: transform 0.2s ease;
+}
+
+.buton[aria-expanded='true'] .chevron {
+  transform: rotate(180deg);
+}
+
+.lista {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 20;
+  min-width: 190px;
+  margin: 0;
+  padding: 6px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(11, 15, 20, 0.08),
+    0 14px 34px -14px rgba(11, 15, 20, 0.35);
+  list-style: none;
+}
+
+.optiune {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 11px;
+  border-radius: 8px;
+  color: #0b0f14;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.optiune[aria-current='true'] {
+  background: #f0f1f3;
+  font-weight: 600;
+}
+
+.cod {
+  color: #8b919c;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.bifa {
+  width: 15px;
+  height: 15px;
+  color: #0b0f14;
+}
+
+@media (hover: hover) {
+  .buton:hover {
+    color: #0b0f14;
+  }
+
+  .optiune:hover {
+    background: #f6f7f8;
+  }
+}
+
+/* pe ecranele mari, lista se aliniaza la dreapta butonului (subsolul are selectorul in dreapta) */
+@media (min-width: 640px) {
+  .lista {
+    right: 0;
+    left: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buton,
+  .chevron,
+  .optiune {
+    transition: none;
+  }
+}

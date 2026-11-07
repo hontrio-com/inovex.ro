@@ -10,6 +10,7 @@
    film.ts. */
 
 import {
+  traducator,
   clamp01,
   eio,
   eo,
@@ -28,6 +29,11 @@ import {
   typist,
   type Stil,
 } from './film';
+import type { Limba } from '@/lib/i18n/config';
+import { bani, harta } from './texte';
+import { intreg } from './texte/aplicatii';
+import { DINAMIC, STATIC } from './texte/crm';
+import { panouBanner } from './texte/magazin';
 
 const DIR = '/imagini/servicii/acasa/animatie-crm';
 // sigla, bannerele si produsele magazinului de mobila sunt aceleasi ca in animatia magazinului
@@ -53,7 +59,9 @@ const CAMERA = { z0: 1.12, x0: 730, z1: 0.92, x1: 730 };
 // margini pentru apropierea lenta a camerei
 const VEDERE = { x: 282, y: 23, w: 1356, h: 1126 };
 
-const ADRESA = 'app.nexo.ro';
+// limba animatiei si textele ei schimbate in timpul animatiei (adresa, titlul paginii, starea, sumele)
+let L: Limba = 'ro';
+let D = DINAMIC.ro;
 
 /* ─── Interfata ─── */
 
@@ -93,7 +101,7 @@ const av = (txt: string, s: number) =>
   '<span class="av" style="width:' + s + 'px;height:' + s + 'px;font-size:' + Math.round(s * 0.36) + 'px">' + txt + '</span>';
 
 // numerele cu punct la mii
-const fmt = (v: number) => Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+const fmt = (v: number) => intreg(L, v);
 
 // meniul din stanga: iconita si nume, apoi cat de jos sta fiecare
 const NAV = [['grid', 'Dashboard'], ['globe', 'Site (CMS)'], ['users', 'Clienți'], ['funnel', 'Vânzări'], ['box', 'Comenzi'], ['stack', 'Stocuri'], ['doc', 'Facturi'], ['chart', 'Rapoarte'], ['gear', 'Setări']];
@@ -139,7 +147,7 @@ function paginaCms() {
   v += '<div class="pc card c-can" style="left:418px;top:182px;width:618px;height:640px;background:' + SOFT + ';overflow:hidden">' +
     '<div class="pc" style="left:18px;top:14px;width:582px;height:42px;border-radius:10px;background:var(--ground);display:flex;align-items:center;gap:16px;padding:0 14px;font-size:11.5px;font-weight:700;box-shadow:0 0 0 1px ' + LN + '"><img alt="" src="' + MAGAZIN + '/logo-mobila.webp" style="height:17px;width:70px;object-fit:contain;object-position:0 50%"><span style="margin-left:30px">Living</span><span>Dormitor</span><span>Bucătărie</span><span>Birou</span><span style="margin-left:auto;display:flex;gap:12px;align-items:center">' + ic(I.search, 15) + '<span style="position:relative">' + ic(COS, 16) + '<i style="position:absolute;right:-5px;top:-5px;width:13px;height:13px;border-radius:50%;background:' + OR + ';color:var(--ground);font-size:8px;font-style:normal;font-weight:800;display:flex;align-items:center;justify-content:center">2</i></span></span></div>' +
     '<div class="pc c-hero" style="left:18px;top:66px;width:582px;height:212px;border-radius:12px;background:var(--ground)">' +
-    '<div style="position:absolute;inset:0;border-radius:12px;overflow:hidden"><img alt="" src="' + MAGAZIN + '/banner-1.webp" style="position:absolute;inset:0;width:582px;height:212px;object-fit:cover"><img class="c-b2" alt="" src="' + MAGAZIN + '/banner-2.webp" style="position:absolute;inset:0;width:582px;height:212px;object-fit:cover;opacity:0">' +
+    '<div style="position:absolute;inset:0;border-radius:12px;overflow:hidden">' + bannereCms() + '' +
     sageata('left') + sageata('right') +
     '<span style="position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:5px">' + punct + punct + punct + '</span></div>' +
     '<i class="c-sel" style="position:absolute;inset:-4px;border-radius:14px;border:2px solid var(--main)"><span style="position:absolute;left:10px;top:-11px;height:20px;padding:0 8px;border-radius:6px;background:var(--main);color:var(--ground);font-size:10.5px;font-weight:700;display:flex;align-items:center;font-style:normal">Slider · editare</span></i></div>' +
@@ -331,7 +339,7 @@ function construieste(box: HTMLElement) {
   );
   box.append(root);
   const urlEl = gaseste(root, 'u-url');
-  urlEl.textContent = ADRESA;
+  urlEl.textContent = D.adresa;
   return {
     cam: root.style,
     urlEl,
@@ -434,10 +442,9 @@ function cursor(q: Interfata, t: number, t0: number, t1: number, x0: number, y0:
 
 // in CMS: titlul colectiei se scrie, bannerul se schimba, apoi pagina se publica
 const CMS = { titlu: 0.45, publica: 1.2 };
-const TITLU = 'Colecția de toamnă';
 
 function stareCms(q: Interfata, t: number) {
-  q.ctitle.textContent = TITLU.slice(0, Math.max(0, Math.min(TITLU.length, Math.floor((t - CMS.titlu) * 34))));
+  q.ctitle.textContent = D.titlu.slice(0, Math.max(0, Math.min(D.titlu.length, Math.floor((t - CMS.titlu) * 34))));
   q.c.sel.opacity = (1 - seg(t, CMS.publica, CMS.publica + 0.2)).toFixed(3);
   const bp = eio(seg(t, CMS.titlu - 0.1, CMS.titlu + 0.3));
   q.c.b2.opacity = String(bp);
@@ -446,7 +453,7 @@ function stareCms(q: Interfata, t: number) {
     d.width = (6 + 12 * a).toFixed(1) + 'px';
     d.opacity = (0.55 + 0.45 * a).toFixed(2);
   });
-  q.cstate.textContent = t >= CMS.publica + 0.1 ? 'Publicată' : 'Ciornă';
+  q.cstate.textContent = t >= CMS.publica + 0.1 ? D.publicata : D.ciorna;
   apasa(q.c.pub, t, CMS.publica);
 }
 
@@ -480,7 +487,7 @@ function stareErp(q: Interfata, t: number, t0: number) {
     const b = eio(seg(t, t0 + 0.5 + k * 0.1, t0 + 1.3 + k * 0.1));
     const v = lerp(s[1], s[2], b);
     q.ebars[k].width = v.toFixed(1) + '%';
-    q.eq[k].textContent = Math.round((s[4] * v) / s[1]) + ' ' + s[3];
+    q.eq[k].textContent = Math.round((s[4] * v) / s[1]) + ' ' + (D.unitati[s[3]] ?? s[3]);
   });
   q.e.res.opacity = String(eo(seg(t, t0 + 1.0, t0 + 1.3)));
   const sp = seg(t, t0 + 1.45, t0 + 1.75);
@@ -496,7 +503,7 @@ function stareErp(q: Interfata, t: number, t0: number) {
 function stareRapoarte(q: Interfata, t: number, t0: number) {
   q.pv.forEach((e, k) => {
     const p = eo(seg(t, t0 + k * 0.08, t0 + 0.9 + k * 0.08));
-    e.textContent = fmt(KP[k][1] * p) + KP[k][2];
+    e.textContent = KP[k][2] === ' lei' ? bani(L, (KP[k][1] / D.curs) * p, 0) : fmt(KP[k][1] * p) + KP[k][2];
   });
   q.psp.forEach((s, k) => {
     s.strokeDashoffset = (1 - eio(seg(t, t0 + 0.2 + k * 0.08, t0 + 0.9 + k * 0.08))).toFixed(4);
@@ -530,7 +537,7 @@ const MAP = [3, 4, 2, 5, 6, 0];
 // fisierele si aplicatiile imprastiate apar in jurul ferestrei goale, apoi intra fiecare in meniu
 function sceneHaos(box: HTMLElement, start: number) {
   const q = construieste(box);
-  const adresa = typist(ADRESA, 0.2, 26);
+  const adresa = typist(D.adresa, 0.2, 26);
   return (t: number) => {
     camera(q, start + t, 1);
     cadru(q);
@@ -627,4 +634,18 @@ const SCENE = [
 ];
 
 // porneste animatia in casuta (vezi pornesteFilmul)
-export const porneste = (cutie: HTMLElement, scena: HTMLElement) => pornesteFilmul(cutie, scena, { scene: SCENE, vedere: VEDERE });
+export const porneste = (cutie: HTMLElement, scena: HTMLElement, lang: Limba = 'ro') => {
+  L = lang;
+  D = DINAMIC[lang];
+  return pornesteFilmul(cutie, scena, { scene: SCENE, vedere: VEDERE, traduce: traducator(harta(STATIC, lang)) });
+};
+
+// cele doua bannere din editorul CMS; in limbile straine, cu panoul tradus peste textul romanesc din poza
+function bannereCms() {
+  const img = (i: number) => '<img alt="" src="' + MAGAZIN + '/banner-' + i + '.webp" style="position:absolute;inset:0;width:582px;height:212px;object-fit:cover">';
+  if (L === 'ro') return img(1) + '<img class="c-b2" alt="" src="' + MAGAZIN + '/banner-2.webp" style="position:absolute;inset:0;width:582px;height:212px;object-fit:cover;opacity:0">';
+  return (
+    '<div style="position:absolute;inset:0">' + img(1) + panouBanner(L, 0, 582) + '</div>' +
+    '<div class="c-b2" style="position:absolute;inset:0;opacity:0">' + img(2) + panouBanner(L, 1, 582) + '</div>'
+  );
+}

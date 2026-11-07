@@ -5,6 +5,8 @@
 .portofoliu {
   padding: 56px var(--rama) 64px;
   background: #fff;
+  /* ancora #portofoliu: rezerva pentru linkurile spre portofoliu, cand pagina lipseste intr-o limba */
+  scroll-margin-top: 24px;
 }
 
 /* ─── Titlul sectiunii, ca la servicii ─── */

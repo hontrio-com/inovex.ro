@@ -132,7 +132,27 @@ export type Film = {
   // fiecare scena primeste cutia ei si momentul in care incepe, si intoarce functia care o deseneaza
   scene: { dur: number; creeaza: (box: HTMLElement, start: number) => (t: number) => void }[];
   vedere: { x: number; y: number; w: number; h: number };
+  // in limbile straine: traduce textele scenei, dupa ce s-a construit (vezi traducator)
+  traduce?: (root: HTMLElement) => void;
 };
+
+/* Traducerea animatiilor (2026-11-05): fiecare nod de text al unei scene construite care, fara spatiile de
+   la margini, e exact o cheie din `texte` primeste traducerea (spatiile raman). Doar noduri de text intregi,
+   deci nu atinge stilurile, atributele sau bucati din alte cuvinte. Textele schimbate in timpul animatiei
+   (adresa scrisa, totalul, raspunsul AI) le traduce fiecare film la sursa. */
+export function traducator(texte: Record<string, string> | null) {
+  if (!texte) return undefined;
+  return (root: HTMLElement) => {
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode() as Text | null; n; n = w.nextNode() as Text | null) {
+      const t = n.data.trim();
+      const tr = t ? texte[t] : undefined;
+      if (tr === undefined || tr === t) continue;
+      const i = n.data.indexOf(t);
+      n.data = n.data.slice(0, i) + tr + n.data.slice(i + t.length);
+    }
+  };
+}
 
 // dupa ultima scena: cat sta pe loc, apoi cat dureaza stingerea
 const HOLD = 2.0;
@@ -161,7 +181,12 @@ export function pornesteFilmul(cutie: HTMLElement, scena: HTMLElement, film: Fil
   /* Fiecare scena isi construieste interfata o singura data, cand e nevoie de ea sau mai devreme, in
      pauzele paginii, cate una pe rand: toate odata ar bloca pagina o clipa (cateva sute de ms pe un
      telefon mai slab). Cu „reduce motion” e nevoie doar de ultima. */
-  const pregateste = (sc: Scena) => (sc.render ??= sc.creeaza(sc.box, sc.start));
+  const pregateste = (sc: Scena) =>
+    (sc.render ??= (() => {
+      const render = sc.creeaza(sc.box, sc.start);
+      film.traduce?.(sc.box);
+      return render;
+    })());
   const idle = typeof window.requestIdleCallback === 'function';
   const amana = (f: () => void) => (idle ? requestIdleCallback(f, { timeout: 500 }) : window.setTimeout(f, 50));
   let asteapta = 0;

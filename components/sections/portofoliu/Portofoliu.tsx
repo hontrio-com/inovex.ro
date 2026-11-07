@@ -1,6 +1,10 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { PORTFOLIO_PROJECTS } from '@/lib/portfolio-data';
+import { cale, existaIn, type Limba } from '@/lib/i18n/config';
+import { dictionar } from '@/lib/i18n/dictionare';
+import { textAcasa } from '@/lib/i18n/pagini/acasa';
+import { descriereScurta, portofoliuInternational } from '@/lib/portofoliu-international';
 import { ListaProiecte } from './ListaProiecte';
 import { Proiect } from './Proiect';
 import styles from './Portofoliu.module.css';
@@ -12,15 +16,11 @@ import styles from './Portofoliu.module.css';
    noua. Cat timp proiectul e sub mouse sau, pe ecranele fara mouse, la mijlocul ecranului, captura
    coboara pe pagina si urca inapoi, pe rand (ListaProiecte). */
 
-// proiectele alese de proprietar (2026-11-05), in ordinea de pe pagina, cu ce fel de proiect e fiecare
-const ALESE = [
-  { id: 'hobbyroom', descriere: 'Magazin online de seturi de construcție' },
-  { id: 'esafe', descriere: 'Magazin online de echipamente de protecție' },
-  { id: 'atp-autoteile', descriere: 'Magazin online de piese auto' },
-  { id: 'edinio', descriere: 'Platformă SaaS pentru magazine online' },
-  { id: 'bridge', descriere: 'Platformă SaaS pentru întâlniri video cu AI' },
-  { id: 'inpardoseala', descriere: 'Website pentru pardoseli din beton' },
-];
+// in romana, proiectele alese de proprietar (2026-11-05), in ordinea de pe pagina, cu ce fel de proiect e
+// fiecare in lib/i18n/pagini/acasa.ts; in engleza, germana si franceza, primele PE_PRIMA din portofoliul
+// international (lib/portofoliu-international.ts, in ordinea data de proprietar pe 2026-11-07)
+const ALESE = ['hobbyroom', 'esafe', 'atp-autoteile', 'edinio', 'bridge', 'inpardoseala'];
+const PE_PRIMA = 6;
 
 // pe telefon se vad doar primele atatea
 const PE_TELEFON = 4;
@@ -29,38 +29,46 @@ const PE_TELEFON = 4;
 // sectiunii (--rama), golurile grilei si paddingul cardului; se schimba odata cu Portofoliu.module.css
 const LATIME = '(min-width: 1024px) calc(28vw - 48px), (min-width: 640px) calc(42vw - 34px), calc(84vw - 34px)';
 
-const PROIECTE = ALESE.flatMap(({ id, descriere }) => {
-  const p = PORTFOLIO_PROJECTS.find((x) => x.id === id);
-  return p ? [{ ...p, descriere }] : [];
-});
+const PROIECTE = ALESE.flatMap((id) => PORTFOLIO_PROJECTS.filter((x) => x.id === id));
 
-export function Portofoliu() {
+export function Portofoliu({ lang = 'ro' }: { lang?: Limba }) {
+  const t = textAcasa(lang).portofoliu;
+  const d = dictionar(lang);
+  const proiecte = lang === 'ro' ? PROIECTE : portofoliuInternational(lang).slice(0, PE_PRIMA);
+  const descriere = (id: string) => (lang === 'ro' ? t.descrieri[id] ?? '' : descriereScurta(lang, id));
   return (
-    <section className={styles.portofoliu} aria-labelledby="portofoliu-titlu">
+    <section id="portofoliu" className={styles.portofoliu} aria-labelledby="portofoliu-titlu">
       <div className={styles.cap}>
         <h2 id="portofoliu-titlu" className={styles.titlu}>
-          Proiecte care vorbesc de la sine
+          {t.titlu}
         </h2>
-        <p className={styles.lead}>
-          Peste 200 de proiecte livrate. Aici e o parte din ele, fiecare cu obiectivul lui, fiecare livrat
-          la termen.
-        </p>
+        <p className={styles.lead}>{t.lead}</p>
       </div>
 
       <div className={styles.chenar}>
         <ListaProiecte className={styles.grila}>
-          {PROIECTE.map((p, k) => (
-            <Proiect key={p.id} p={p} descriere={p.descriere} sizes={LATIME} inPlus={k >= PE_TELEFON} />
+          {proiecte.map((p, k) => (
+            <Proiect
+              key={p.id}
+              p={p}
+              descriere={descriere(p.id)}
+              sizes={LATIME}
+              inPlus={k >= PE_TELEFON}
+              filaNoua={t.filaNoua}
+            />
           ))}
         </ListaProiecte>
       </div>
 
-      <div className={styles.actiuni}>
-        <Link href="/portofoliu" className={styles.primar}>
-          Vezi portofoliul
-          <ArrowRight aria-hidden />
-        </Link>
-      </div>
+      {/* butonul spre pagina de portofoliu, doar unde pagina exista in limba data */}
+      {existaIn(lang, '/portofoliu') && (
+        <div className={styles.actiuni}>
+          <Link href={cale(lang, '/portofoliu')} className={styles.primar}>
+            {d.servicii.veziPortofoliul}
+            <ArrowRight aria-hidden />
+          </Link>
+        </div>
+      )}
     </section>
   );
 }

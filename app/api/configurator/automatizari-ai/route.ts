@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { sendEmail } from '@/lib/email/send';
 import { internSubject, internHtml, clientSubject, clientHtml } from '@/lib/email/templates/automatizari-ai';
+import { limbaEmail, sufixLimba } from '@/lib/email/texte';
 import { createWebsiteLead } from '@/lib/crm/website-lead';
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -36,6 +37,8 @@ const schema = z
     email:               z.string().email().optional().or(z.literal('')),
     telefon:             z.string().min(10).max(20),
     gdprConsent:         z.literal(true),
+    // limba paginii (2026-11-07): confirmarea pleaca in limba clientului, iar in CRM sursa o arata
+    limba:               z.enum(['ro', 'en', 'de', 'fr']).optional(),
   })
   .superRefine((data, ctx) => {
     if (
@@ -59,10 +62,11 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const data = schema.parse(body);
+    const lang = limbaEmail(data.limba);
 
     // Lead in CRM (best-effort, nu afecteaza emailurile).
     await createWebsiteLead({
-      req, source: 'Configurator automatizari AI', metaEventId: req.headers.get('x-meta-event-id'),
+      req, source: 'Configurator automatizari AI' + sufixLimba(lang), metaEventId: req.headers.get('x-meta-event-id'),
       name: data.numeComplet, email: data.email || null, phone: data.telefon,
       notes: [
         `Tip afacere: ${data.tipAfacere}`,
@@ -73,13 +77,13 @@ export async function POST(req: NextRequest) {
     });
 
     const to = process.env.SMTP_TO ?? 'contact@inovex.ro';
-    const emailData = { ...data, ip };
+    const emailData = { ...data, ip, limba: lang };
 
     const internResult = await sendEmail({ to, subject: internSubject(emailData), html: internHtml(emailData) });
     if (!internResult.success) console.error('[Email intern Automatizari esuat]', internResult.error);
 
     if (data.email) {
-      const clientResult = await sendEmail({ to: data.email, subject: clientSubject(), html: clientHtml(emailData), replyTo: process.env.SMTP_USER });
+      const clientResult = await sendEmail({ to: data.email, subject: clientSubject(lang), html: clientHtml(emailData, lang), replyTo: process.env.SMTP_USER });
       if (!clientResult.success) console.error('[Email client Automatizari esuat]', clientResult.error);
     }
 

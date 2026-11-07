@@ -3,9 +3,12 @@ import type Stripe from 'stripe';
 import { getStripe } from '@/lib/stripe';
 import { sendEmail } from '@/lib/email/send';
 import { internSubject, internHtml, clientSubject, clientHtml } from '@/lib/email/templates/motion-design';
+import { limbaEmail } from '@/lib/email/texte';
 import { sendMetaPurchaseCapi } from '@/lib/crm/ads/signals';
 import { LINKEDIN_CONVERSII, sendLinkedInEvent } from '@/lib/crm/ads/linkedin';
-import { motionLabel, formatLei, MOTION_PATH } from '@/lib/motion-design';
+import { cale } from '@/lib/i18n/config';
+import { etichetaVideo, textMotion } from '@/lib/i18n/pagini/motion';
+import { motionLabel, formatPret, MOTION_PATH, type MonedaMotion } from '@/lib/motion-design';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -62,6 +65,9 @@ export async function POST(req: NextRequest) {
   const videos = Number(meta.videoclipuri);
   const pachet = videos > 0 ? motionLabel(videos) : 'necunoscut';
   const total = (session.amount_total ?? 0) / 100;
+  // moneda platii (lei pe pagina romaneasca, euro pe celelalte) si limba clientului, din sesiune
+  const moneda = (session.currency ?? 'ron').toUpperCase() as MonedaMotion;
+  const lang = limbaEmail(meta.limba);
 
   let brief = '';
   for (let i = 0; meta[`brief_${i}`] !== undefined; i++) brief += meta[`brief_${i}`];
@@ -73,25 +79,32 @@ export async function POST(req: NextRequest) {
     companie: customer?.business_name ?? null,
     cui: customer?.tax_ids?.[0]?.value ?? null,
     pachet,
-    total: formatLei(total),
+    total: formatPret(total, moneda, 'ro'),
     brief: brief || null,
     sessionId: session.id,
+    limba: lang,
+  };
+  // pentru client: pachetul si totalul in limba lui
+  const clientData = {
+    ...emailData,
+    pachet: videos > 0 ? etichetaVideo(textMotion(lang).eticheta, videos) : pachet,
+    total: formatPret(total, moneda, lang),
   };
 
   // Meta "Purchase" server-side; perechea de browser pleaca de pe pagina de multumire.
   await sendMetaPurchaseCapi({
     eventId: session.id,
-    value: total, currency: 'RON', contentName: 'motion-design',
+    value: total, currency: moneda, contentName: 'motion-design',
     email: emailData.email, phone: emailData.telefon,
     fbp: meta.fbp, fbclid: meta.fbclid,
-    sourceUrl: `${req.nextUrl.origin}${MOTION_PATH}/multumim`,
+    sourceUrl: `${req.nextUrl.origin}${cale(lang, `${MOTION_PATH}/multumim`)}`,
   });
 
   const to = process.env.SMTP_TO ?? 'contact@inovex.ro';
   const [internResult, clientResult] = await Promise.all([
     sendEmail({ to, subject: internSubject(emailData), html: internHtml(emailData), replyTo: emailData.email || undefined }),
     emailData.email
-      ? sendEmail({ to: emailData.email, subject: clientSubject(), html: clientHtml(emailData) })
+      ? sendEmail({ to: emailData.email, subject: clientSubject(lang), html: clientHtml(clientData, lang) })
       : Promise.resolve({ success: true as const, error: undefined }),
   ]);
   if (!internResult.success) console.error('[Email intern Motion Design esuat]', internResult.error);
@@ -116,7 +129,7 @@ export async function POST(req: NextRequest) {
     liFatId: meta.li_fat_id,
     name: meta.nume || customer?.name,
     company: emailData.companie,
-    value: { amount: total, currency: 'RON' },
+    value: { amount: total, currency: moneda },
   }).then((r) => {
     if (!r.ok && !r.unconfigured && !r.skip) console.error('[stripe webhook] LinkedIn CAPI:', r.error);
   }).catch(() => {}));

@@ -1,4 +1,7 @@
 import Image from 'next/image';
+import { completeaza } from '@/lib/i18n/completeaza';
+import type { Limba } from '@/lib/i18n/config';
+import { textPortofoliu } from '@/lib/i18n/pagini/portofoliu';
 import styles from './Sigle.module.css';
 
 /* Siglele si steagurile din fisele de pe pagina /portofoliu.
@@ -54,6 +57,29 @@ const SIGLE: Record<string, Sigla> = {
   // alte servicii
   TecDoc: { src: `${I}/tecdoc.svg`, h: 22, raport: 1 },
   Booking: { src: `${I}/booking.svg`, h: 12, raport: 5.894 },
+  // portofoliul international (2026-11-07): simple-icons in culoarea marcii; OpenAI de pe Wikimedia Commons
+  // (domeniu public). Clearpay are acelasi semn ca Afterpay (aceeasi firma), cu numele scris langa.
+  Klarna: { src: `${I}/klarna.svg`, h: 15, raport: 1, text: 'Klarna' },
+  Clearpay: { src: `${I}/clearpay.svg`, h: 15, raport: 1, text: 'Clearpay' },
+  Trustpilot: { src: `${I}/trustpilot.svg`, h: 15, raport: 1, text: 'Trustpilot' },
+  ChatGPT: { src: `${I}/openai.svg`, h: 15, raport: 1.009, text: 'ChatGPT' },
+  OpenAI: { src: `${I}/openai.svg`, h: 15, raport: 1.009, text: 'OpenAI' },
+  Anthropic: { src: `${I}/anthropic.svg`, h: 15, raport: 1, text: 'Anthropic' },
+  Claude: { src: `${I}/claude.svg`, h: 15, raport: 1, text: 'Claude' },
+  Gemini: { src: `${I}/gemini.svg`, h: 15, raport: 1, text: 'Gemini' },
+  Perplexity: { src: `${I}/perplexity.svg`, h: 15, raport: 1, text: 'Perplexity' },
+  MCP: { src: `${I}/mcp.svg`, h: 15, raport: 1, text: 'MCP' },
+  'Hugging Face': { src: `${I}/hugging-face.svg`, h: 15, raport: 1, text: 'Hugging Face' },
+  Telegram: { src: `${I}/telegram.svg`, h: 15, raport: 1, text: 'Telegram' },
+  Instagram: { src: `${I}/instagram.svg`, h: 15, raport: 1, text: 'Instagram' },
+  TikTok: { src: `${I}/tiktok.svg`, h: 15, raport: 1, text: 'TikTok' },
+  YouTube: { src: `${I}/youtube.svg`, h: 15, raport: 1, text: 'YouTube' },
+  Gmail: { src: `${I}/gmail.svg`, h: 15, raport: 1, text: 'Gmail' },
+  HubSpot: { src: `${I}/hubspot.svg`, h: 15, raport: 1, text: 'HubSpot' },
+  'Google Sheets': { src: `${I}/google-sheets.svg`, h: 15, raport: 1, text: 'Google Sheets' },
+  Notion: { src: `${I}/notion.svg`, h: 15, raport: 1, text: 'Notion' },
+  GitHub: { src: `${I}/github.svg`, h: 15, raport: 1, text: 'GitHub' },
+  Chrome: { src: `${I}/chrome.svg`, h: 15, raport: 1, text: 'Chrome' },
   // tehnologii
   PHP: { src: `${T}/php.svg`, h: 26, raport: 1 },
   Laravel: { src: `${T}/laravel.svg`, h: 15, raport: 1, text: 'Laravel' },
@@ -62,6 +88,15 @@ const SIGLE: Record<string, Sigla> = {
   React: { src: `${T}/react.svg`, h: 15, raport: 1, text: 'React' },
   Supabase: { src: `${T}/supabase.svg`, h: 15, raport: 1, text: 'Supabase' },
   Shopify: { src: `${T}/shopify.svg`, h: 16, raport: 0.877, text: 'Shopify' },
+  // portofoliul international (2026-11-07); Tencent Cloud de pe Wikimedia Commons (domeniu public), doar norul
+  Angular: { src: `${T}/angular.svg`, h: 15, raport: 1, text: 'Angular' },
+  'Node.js': { src: `${T}/nodejs.svg`, h: 15, raport: 1, text: 'Node.js' },
+  Astro: { src: `${T}/astro.svg`, h: 15, raport: 1, text: 'Astro' },
+  'Tailwind CSS': { src: `${T}/tailwind.svg`, h: 15, raport: 1, text: 'Tailwind CSS' },
+  Vercel: { src: `${T}/vercel.svg`, h: 14, raport: 1, text: 'Vercel' },
+  Sanity: { src: `${T}/sanity.svg`, h: 15, raport: 1, text: 'Sanity' },
+  Firebase: { src: `${T}/firebase.svg`, h: 15, raport: 1, text: 'Firebase' },
+  'Tencent Cloud': { src: `${T}/tencent-cloud.svg`, h: 13, raport: 1.376, text: 'Tencent Cloud' },
 };
 
 // cat incape intr-o casuta de un loc (vezi .sigle in Sigle.module.css: 74px, din care 16px margini)
@@ -93,29 +128,32 @@ export function Sigle({ nume }: { nume: string[] }) {
   );
 }
 
-// limba: numele si steagul (engleza cu steagul Marii Britanii)
-const LIMBI: Record<string, { nume: string; src: string }> = {
-  ro: { nume: 'Română', src: `${S}/ro.svg` },
-  en: { nume: 'Engleză', src: `${S}/gb.svg` },
-  de: { nume: 'Germană', src: `${S}/de.svg` },
-  fr: { nume: 'Franceză', src: `${S}/fr.svg` },
-  it: { nume: 'Italiană', src: `${S}/it.svg` },
-  es: { nume: 'Spaniolă', src: `${S}/es.webp` },
-  tr: { nume: 'Turcă', src: `${S}/tr.svg` },
+// steagul fiecarei limbi (engleza cu steagul Marii Britanii); numele limbii, in limba paginii, e in
+// lib/i18n/pagini/portofoliu.ts
+const STEAGURI: Record<string, string> = {
+  ro: `${S}/ro.svg`,
+  en: `${S}/gb.svg`,
+  de: `${S}/de.svg`,
+  fr: `${S}/fr.svg`,
+  it: `${S}/it.svg`,
+  es: `${S}/es.webp`,
+  tr: `${S}/tr.svg`,
 };
 
-export function Steaguri({ coduri, total }: { coduri: string[]; total?: number }) {
+export function Steaguri({ coduri, total, lang = 'ro' }: { coduri: string[]; total?: number; lang?: Limba }) {
+  const t = textPortofoliu(lang);
   const inPlus = total && total > coduri.length ? total - coduri.length : 0;
   return (
     <span className={styles.steaguri}>
       {coduri.map((c) => {
-        const l = LIMBI[c];
-        return l ? (
+        const src = STEAGURI[c];
+        const nume = t.limbi[c] ?? c;
+        return src ? (
           <Image
             key={c}
-            src={l.src}
-            alt={l.nume}
-            title={l.nume}
+            src={src}
+            alt={nume}
+            title={nume}
             width={24}
             height={18}
             style={{ width: 24, height: 18 }}
@@ -129,9 +167,9 @@ export function Steaguri({ coduri, total }: { coduri: string[]; total?: number }
         );
       })}
       {inPlus > 0 && (
-        <span className={styles.inPlus} title={`Încă ${inPlus} limbi`}>
+        <span className={styles.inPlus} title={completeaza(t.incaLimbi, { n: inPlus })}>
           +{inPlus}
-          <span className={styles.ascuns}> limbi</span>
+          <span className={styles.ascuns}>{t.limbiAscuns}</span>
         </span>
       )}
     </span>

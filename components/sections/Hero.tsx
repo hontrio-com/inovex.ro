@@ -1,6 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { cale, linkPagina, type Limba } from '@/lib/i18n/config';
+import { dictionar } from '@/lib/i18n/dictionare';
+import { textAcasa } from '@/lib/i18n/pagini/acasa';
 import { CuvantRotativ } from './CuvantRotativ';
 import styles from './Hero.module.css';
 
@@ -9,8 +12,20 @@ import styles from './Hero.module.css';
    sticla. Sus, antetul fix sta in el ca partea lui de sus; la derulare antetul se desprinde, iar
    chenarul urca pe sub el. */
 
-// se schimba pe rand in pastila neagra din titlu
-const SERVICII = ['magazine online', 'aplicații web', 'automatizări', 'website-uri de prezentare'];
+// Cuvintele care se schimba pe rand in pastila neagra si restul textelor: lib/i18n/pagini/acasa.ts.
+
+// cuvintele cu cratima (website-uri, SEO-optimised, Web-Apps) nu se rup la capat de rand
+function faraRupere(text: string) {
+  return text.split(/(\S+-\S+)/).map((parte, k) =>
+    k % 2 === 1 ? (
+      <span key={k} className={styles.nowrap}>
+        {parte}
+      </span>
+    ) : (
+      parte
+    ),
+  );
+}
 
 // Clienti care ne recomanda, cu pozele lor de profil: logo-urile date de proprietar, intregi, cat de
 // mari incap in patratel (in /imagini/hero/clienti, albe, la de 3 ori marimea lui).
@@ -22,44 +37,40 @@ const RECOMANDARI = [
   { nume: 'Sagra Handmade', poza: '/imagini/hero/clienti/sagra-handmade.webp' },
 ];
 
-export function Hero() {
+export function Hero({ lang = 'ro' }: { lang?: Limba }) {
+  const t = textAcasa(lang).hero;
+  const d = dictionar(lang);
   return (
     <section className={styles.hero} aria-labelledby="hero-titlu">
       <div className={styles.chenar}>
         <div className={styles.continut}>
           <h1 id="hero-titlu" className={styles.titlu}>
             {/* titlul intreg, pentru cititoarele de ecran si motoarele de cautare */}
-            <span className={styles.ascuns}>
-              Construim magazine online, aplicații web, automatizări și website-uri de prezentare care
-              îți aduc clienți, nu doar trafic
-            </span>{' '}
+            <span className={styles.ascuns}>{t.titluComplet}</span>{' '}
             {/* data-nosnippet: Google ia fragmentul din titlul de mai sus, nu din cuvintele pastilei */}
             <span className={styles.vizibil} aria-hidden data-nosnippet>
               <span className={styles.rand}>
-                <span>Construim</span> <CuvantRotativ cuvinte={SERVICII} />
+                <span>{t.inceput}</span> <CuvantRotativ cuvinte={t.cuvinte} />
+                {t.dupaCuvant}
               </span>{' '}
-              <span className={styles.continuare}>care îți aduc clienți, nu doar trafic</span>
+              <span className={styles.continuare}>{t.continuare}</span>
             </span>
           </h1>
 
-          <p className={styles.lead}>
-            De la magazine online și <span className={styles.nowrap}>website-uri</span> de prezentare până la
-            aplicații web și platforme SaaS, dezvoltăm soluții rapide, optimizate SEO și construite pentru
-            conversii.
-          </p>
+          <p className={styles.lead}>{faraRupere(t.lead)}</p>
 
           <div className={styles.actiuni}>
-            <Link href="/oferta" className={styles.primar}>
-              Solicită ofertă
+            <Link href={cale(lang, '/oferta')} className={styles.primar}>
+              {d.antet.oferta}
               <ArrowRight aria-hidden />
             </Link>
-            <Link href="/portofoliu" className={styles.secundar}>
-              Vezi portofoliul
+            <Link href={linkPagina(lang, '/portofoliu') ?? cale(lang, '/')} className={styles.secundar}>
+              {d.servicii.veziPortofoliul}
             </Link>
           </div>
 
           <div className={styles.dovada}>
-            <ul className={styles.avatare} aria-label="Câțiva dintre clienții noștri">
+            <ul className={styles.avatare} aria-label={t.clienti}>
               {RECOMANDARI.map((client) => (
                 <li key={client.nume} title={client.nume}>
                   <Image src={client.poza} alt={client.nume} width={54} height={54} unoptimized loading="eager" />
@@ -67,14 +78,16 @@ export function Hero() {
               ))}
             </ul>
             <div className={styles.dovadaText}>
-              <div className={styles.stele} role="img" aria-label="Evaluare de 5 stele pe Google">
+              <div className={styles.stele} role="img" aria-label={t.stele}>
                 {[0, 1, 2, 3, 4].map((k) => (
                   <Stea key={k} />
                 ))}
                 <LogoGoogle />
               </div>
               <p className={styles.recomandat}>
-                Recomandați de <strong>peste 200 de afaceri</strong> din România
+                {t.recomandat[0]}
+                <strong>{t.recomandat[1]}</strong>
+                {t.recomandat[2]}
               </p>
             </div>
           </div>

@@ -5,10 +5,14 @@
    Zero CSS extern, zero fonturi Google — doar Arial/Georgia.
 ───────────────────────────────────────────────────────────────────────────── */
 
+import { CADRU, SUNA_DIRECT, type LimbaEmail } from '@/lib/email/texte';
+
 export interface LayoutOptions {
   content: string;
   previewText: string;
   headerTag: string;
+  /** limba emailului (antet, subsol); implicit romana */
+  lang?: LimbaEmail;
 }
 
 /* ── Helpers reutilizabili exportati ── */
@@ -191,19 +195,20 @@ export function timeline(steps: Array<{ title: string; desc: string }>): string 
     </table>`;
 }
 
-export function contactDirect(): string {
+export function contactDirect(lang: LimbaEmail = 'ro'): string {
+  const t = SUNA_DIRECT[lang];
   return `
     <div style="text-align:center;padding:20px 40px 8px;">
       <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#8A94A6;margin-bottom:8px;">
-        Nu vrei sa astepti? Suna-ne direct:
+        ${t.titlu}
       </div>
       <a href="tel:+40750456096"
          style="font-family:Arial,Helvetica,sans-serif;font-size:22px;font-weight:bold;
                 color:#2B8FCC;text-decoration:none;">
-        0750 456 096
+        ${t.telefon}
       </a>
       <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#8A94A6;margin-top:4px;">
-        Luni-Vineri, 09:00-18:00
+        ${t.program}
       </div>
     </div>`;
 }
@@ -227,9 +232,10 @@ export function esc(str: string): string {
 }
 
 /* ── Layout principal ── */
-export function buildEmail({ content, previewText, headerTag }: LayoutOptions): string {
+export function buildEmail({ content, previewText, headerTag, lang = 'ro' }: LayoutOptions): string {
+  const cadru = CADRU[lang];
   return `<!DOCTYPE html>
-<html lang="ro">
+<html lang="${lang}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -267,7 +273,7 @@ export function buildEmail({ content, previewText, headerTag }: LayoutOptions): 
                     </span>
                     <div style="margin-top:4px;font-family:Arial,Helvetica,sans-serif;
                                 font-size:12px;color:rgba(255,255,255,0.70);">
-                      Agentie Web Design Romania
+                      ${cadru.subtitlu}
                     </div>
                   </td>
                   <td align="right" valign="middle">
@@ -321,15 +327,15 @@ export function buildEmail({ content, previewText, headerTag }: LayoutOptions): 
                   &nbsp;·&nbsp;
                   <a href="tel:+40750456096"
                      style="color:rgba(255,255,255,0.35);text-decoration:none;">
-                    0750 456 096
+                    ${cadru.telefon}
                   </a>
                   &nbsp;·&nbsp;
-                  <a href="https://inovex.ro"
+                  <a href="${cadru.site}"
                      style="color:rgba(255,255,255,0.35);text-decoration:none;">
                     inovex.ro
                   </a>
                 </div>
-                <div style="margin-top:4px;">Targu Jiu, Gorj &nbsp;·&nbsp; Bucuresti</div>
+                <div style="margin-top:4px;">${cadru.oras}</div>
               </div>
             </td>
           </tr>

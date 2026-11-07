@@ -1,7 +1,7 @@
 'use client';
 
 // butonul „Setări cookies” din subsol: uita alegerea si reincarca pagina, ca bannerul sa apara din nou
-export function SetariCookies({ className }: { className?: string }) {
+export function SetariCookies({ className, text }: { className?: string; text: string }) {
   return (
     <button
       type="button"
@@ -13,7 +13,7 @@ export function SetariCookies({ className }: { className?: string }) {
         window.location.reload();
       }}
     >
-      Setări cookies
+      {text}
     </button>
   );
 }

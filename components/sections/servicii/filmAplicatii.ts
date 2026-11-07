@@ -9,6 +9,7 @@
    Redarea si uneltele comune sunt in film.ts. */
 
 import {
+  traducator,
   eio,
   eo,
   eob,
@@ -28,6 +29,9 @@ import {
   toate,
   typist,
 } from './film';
+import type { Limba } from '@/lib/i18n/config';
+import { bani, harta } from './texte';
+import { DINAMIC, STATIC, intreg, procent } from './texte/aplicatii';
 
 const DIR = '/imagini/servicii/acasa/animatie-aplicatii';
 
@@ -45,7 +49,9 @@ const CAMERA = { z0: 1.12, x0: 730, z1: 0.98, x1: 787, y1: 599 };
 const VEDERE = { x: 282, y: 23, w: 1356, h: 1126 };
 
 const ADRESA = 'app.hontrio.com';
-const EMAIL = 'contact@magazinul-tau.ro';
+// limba animatiei si textele ei schimbate in timpul animatiei (emailul scris, MRR-ul, instantele)
+let L: Limba = 'ro';
+let D = DINAMIC.ro;
 
 /* ─── Interfata ─── */
 
@@ -299,7 +305,7 @@ function camera(q: Interfata, ft: number, k: number) {
 }
 
 // numerele cu punct la mii
-const fmt = (v: number) => Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+const fmt = (v: number) => intreg(L, v);
 
 const KV = [1248, 3560, 86, 4177];
 
@@ -327,7 +333,7 @@ function dashGata(q: Interfata) {
 function sceneApp(box: HTMLElement, start: number) {
   const q = construieste(box);
   const adresa = typist(ADRESA, 0.2, 26);
-  const email = typist(EMAIL, 0.6, 24);
+  const email = typist(D.email, 0.6, 24);
   return (t: number) => {
     camera(q, start + t, 0);
     const p = seg(t, -0.45, 0.4);
@@ -433,7 +439,7 @@ function sceneAbonamente(box: HTMLElement, start: number) {
     q.d.toast.transform = 'translateY(' + (-12 * tp).toFixed(1) + 'px)';
     fly(q.b.bill, t, 0.3, 0.5, 420, 0);
     ring(q.b.bill, t, 0.8);
-    q.mrr.textContent = fmt(lerp(71200, 84300, eo(seg(t, 0.7, 1.9)))) + ' lei';
+    q.mrr.textContent = bani(L, lerp(D.mrr[0], D.mrr[1], eo(seg(t, 0.7, 1.9))), 0);
     q.bars.forEach((s, k) => {
       const p = seg(t, 0.6 + k * 0.05, 1.05 + k * 0.05);
       s.transform = 'scaleY(' + Math.max(0.001, eob(p, 1.5)).toFixed(4) + ')';
@@ -452,7 +458,7 @@ const SERVERE = [0, 1, 2, 3].map((i) => 1.55 + i * 0.13);
 function sceneScalare(box: HTMLElement, start: number) {
   const q = construieste(box);
   // abonamentele pleaca asa cum au ramas; in original venitul sarea aici inapoi la „0 lei”
-  q.mrr.textContent = fmt(84300) + ' lei';
+  q.mrr.textContent = bani(L, D.mrr[1], 0);
   return (t: number) => {
     camera(q, start + t, 1);
     on(q.u.win);
@@ -464,7 +470,7 @@ function sceneScalare(box: HTMLElement, start: number) {
     out(q.b.bill, t, 0, 0.4, 360);
     fly(q.c.scale, t, 0.3, 0.5, 420, 0);
     const p = eo(seg(t, 0.7, 1.6));
-    q.cv[0].textContent = (99 + 0.98 * p).toFixed(2).replace('.', ',') + '%';
+    q.cv[0].textContent = procent(L, 99 + 0.98 * p);
     q.cv[1].textContent = Math.round(120 * p) + ' ms';
     q.cv[2].textContent = fmt(12480 * p);
     const lp = eio(seg(t, 0.8, 1.9));
@@ -476,7 +482,7 @@ function sceneScalare(box: HTMLElement, start: number) {
       else pop(s, t, SERVERE[k - 2]);
     });
     const n = 2 + SERVERE.filter((t0) => t >= t0).length;
-    q.cnt.textContent = n + ' instanțe active' + (n === 6 ? ' · trafic distribuit automat' : '');
+    q.cnt.textContent = D.instante(n);
   };
 }
 
@@ -488,4 +494,8 @@ const SCENE = [
 ];
 
 // porneste animatia in casuta (vezi pornesteFilmul)
-export const porneste = (cutie: HTMLElement, scena: HTMLElement) => pornesteFilmul(cutie, scena, { scene: SCENE, vedere: VEDERE });
+export const porneste = (cutie: HTMLElement, scena: HTMLElement, lang: Limba = 'ro') => {
+  L = lang;
+  D = DINAMIC[lang];
+  return pornesteFilmul(cutie, scena, { scene: SCENE, vedere: VEDERE, traduce: traducator(harta(STATIC, lang)) });
+};

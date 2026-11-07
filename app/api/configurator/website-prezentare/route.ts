@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { sendEmail } from '@/lib/email/send';
 import { internSubject, internHtml, clientSubject, clientHtml } from '@/lib/email/templates/website-prezentare';
+import { limbaEmail, sufixLimba } from '@/lib/email/texte';
 import { createWebsiteLead } from '@/lib/crm/website-lead';
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -28,6 +29,8 @@ const schema = z.object({
   telefon:          z.string().min(10).max(20),
   observatii:       z.string().optional(),
   acordPrivacitate: z.literal(true),
+  // limba paginii (2026-11-07): confirmarea pleaca in limba clientului, iar in CRM sursa o arata
+  limba:            z.enum(['ro', 'en', 'de', 'fr']).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -39,10 +42,11 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const data = schema.parse(body);
+    const lang = limbaEmail(data.limba);
 
     // Lead in CRM (best-effort, nu afecteaza emailurile).
     await createWebsiteLead({
-      req, source: 'Configurator website prezentare', metaEventId: req.headers.get('x-meta-event-id'),
+      req, source: 'Configurator website prezentare' + sufixLimba(lang), metaEventId: req.headers.get('x-meta-event-id'),
       name: data.nume, email: data.email, phone: data.telefon,
       notes: [
         `Tip entitate: ${data.tipEntitate}`,
@@ -55,11 +59,11 @@ export async function POST(req: NextRequest) {
     });
 
     const to = process.env.SMTP_TO ?? 'contact@inovex.ro';
-    const emailData = { ...data, ip };
+    const emailData = { ...data, ip, limba: lang };
 
     const [internResult, clientResult] = await Promise.all([
       sendEmail({ to, subject: internSubject(emailData), html: internHtml(emailData) }),
-      sendEmail({ to: data.email, subject: clientSubject(), html: clientHtml(emailData), replyTo: process.env.SMTP_USER }),
+      sendEmail({ to: data.email, subject: clientSubject(lang), html: clientHtml(emailData, lang), replyTo: process.env.SMTP_USER }),
     ]);
 
     if (!internResult.success) console.error('[Email intern WP eșuat]', internResult.error);

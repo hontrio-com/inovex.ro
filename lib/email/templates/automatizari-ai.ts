@@ -3,6 +3,8 @@ import {
   paragraph, heading, separator, primaryButton, metadataFooter,
   quickActionButtons, timeline, contactDirect, smallDisclaimer, esc,
 } from '@/lib/email/layout';
+import { butonPortofoliu, CONFIGURATOR, etichetaLimba, OFERTA, sufixLimba, type LimbaEmail } from '@/lib/email/texte';
+import { etichetaOptiune, textConfiguratoare } from '@/lib/i18n/pagini/configuratoare';
 
 export interface AutomatizariData {
   tipAfacere: string;
@@ -12,8 +14,11 @@ export interface AutomatizariData {
   email?: string;
   telefon: string;
   ip?: string;
+  /** limba paginii (din 2026-11-07): confirmarea pleaca in limba clientului; internul ramane in romana */
+  limba?: LimbaEmail;
 }
 
+// etichetele din emailurile in romana (internul si confirmarea romaneasca), ca pana acum
 const AFACERE_LABEL: Record<string, string> = {
   'magazin-online':     'Magazin online',
   'prestari-servicii':  'Prestari servicii',
@@ -33,7 +38,7 @@ const PROCES_LABEL: Record<string, string> = {
 /* ── Email INTERN ── */
 
 export function internSubject(d: AutomatizariData): string {
-  return `[LEAD NOU] Automatizari AI - ${d.numeComplet}`;
+  return `${etichetaLimba(d.limba ?? 'ro')}[LEAD NOU] Automatizari AI - ${d.numeComplet}`;
 }
 
 export function internHtml(d: AutomatizariData): string {
@@ -83,7 +88,7 @@ export function internHtml(d: AutomatizariData): string {
       ${primaryButton('https://inovex.ro/admin/bids', 'Deschide in admin', '#10B981')}
     </div>
 
-    ${metadataFooter(`Primit la: ${submittedAt} &nbsp;·&nbsp; Sursa: Configurator Automatizari AI${d.ip ? ` &nbsp;·&nbsp; IP: ${esc(d.ip)}` : ''}`)}
+    ${metadataFooter(`Primit la: ${submittedAt} &nbsp;·&nbsp; Sursa: Configurator Automatizari AI${sufixLimba(d.limba)}${d.ip ? ` &nbsp;·&nbsp; IP: ${esc(d.ip)}` : ''}`)}
   `;
 
   return buildEmail({
@@ -95,56 +100,59 @@ export function internHtml(d: AutomatizariData): string {
 
 /* ── Email CLIENT ── */
 
-export function clientSubject(): string {
-  return 'Am primit cererea ta - te contactam in 24 de ore | Inovex';
+export function clientSubject(lang: LimbaEmail = 'ro'): string {
+  return CONFIGURATOR[lang].subiect;
 }
 
-export function clientHtml(d: AutomatizariData): string {
+export function clientHtml(d: AutomatizariData, lang: LimbaEmail = 'ro'): string {
+  const o = OFERTA[lang];
+  const t = CONFIGURATOR[lang].automatizari;
+  const r = t.randuri;
+  const p = textConfiguratoare(lang).automatizari;
+  // in romana, etichetele de pana acum; in celelalte limbi, cele de pe pagina
+  const afacere = lang === 'ro' ? AFACERE_LABEL[d.tipAfacere] ?? d.tipAfacere : etichetaOptiune(p.tipuri, d.tipAfacere);
   const proceseList = d.proceseAutomatizare
-    .map((p) => PROCES_LABEL[p] ?? p)
+    .map((v) => (lang === 'ro' ? PROCES_LABEL[v] ?? v : etichetaOptiune(p.listaProcese, v)))
     .join(', ');
 
   const content = `
-    ${heading(`Buna, ${d.numeComplet}!`)}
+    ${heading(o.salut(d.numeComplet))}
 
-    ${paragraph('Am primit cererea ta pentru <strong>automatizari AI</strong> si ne-am apucat deja sa o analizam. Un specialist Inovex in automatizari te va contacta in maximum <strong>24 de ore</strong> pentru a discuta detaliile implementarii.')}
+    ${paragraph(t.primit)}
 
     <div style="margin:8px 40px 20px;padding:16px 20px;background-color:#F8FAFB;
                 border:1px solid #E8ECF0;border-radius:8px;">
       <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;
                   color:#0D1117;margin-bottom:10px;">
-        Rezumatul cererii tale
+        ${o.rezumat}
       </div>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-        ${dataRow('Tip afacere', AFACERE_LABEL[d.tipAfacere] ?? d.tipAfacere)}
-        ${dataRow('Procese de automatizat', proceseList)}
-        ${d.descriereAltceva ? dataRow('Descriere', d.descriereAltceva.slice(0, 120) + (d.descriereAltceva.length > 120 ? '...' : '')) : ''}
+        ${dataRow(r.tip, afacere)}
+        ${dataRow(r.procese, proceseList)}
+        ${d.descriereAltceva ? dataRow(r.descriere, d.descriereAltceva.slice(0, 120) + (d.descriereAltceva.length > 120 ? '...' : '')) : ''}
       </table>
     </div>
 
-    ${sectionHeading('Ce urmeaza?')}
+    ${sectionHeading(o.urmeaza)}
     <div style="padding:0 40px 8px;">
-      ${timeline([
-        { title: 'Analiza cerere', desc: 'Echipa noastra analizeaza procesele tale si identifica cele mai bune solutii de automatizare.' },
-        { title: 'Te contactam', desc: 'Un specialist te suna sau iti trimite email in maximum 24 de ore.' },
-        { title: 'Propunere detaliata', desc: 'Primesti o propunere completa cu solutiile recomandate si estimarea timpului de implementare.' },
-      ])}
+      ${timeline(t.pasi)}
     </div>
 
     ${separator()}
-    ${contactDirect()}
+    ${contactDirect(lang)}
 
     <div style="text-align:center;padding:16px 40px 8px;">
-      ${primaryButton('https://inovex.ro/portofoliu', 'Exploreaza portofoliul nostru')}
+      ${primaryButton(...butonPortofoliu(lang))}
     </div>
 
     ${separator()}
-    ${smallDisclaimer('Daca nu ai completat tu aceasta cerere sau e o greseala, ignora acest email. Nu ai niciun angajament.')}
+    ${smallDisclaimer(o.avertisment)}
   `;
 
   return buildEmail({
     content,
-    previewText: 'Multumim! Echipa Inovex analizeaza procesele tale acum.',
-    headerTag: 'Confirmare',
+    previewText: t.previzualizare,
+    headerTag: o.eticheta,
+    lang,
   });
 }

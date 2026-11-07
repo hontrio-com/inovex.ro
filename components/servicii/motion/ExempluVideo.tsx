@@ -2,11 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
+import { completeaza } from '@/lib/i18n/completeaza';
 
 interface ExempluVideoProps {
   src: string;
   poster: string;
   title: string;
+  /** etichetele pentru cititoarele de ecran, cu {titlu} (lib/i18n/pagini/motion.ts: exemple.video) */
+  etichete: { eticheta: string; porneste: string; opreste: string };
 }
 
 /** Numele evenimentului prin care un clip cu sunet le anunta pe celelalte sa taca. */
@@ -17,7 +20,7 @@ const UNMUTE_EVENT = 'motion-exemplu-unmute';
  * pe ecran si se opreste cand iese. Sunetul se activeaza din buton, pe rand —
  * un singur clip se aude la un moment dat.
  */
-export default function ExempluVideo({ src, poster, title }: ExempluVideoProps) {
+export default function ExempluVideo({ src, poster, title, etichete }: ExempluVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
 
@@ -75,13 +78,13 @@ export default function ExempluVideo({ src, poster, title }: ExempluVideoProps) 
         loop
         playsInline
         preload="none"
-        aria-label={`Videoclip: ${title}`}
+        aria-label={completeaza(etichete.eticheta, { titlu: title })}
         className="absolute inset-0 w-full h-full object-cover"
       />
       <button
         type="button"
         onClick={toggleSound}
-        aria-label={muted ? `Porneste sunetul pentru ${title}` : `Opreste sunetul pentru ${title}`}
+        aria-label={completeaza(muted ? etichete.porneste : etichete.opreste, { titlu: title })}
         aria-pressed={!muted}
         className="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-black/55 backdrop-blur-sm text-white flex items-center justify-center hover:bg-black/75 transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-white/70"
       >

@@ -1,44 +1,24 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { cale, type Limba } from '@/lib/i18n/config';
+import { dictionar } from '@/lib/i18n/dictionare';
+import { textAcasa } from '@/lib/i18n/pagini/acasa';
 import styles from './Recenzii.module.css';
 
 /* Recenziile de pe prima pagina, in stilul portofoliului (2026-10-29): titlu in doua tonuri, centrat,
    cu stelele si „G”-ul Google dedesubt, apoi recenziile. Pe ecranele mari, intr-un chenar ca al
    hero-ului, despartite de linii fine; pe telefon si tableta, fiecare e un card. Recenziile sunt cele
-   de pe Google, copiate in pagina. */
+   de pe Google, copiate in pagina; textele lor (traduse in celelalte limbi, cu mentiunea „tradus din
+   romana”) sunt in lib/i18n/pagini/acasa.ts, in aceeasi ordine. */
 
 const RECENZII = [
-  {
-    nume: 'Cosmin Danila',
-    site: 'stupinamaria.ro',
-    text: 'Colaborarea a fost peste așteptări. Răbdare, soluții rapide și un rezultat final foarte bine pus la punct. Se vede experiența și pasiunea pentru ceea ce face. Recomand!',
-  },
-  {
-    nume: 'Export Trans Ultimate',
-    site: 'exporttrans.ro',
-    text: 'Recomand cu toată încrederea! Site-ul de prezentare a fost realizat exact așa cum mi-am dorit: modern, clar, bine structurat și ușor de folosit. Comunicarea a fost foarte bună, a fost receptiv la toate cerințele mele și a respectat termenele stabilite. Se vede că este implicat și atent la detalii. Mulțumesc pentru profesionalism!',
-  },
-  {
-    nume: 'Craus Armand',
-    site: 'fumgreuiasi.ro',
-    text: 'Mi-au făcut un website de nota 10 pentru firma mea de evenimente. Recomand cu cea mai mare încredere dacă doriți ceva profesional și modern.',
-  },
-  {
-    nume: 'AVI MOB',
-    site: 'avimob.ro',
-    text: 'Servicii calitative, atenție la detalii, idei productive privind organizarea și gestiunea activității în online.',
-  },
-  {
-    nume: 'Romina Somicescu',
-    site: 'romagcooking.ro',
-    text: 'Sunt foarte mulțumită de rezultatele colaborării mele cu ei. Recomand cu încredere!',
-  },
-  {
-    nume: 'IRETRO',
-    site: 'profesoruldeai.ro',
-    text: 'Per total am fost foarte mulțumit de serviciile oferite, singura problemă minoră a fost faptul că au întârziat 5 zile. În rest, totul perfect! Recomand!',
-  },
+  { nume: 'Cosmin Danila', site: 'stupinamaria.ro' },
+  { nume: 'Export Trans Ultimate', site: 'exporttrans.ro' },
+  { nume: 'Craus Armand', site: 'fumgreuiasi.ro' },
+  { nume: 'AVI MOB', site: 'avimob.ro' },
+  { nume: 'Romina Somicescu', site: 'romagcooking.ro' },
+  { nume: 'IRETRO', site: 'profesoruldeai.ro' },
 ];
 
 // pe telefon se vad doar primele atatea
@@ -50,21 +30,24 @@ function initiale(nume: string) {
   return (cuvinte.length > 1 ? cuvinte[0][0] + cuvinte[1][0] : nume.slice(0, 2)).toUpperCase();
 }
 
-export function Recenzii() {
+export function Recenzii({ lang = 'ro' }: { lang?: Limba }) {
+  const t = textAcasa(lang).recenzii;
+  const d = dictionar(lang);
   return (
     <section className={styles.recenzii} aria-labelledby="recenzii-titlu">
       <div className={styles.cap}>
         <h2 id="recenzii-titlu" className={styles.titlu}>
-          Ce spun clienții noștri
+          {t.titlu}
         </h2>
         <div className={styles.evaluare}>
-          <span className={styles.stele} role="img" aria-label="Evaluare de 5 stele pe Google">
+          <span className={styles.stele} role="img" aria-label={t.stele}>
             {[0, 1, 2, 3, 4].map((k) => (
               <Stea key={k} />
             ))}
           </span>
           <span className={styles.evaluareText}>
-            <LogoGoogle /> Recenzii verificate pe Google
+            <LogoGoogle /> {t.verificate}
+            {t.tradus && ` · ${t.tradus}`}
           </span>
         </div>
       </div>
@@ -75,7 +58,7 @@ export function Recenzii() {
             <li key={r.nume} className={styles.celula} data-in-plus={k >= PE_TELEFON ? '' : undefined}>
               <figure className={styles.recenzie}>
                 <div className={styles.sus}>
-                  <span className={styles.stele} role="img" aria-label="5 stele">
+                  <span className={styles.stele} role="img" aria-label={t.cinciStele}>
                     {[0, 1, 2, 3, 4].map((s) => (
                       <Stea key={s} />
                     ))}
@@ -83,7 +66,7 @@ export function Recenzii() {
                   <LogoGoogle />
                 </div>
                 <blockquote className={styles.text}>
-                  <p>{r.text}</p>
+                  <p>{t.texte[k]}</p>
                 </blockquote>
                 <figcaption className={styles.autor}>
                   <span className={styles.initiale} aria-hidden>
@@ -94,7 +77,7 @@ export function Recenzii() {
                       {r.nume}
                       <Image
                         src="/imagini/servicii/acasa/verificat.webp"
-                        alt="Recenzie verificată"
+                        alt={t.verificata}
                         width={16}
                         height={16}
                         className={styles.verificat}
@@ -110,8 +93,8 @@ export function Recenzii() {
       </div>
 
       <div className={styles.actiuni}>
-        <Link href="/oferta" className={styles.primar}>
-          Solicită ofertă
+        <Link href={cale(lang, '/oferta')} className={styles.primar}>
+          {d.antet.oferta}
           <ArrowRight aria-hidden />
         </Link>
       </div>

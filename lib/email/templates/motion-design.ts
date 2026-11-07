@@ -3,6 +3,7 @@ import {
   paragraph, heading, separator, metadataFooter,
   contactDirect, quickActionButtons, esc,
 } from '@/lib/email/layout';
+import { etichetaLimba, MOTION, type LimbaEmail } from '@/lib/email/texte';
 
 export interface MotionOrderData {
   nume: string;
@@ -15,12 +16,14 @@ export interface MotionOrderData {
   /** Brief-ul completat la comanda (descriere + link-uri catre materiale). */
   brief?: string | null;
   sessionId: string;
+  /** limba clientului (din metadata sesiunii); emailul intern ramane in romana, cu [EN] in subiect */
+  limba?: LimbaEmail;
 }
 
 /* ── Email INTERN ── */
 
 export function internSubject(d: MotionOrderData): string {
-  return `[COMANDA PLATITA] Motion Design - ${d.pachet} - ${d.nume}`;
+  return `${etichetaLimba(d.limba ?? 'ro')}[COMANDA PLATITA] Motion Design - ${d.pachet} - ${d.nume}`;
 }
 
 export function internHtml(d: MotionOrderData): string {
@@ -52,7 +55,7 @@ export function internHtml(d: MotionOrderData): string {
                   color:#0D1117;line-height:1.75;white-space:pre-wrap;word-break:break-word;">${esc(d.brief)}</div>
     </div>` : ''}
 
-    ${metadataFooter(`Platit la: ${paidAt} &nbsp;·&nbsp; Sursa: Stripe Checkout &nbsp;·&nbsp; Sesiune: ${esc(d.sessionId)}`)}
+    ${metadataFooter(`Platit la: ${paidAt} &nbsp;·&nbsp; Sursa: Stripe Checkout${d.limba && d.limba !== 'ro' ? ` (${d.limba.toUpperCase()})` : ''} &nbsp;·&nbsp; Sesiune: ${esc(d.sessionId)}`)}
   `;
 
   return buildEmail({
@@ -64,30 +67,33 @@ export function internHtml(d: MotionOrderData): string {
 
 /* ── Email CLIENT ── */
 
-export function clientSubject(): string {
-  return 'Am primit comanda ta de Motion Design | Inovex';
+export function clientSubject(lang: LimbaEmail = 'ro'): string {
+  return MOTION[lang].subiect;
 }
 
-export function clientHtml(d: MotionOrderData): string {
+/** Confirmarea pentru client, in limba lui; `pachet` si `total` vin deja scrise in limba lui. */
+export function clientHtml(d: MotionOrderData, lang: LimbaEmail = 'ro'): string {
+  const t = MOTION[lang];
   const content = `
-    ${heading('Plata a fost confirmata!')}
+    ${heading(t.titlu)}
 
-    ${paragraph(`Multumim, <strong>${esc(d.nume)}</strong>. Am primit comanda ta si ne apucam de treaba.`)}
+    ${paragraph(t.multumim(esc(d.nume)))}
 
     ${dataTable(
-      dataRow('Pachet', esc(d.pachet)) +
-      dataRow('Total platit', esc(d.total))
+      dataRow(t.pachet, esc(d.pachet)) +
+      dataRow(t.total, esc(d.total))
     )}
 
-    ${paragraph('Avem deja brief-ul si materialele trimise la comanda, asa ca incepem cu scenariul. Daca avem nevoie de lamuriri, te contactam in maximum <strong>24 de ore</strong>.')}
+    ${paragraph(t.text)}
 
     ${separator()}
-    ${contactDirect()}
+    ${contactDirect(lang)}
   `;
 
   return buildEmail({
     content,
-    previewText: 'Plata confirmata. Ne apucam de videoclipul tau.',
-    headerTag: 'Confirmare comanda',
+    previewText: t.previzualizare,
+    headerTag: t.eticheta,
+    lang,
   });
 }

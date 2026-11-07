@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { sendEmail } from '@/lib/email/send';
 import { internSubject, internHtml, clientSubject, clientHtml } from '@/lib/email/templates/contact';
 import { createWebsiteLead } from '@/lib/crm/website-lead';
+import { limbaEmail } from '@/lib/email/texte';
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
@@ -25,6 +26,8 @@ const schema = z.object({
   companie:         z.string().max(100).optional(),
   mesaj:            z.string().min(10).max(2000),
   acordPrivacitate: z.literal(true),
+  // limba paginii (2026-11-06): confirmarea pleaca in limba clientului, iar in CRM sursa o arata
+  limba:            z.enum(['ro', 'en', 'de', 'fr']).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -39,17 +42,18 @@ export async function POST(req: NextRequest) {
 
     // Lead in CRM (best-effort, nu afecteaza emailurile).
     await createWebsiteLead({
-      req, source: 'Formular contact', metaEventId: req.headers.get('x-meta-event-id'),
+      req, source: 'Formular contact' + (data.limba && data.limba !== 'ro' ? ` (${data.limba.toUpperCase()})` : ''), metaEventId: req.headers.get('x-meta-event-id'),
       name: data.nume, email: data.email, phone: data.telefon, company: data.companie,
       notes: data.mesaj, raw: data,
     });
 
     const to = process.env.SMTP_TO ?? 'contact@inovex.ro';
+    const lang = limbaEmail(data.limba);
     const emailData = { ...data, ip };
 
     const [internResult, clientResult] = await Promise.all([
       sendEmail({ to, subject: internSubject(emailData), html: internHtml(emailData) }),
-      sendEmail({ to: data.email, subject: clientSubject(), html: clientHtml(emailData), replyTo: process.env.SMTP_USER }),
+      sendEmail({ to: data.email, subject: clientSubject(lang), html: clientHtml(emailData, lang), replyTo: process.env.SMTP_USER }),
     ]);
 
     if (!internResult.success) console.error('[Email intern Contact eșuat]', internResult.error);

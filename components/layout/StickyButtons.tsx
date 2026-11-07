@@ -7,12 +7,14 @@ import { Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { trackConversions } from '@/lib/gtm';
 import { MOTION_PATH } from '@/lib/motion-design';
+import { cale, type Limba } from '@/lib/i18n/config';
+import type { Dictionar } from '@/lib/i18n/dictionare/ro';
 
 const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '40750456096';
-const WA_MESSAGE = encodeURIComponent('Bună ziua, am o întrebare despre serviciile Inovex.');
 
-export function StickyButtons() {
+export function StickyButtons({ lang, t, telefon }: { lang: Limba; t: Dictionar['butoane']; telefon: string }) {
   const pathname = usePathname();
+  const mesajWhatsapp = encodeURIComponent(t.mesajWhatsapp);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -24,7 +26,7 @@ export function StickyButtons() {
   }, []);
 
   // Pagina Video Motion Design are propria bara lipita jos, cu "COMANDA ACUM".
-  if (pathname === MOTION_PATH) return null;
+  if (pathname === cale(lang, MOTION_PATH)) return null;
 
   return (
     <AnimatePresence>
@@ -35,22 +37,22 @@ export function StickyButtons() {
           exit={{ y: 40, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           className="fixed bottom-6 right-5 z-[9999] flex flex-col gap-3"
-          aria-label="Butoane contact rapid"
+          aria-label={t.aria}
         >
           {/* WhatsApp */}
           <div className="relative group">
             <a
-              href={`https://wa.me/${WA_NUMBER}?text=${WA_MESSAGE}`}
+              href={`https://wa.me/${WA_NUMBER}?text=${mesajWhatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Mesaj WhatsApp"
+              aria-label={t.whatsapp}
               onClick={() => trackConversions.whatsapp()}
               className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#25D366] text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110"
             >
               <WhatsAppIcon />
             </a>
             <span className="hidden md:block absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-[#1A202C] text-white text-xs font-medium px-2.5 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-              Mesaj WhatsApp
+              {t.whatsapp}
             </span>
           </div>
 
@@ -58,7 +60,7 @@ export function StickyButtons() {
           <div className="relative group">
             <a
               href="tel:+40750456096"
-              aria-label="Sună acum"
+              aria-label={t.suna}
               onClick={() => trackConversions.telefon()}
               className="relative flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110"
             >
@@ -71,7 +73,7 @@ export function StickyButtons() {
               />
             </a>
             <span className="hidden md:block absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-[#1A202C] text-white text-xs font-medium px-2.5 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-              0750 456 096
+              {telefon}
             </span>
           </div>
         </motion.div>

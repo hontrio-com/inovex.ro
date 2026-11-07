@@ -13,12 +13,15 @@ export function Proiect({
   sizes,
   priority = false,
   inPlus = false,
+  filaNoua = ' (se deschide într-o filă nouă)',
 }: {
   p: PortfolioProject;
   descriere: string;
   sizes: string;
   priority?: boolean;
   inPlus?: boolean;
+  /** textul pentru cititoarele de ecran, in limba paginii */
+  filaNoua?: string;
 }) {
   return (
     <li className={styles.celula} data-in-plus={inPlus ? '' : undefined}>
@@ -31,7 +34,7 @@ export function Proiect({
             <ArrowUpRight />
           </span>
         </div>
-        <span className={styles.ascuns}> (se deschide într-o filă nouă)</span>
+        <span className={styles.ascuns}>{filaNoua}</span>
       </a>
     </li>
   );
